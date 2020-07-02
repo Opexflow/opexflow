@@ -11,7 +11,8 @@ import {
     FORGOT_PASSWORD_ERROR,
     RESET_PASSWORD,
     RESET_PASSWORD_SUCCESS,
-    RESET_PASSWORD_ERROR
+    RESET_PASSWORD_ERROR,
+    AUTH_LOCATION
 } from '../actions';
 
 const INIT_STATE = {
@@ -19,12 +20,15 @@ const INIT_STATE = {
     forgotUserMail: '',
     newPassword: '',
     resetPasswordCode: '',
+    authLocation: '/',
     loading: false,
     error: ''
 };
 
 export default (state = INIT_STATE, action) => {
     switch (action.type) {
+        case AUTH_LOCATION:
+            return { ...state, authLocation: action.payload };
         case LOGIN_USER:
             return { ...state, loading: true, error: '' };
         case LOGIN_USER_SUCCESS:
