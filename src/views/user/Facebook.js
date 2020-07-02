@@ -10,14 +10,19 @@ export default class Facebook extends Component {
     };
 
     responseFacebook = response => {
-        console.log(response);
-        if(response.status !== 'unknown')
-        this.setState({
-            auth: true,
-            name: response.name,
-            picture: response.picture.data.url
-        });
-        
+        if(response && response.status !== 'unknown' && response.picture) {
+            this.props.onUserLogin({
+                ...response,
+                email: 'demo@gogo.com',
+                password: 'gogo123',
+            });
+
+            this.setState({
+                auth: true,
+                name: response.name,
+                picture: response.picture.data.url
+            });
+        }
     }
 
     componentClicked = () => {
@@ -27,25 +32,14 @@ export default class Facebook extends Component {
     render(){
         let facebookData;
 
-        this.state.auth ?
-        facebookData = (
-                <div style={{
-                    width: '400px',
-                    margin: 'auto',
-                    background: '#f4f4f4',
-                    padding: '20px',
-                    color: '#000'
-                }}>
-                    <img src={this.state.picture} alt={this.state.name} />
-                    <h2>Welcome {this.state.name}!</h2>
-                </div>
-            ) : 
+        if (!this.setState.auth) {
             facebookData = (<FacebookLogin
-                appId="2908344615961117"
+                appId="2969806906408505"
                 autoLoad={true}
                 fields="name,picture"
                 onClick={this.componentClicked}
                 callback={this.responseFacebook} />);
+        }
 
         return (
             <>

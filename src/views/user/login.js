@@ -145,7 +145,7 @@ class Login extends Component {
 
                     {/* Facebook autorization */}
                     <div className="Facebook">
-                        <Facebook />
+                        <Facebook onUserLogin={this.onUserLogin} />
                     </div>
                       
 
