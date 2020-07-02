@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Row, Card, CardTitle, Label, FormGroup, Button } from "reactstrap";
 import { NavLink } from "react-router-dom";
 import { connect } from "react-redux";
+import Facebook from './Facebook';
 
 import { NotificationManager } from "../../components/common/react-notifications";
 import { Formik, Form, Field } from "formik";
@@ -9,6 +10,7 @@ import { Formik, Form, Field } from "formik";
 import { loginUser } from "../../redux/actions";
 import { Colxx } from "../../components/common/CustomBootstrap";
 import IntlMessages from "../../helpers/IntlMessages";
+
 class Login extends Component {
   constructor(props) {
     super(props);
@@ -140,6 +142,12 @@ class Login extends Component {
                         <span className="label"><IntlMessages id="user.login-button" /></span>
                       </Button>
                     </div>
+
+                    {/* Facebook autorization */}
+                    <div className="Facebook">
+                        <Facebook />
+                    </div>
+                      
 
 
                   </Form>
