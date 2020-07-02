@@ -13,6 +13,7 @@ import ColorSwitcher from './components/common/ColorSwitcher';
 import NotificationContainer from './components/common/react-notifications/NotificationContainer';
 import { isMultiColorActive, isDemo } from './constants/defaultValues';
 import { getDirection } from './helpers/Utils';
+import SiteRules from './components/pages/SiteRules';
 
 const ViewMain = React.lazy(() =>
   import(/* webpackChunkName: "views" */ './views')
@@ -80,6 +81,10 @@ class App extends Component {
                     path="/app"
                     authUser={loginUser}
                     component={ViewApp}
+                  />
+                  <Route
+                    path="/SiteRules"
+                    render={props => <SiteRules />}
                   />
                   <Route
                     path="/user"

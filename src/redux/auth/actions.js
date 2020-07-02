@@ -11,8 +11,16 @@ import {
   FORGOT_PASSWORD_ERROR,
   RESET_PASSWORD,
   RESET_PASSWORD_SUCCESS,
-  RESET_PASSWORD_ERROR
+  RESET_PASSWORD_ERROR,
+  AUTH_LOCATION
 } from '../actions';
+
+export const authLocation = (location) => {
+ return {
+    type: AUTH_LOCATION,
+    payload: location 
+  }
+}
 
 export const loginUser = (user, history) => ({
   type: LOGIN_USER,

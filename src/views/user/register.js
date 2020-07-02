@@ -1,11 +1,12 @@
 import React, { Component } from "react";
 import { Row, Card, CardTitle, Form, Label, Input, Button } from "reactstrap";
-import { NavLink } from "react-router-dom";
+import { NavLink, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-import { registerUser } from "../../redux/actions";
-
+import { registerUser, authLocation } from "../../redux/actions";
 import IntlMessages from "../../helpers/IntlMessages";
 import { Colxx } from "../../components/common/CustomBootstrap";
+import { NotificationManager } from "../../components/common/react-notifications";
+import { compose } from "redux";
 
 class Register extends Component {
   constructor(props) {
@@ -19,6 +20,23 @@ class Register extends Component {
   onUserRegister() {
     if (this.state.email !== "" && this.state.password !== "") {
       this.props.history.push("/");
+    }
+  }
+
+  componentDidMount(){
+    this.props.authLocation(this.props.location.pathname)
+  }
+
+  componentDidUpdate() {
+    if (this.props.error) {
+      NotificationManager.warning(
+        this.props.error,
+        "Login Error",
+        3000,
+        null,
+        null,
+        ''
+      );
     }
   }
 
@@ -61,7 +79,19 @@ class Register extends Component {
                     defaultValue={this.state.password}
                   />
                 </Label>
-                <div className="d-flex justify-content-end align-items-center">
+                
+                <div className="d-flex justify-content-between align-items-center">
+                  <div>
+                    <NavLink to={`/SiteRules`} className="btn btn-link p-2">
+                      Site rules
+                    </NavLink>
+                    <Label className="form-check form-group pl-4 d-flex align-items-center">
+                      <Input type="checkbox" className="mt-0"/>
+                      <IntlMessages
+                        id="user.siteRules"
+                      />
+                    </Label>
+                  </div>
                   <Button
                     color="primary"
                     className="btn-shadow"
@@ -80,13 +110,18 @@ class Register extends Component {
   }
 }
 const mapStateToProps = ({ authUser }) => {
-  const { user, loading } = authUser;
-  return { user, loading };
+  const { user, loading, error } = authUser;
+  return { user, loading, error };
 };
 
-export default connect(
-  mapStateToProps,
-  {
-    registerUser
-  }
-)(Register);
+export default compose(
+  connect(
+    mapStateToProps,
+    {
+      registerUser,
+      authLocation
+    }
+  ),
+  withRouter)
+(Register)
+

@@ -1,14 +1,14 @@
 import React, { Component } from "react";
 import { Row, Card, CardTitle, Label, FormGroup, Button } from "reactstrap";
-import { NavLink } from "react-router-dom";
+import { NavLink, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-
 import { NotificationManager } from "../../components/common/react-notifications";
 import { Formik, Form, Field } from "formik";
-
-import { loginUser } from "../../redux/actions";
+import { loginUser, authLocation } from "../../redux/actions";
 import { Colxx } from "../../components/common/CustomBootstrap";
 import IntlMessages from "../../helpers/IntlMessages";
+import { compose } from "redux";
+
 class Login extends Component {
   constructor(props) {
     super(props);
@@ -46,6 +46,10 @@ class Login extends Component {
     return error;
   }
 
+  componentDidMount(){
+    this.props.authLocation(this.props.location.pathname)
+  }
+
   componentDidUpdate() {
     if (this.props.error) {
       NotificationManager.warning(
@@ -73,7 +77,7 @@ class Login extends Component {
                 Please use your credentials to login.
                 <br />
                 If you are not a member, please{" "}
-                <NavLink to={`/register`} className="white">
+                <NavLink to={`/user/register`} className="white">
                   register
                 </NavLink>
                 .
@@ -124,9 +128,14 @@ class Login extends Component {
                       )}
                     </FormGroup>
                     <div className="d-flex justify-content-between align-items-center">
-                      <NavLink to={`/user/forgot-password`}>
-                        <IntlMessages id="user.forgot-password-question" />
-                      </NavLink>
+                      <div className="flex-column">
+                        <NavLink to={`/user/forgot-password`} className="btn btn-link p-0 p-sm-2 pl-1">
+                          <IntlMessages id="user.forgot-password-question" />
+                        </NavLink>
+                        <NavLink to={`/SiteRules`} className="btn btn-link p-0 p-sm-2 pl-1">
+                          Site rules
+                        </NavLink>
+                      </div>
                       <Button
                         color="primary"
                         className={`btn-shadow btn-multiple-state ${this.props.loading ? "show-spinner" : ""}`}
@@ -157,9 +166,14 @@ const mapStateToProps = ({ authUser }) => {
   return { user, loading, error };
 };
 
-export default connect(
-  mapStateToProps,
-  {
-    loginUser
-  }
-)(Login);
+export default compose(
+  connect(
+    mapStateToProps,
+    {
+      loginUser,
+      authLocation
+    }
+  ),
+  withRouter)
+(Login)
+
