@@ -1,6 +1,6 @@
 const express = require("express");
 const mysql = require("mysql")
-const mysqltorest =  require('mysql-to-rest');
+const mysqltorest =  require ('mysql-to-rest');
 const app = express();
 
 
@@ -11,16 +11,20 @@ const connection = mysql.createConnection({
     database: "opexbetadb"
 });
 
-connection.connect();
-console.log('aplication is running');
 
-connection.query('SELECT 1 + 1 AS solution', function (error, results, fields) {
-    if (error) throw error;
-    console.log('The solution is: ', results[0].solution);
-  });
-  const api =  mysqltorest(app, connection);  
-  app.listen(3000, function(){
-    console.log("Сервер ожидает подключения...");
-  });
-
-  connection.end();
+// тестирование подключения
+connection.connect(function(err){
+  if (err) {
+    return console.error("Ошибка: " + err.message);
+  }
+  else{
+    console.log("Подключение к серверу MySQL успешно установлено");
+  }
+});
+// закрытие подключения
+connection.end(function(err) {
+if (err) {
+  return console.log("Ошибка: " + err.message);
+}
+console.log("Подключение закрыто");
+});
