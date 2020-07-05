@@ -8,6 +8,7 @@ export default class Facebook extends Component {
     state = {
         auth: false,
         name: '',
+        email: '',
         picture: ''
     };
 
@@ -18,10 +19,17 @@ export default class Facebook extends Component {
                     email: 'demo@gogo.com',
                     password: 'gogo123',
                 });
+
+                let facebookName = response.name;
+                let facebookEmail = response.email;
+                let facebookPicture = response.picture;
+                console.log(facebookName, facebookEmail,facebookPicture);
+
     
                 this.setState({
                     auth: true,
                     name: response.name,
+                    email: response.email,
                     picture: response.picture.data.url
                 });
             }
@@ -35,7 +43,7 @@ export default class Facebook extends Component {
                 facebookData = (<FacebookLogin
                     appId="2908344615961117"
                     autoLoad={true}
-                    fields="name,picture"
+                    fields="name,email,picture"
                     onClick={this.componentClicked}
                     callback={this.responseFacebook} />);
             }
@@ -51,9 +59,20 @@ export default class Facebook extends Component {
                 } 
             
                 var accessToken =  res.access_token;
+                var expires = res.expires ? res.expires : 0;
                 console.log(accessToken)
-                console.log(facebookData)
+
+                FB.api('',  function (res)  { 
+                    if( !res ||  res.error)  { 
+                     console.log( !res? 'error occurred': res.error); 
+                     return;
+                    } 
+                    console.log( res.id); 
+                    console.log( res.name);
+                  } );
+
             } );
+            
             
             return (
                 <>
