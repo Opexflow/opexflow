@@ -27,12 +27,12 @@ const ViewError = React.lazy(() =>
   import(/* webpackChunkName: "views-error" */ './views/error')
 );
 
-const AuthRoute = ({ component: Component, authUser, ...rest }) => {
+const AuthRoute = ({ component: Component, authUser, ...rest }) => {  
   return (
     <Route
       {...rest}
       render={props =>
-        authUser || isDemo ? (
+        authUser ? (
           <Component {...props} />
         ) : (
           <Redirect

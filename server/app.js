@@ -1,30 +1,130 @@
-const express = require("express");
-const mysql = require("mysql")
-const mysqltorest =  require ('mysql-to-rest');
-const app = express();
+const express         =     require('express')
+  , passport          =     require('passport')
+  , FacebookStrategy  =     require('passport-facebook').Strategy
+  , session           =     require('express-session')
+  , cookieParser      =     require('cookie-parser')
+  , bodyParser        =     require('body-parser')
+  , config            =     require('./config')
+  , mysql             =     require('mysql')
+  , app               =     express();
 
+//Define MySQL parameter in Config.js file.
+const pool = mysql.createPool({
+  host     : config.host,
+  user     : config.username,
+  password : config.password,
+  database : config.database
+});
 
-const connection = mysql.createConnection({
-    host: "78.24.216.16",
-    user: "opexbetausr",
-    password: "P6y5H0e9",
-    database: "opexbetadb"
+// Passport session setup.
+passport.serializeUser(function(user, done) {
+    console.log('serializeUser');
+  done(null, user);
+});
+
+passport.deserializeUser(function(obj, done) {
+    console.log('deserializeUser');
+  done(null, obj);
 });
 
 
-// тестирование подключения
-connection.connect(function(err){
-  if (err) {
-    return console.error("Ошибка: " + err.message);
+// Use the FacebookStrategy within Passport.
+
+passport.use(new FacebookStrategy({
+    clientID: config.facebook_api_key,
+    clientSecret:config.facebook_api_secret ,
+    callbackURL: config.callback_url
+  },
+  function(accessToken, refreshToken, profile, done) {
+    process.nextTick(function () {
+      console.log(profile);
+      //Check whether the User exists or not using profile.id
+        pool.query("SELECT * from Users where id="+profile.id, (err,rows) => {
+          if(err) throw err;
+          if(rows && rows.length === 0) {
+              console.log("There is no such user, adding now");
+              pool.query("INSERT into Users(id,login) VALUES('"+profile.id+"','"+profile.displayName+"')");
+          } else {
+              console.log("User already exists in database");
+          }
+        });
+
+      profile.accessToken = accessToken;
+
+      return done(null, profile);
+    });
   }
-  else{
-    console.log("Подключение к серверу MySQL успешно установлено");
+));
+
+// app.set('views', __dirname + '/views');
+// app.set('view engine', 'ejs');
+
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(session({ secret: 'secret123', key: 'sid'}));
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.get('/', function(req, res){
+  // res.render('index', { user: req.user });
+  // res.setHeader('Content-Type', 'application/json');
+  // res.end(JSON.stringify({ user: req.user }));
+  
+  // console.log('/', req, res);
+  
+  if (req.isAuthenticated()) {
+    res.redirect('https://localhost:3000/');
+  } else {
+    res.redirect('http://localhost:3001/auth/facebook');
   }
 });
-// закрытие подключения
-connection.end(function(err) {
-if (err) {
-  return console.log("Ошибка: " + err.message);
+
+app.get('/account', function(req, res){
+  res.setHeader('Content-Type', 'application/json');
+  res.setHeader('Access-Control-Allow-Origin', 'https://localhost:3000');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Set-Cookie, *');
+
+  // res.render('account', { user: req.user });
+  if (!req.isAuthenticated()) {
+    res.end('{}');
+  }
+
+  res.end(JSON.stringify({ user: req.user }));
+});
+
+app.get('/account/:id', function(req, res){
+  pool.query("SELECT * from Users where id="+req.params.id, (err,rows) => {
+    if (err) {
+      return res.end('{}');
+    }
+    res.end(JSON.stringify(rows));
+  });
+});
+
+
+app.get('/auth/facebook', passport.authenticate('facebook',{scope:'email'}));
+
+
+app.get('/auth/facebook/callback',
+  passport.authenticate('facebook', { successRedirect : '/', failureRedirect: '/user/login' }),
+  function(req, res) {
+    // console.log('/callback', req, res);
+
+    res.redirect('/');
+  });
+
+app.get('/logout', function(req, res){
+  req.logout();
+  res.redirect('/');
+});
+
+function ensureAuthenticated(req, res, next) {
+  // console.log('ens')
+  //if (req.isAuthenticated()) { return next(); }
+  //console.log('redir');
+  //res.redirect('/user/login')
+  return next();
 }
-console.log("Подключение закрыто");
-});
+
+app.listen(3001);
