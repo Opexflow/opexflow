@@ -17,12 +17,13 @@ if (window.location.pathname && window.location.pathname !== '/user/login') {
       console.log(x.responseText);
       if (user && user.accessToken) {
         FB.setAccessToken(user.accessToken);
-        FB.api('/me', function(response) {
+        FB.api('/me', { fields: 'id,name,picture' }, function(response) {
           if (user.id !== response.id) {
             window.location.href = '/user/login'; //'http://localhost:3001/auth/facebook';
           } else {
+            console.log(user.id, response);
             ReactDOM.render(
-              <Provider store={configureStore({ authUser: { user } })}>
+              <Provider store={configureStore({ authUser: { user: { ...response }, FB }})}>
                 <Suspense fallback={<div className="loading" />}>
                   <App />
                 </Suspense>

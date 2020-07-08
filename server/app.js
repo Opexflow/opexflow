@@ -116,7 +116,7 @@ app.get('/auth/facebook/callback',
 
 app.get('/logout', function(req, res){
   req.logout();
-  res.redirect('/');
+  return res.end('{}');
 });
 
 function ensureAuthenticated(req, res, next) {

@@ -200,6 +200,8 @@ class TopNav extends Component {
   render() {
     const { containerClassnames, menuClickCount, locale } = this.props;
     const { messages } = this.props.intl;
+    const { user } = this.props.authUser;
+
     return (
       <nav className="navbar fixed-top">
         <div className="d-flex align-items-center navbar-left">
@@ -298,9 +300,9 @@ class TopNav extends Component {
           <div className="user d-inline-block">
             <UncontrolledDropdown className="dropdown-menu-right">
               <DropdownToggle className="p-0" color="empty">
-                <span className="name mr-1">Sarah Kortney</span>
+                <span className="name mr-1">{user.name}</span>
                 <span>
-                  <img alt="Profile" src="/assets/img/profile-pic-l.jpg" />
+                  <img alt="Profile" src={user.picture.data.url} />
                 </span>
               </DropdownToggle>
               <DropdownMenu className="mt-3" right>
@@ -321,14 +323,16 @@ class TopNav extends Component {
   }
 }
 
-const mapStateToProps = ({ menu, settings }) => {
+const mapStateToProps = ({ menu, settings, auth, authUser }) => {
   const { containerClassnames, menuClickCount, selectedMenuHasSubItems } = menu;
   const { locale } = settings;
+
   return {
     containerClassnames,
     menuClickCount,
     selectedMenuHasSubItems,
-    locale
+    locale,
+    authUser
   };
 };
 export default injectIntl(
