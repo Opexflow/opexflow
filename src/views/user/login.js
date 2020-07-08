@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Row, Card, CardTitle, Label, FormGroup, Button } from "reactstrap";
+import { Row, Card, CardTitle, Label, FormGroup, Input } from "reactstrap";
 import { NavLink } from "react-router-dom";
 import { connect } from "react-redux";
 // import Facebook from './Facebook';
@@ -14,6 +14,10 @@ import IntlMessages from "../../helpers/IntlMessages";
 class Login extends Component {
   constructor(props) {
     super(props);
+
+    this.state = {
+      rulesAccepted: false,
+    }
   }
 
   /*
@@ -59,10 +63,13 @@ class Login extends Component {
     }
   }
 
-  render() {
-    // const { password, email } = this.state;
-    // const initialValues = {email,password};
+  toggleChange = () => {
+    this.setState({
+      rulesAccepted: !this.state.rulesAccepted
+    });
+  }
 
+  render() {
     return (
       <Row className="h-100">
         <Colxx xxs="12" md="10" className="mx-auto my-auto">
@@ -85,10 +92,18 @@ class Login extends Component {
               </NavLink>
               <CardTitle className="mb-4">
                 { /* <IntlMessages id="user.login-title" /> */ }
-                Авторизуясь на сайте вы соглашаетесь с правилами.
-              </CardTitle>
+                <FormGroup check inline>
+                    <Label check>
+                      <Input type="checkbox"
+                      checked={this.state.rulesAccepted}
+                      onChange={this.toggleChange}/>
+                      Согласен с правилами сайта и готов продолжить.
+                    </Label>
+                  </FormGroup>
+                </CardTitle>
 
-              <div className="Facebook">
+              {this.state.rulesAccepted &&
+                <div className="Facebook">
                   <a
                     href='http://localhost:3001/auth/facebook'
                     alt="Continue with Facebook"
@@ -99,10 +114,8 @@ class Login extends Component {
                       width="300"
                     />
                   </a>
-                  { 
-                    // <Facebook onUserLogin={this.onUserLogin} />
-                  }
-              </div>
+                </div>
+              }
             </div>
           </Card>
         </Colxx>

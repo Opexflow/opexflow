@@ -21,9 +21,8 @@ if (window.location.pathname && window.location.pathname !== '/user/login') {
           if (user.id !== response.id) {
             window.location.href = '/user/login'; //'http://localhost:3001/auth/facebook';
           } else {
-            console.log(user.id);
             ReactDOM.render(
-              <Provider store={configureStore({ authUser: { user: user.id } })}>
+              <Provider store={configureStore({ authUser: { user } })}>
                 <Suspense fallback={<div className="loading" />}>
                   <App />
                 </Suspense>
