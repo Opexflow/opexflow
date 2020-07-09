@@ -105,7 +105,7 @@ class Login extends Component {
               {this.state.rulesAccepted &&
                 <div className="Facebook">
                   <a
-                    href='http://localhost:3001/auth/facebook'
+                    href={`https://${window.location.host}/api/auth/facebook`}
                     alt="Continue with Facebook"
                   >
                     <img

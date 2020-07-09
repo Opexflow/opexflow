@@ -51,7 +51,7 @@ export default (state = INIT_STATE, action) => {
             return { ...state, loading: false, user: '', error: action.payload.message };
         case LOGOUT_USER:
                 var x = new XMLHttpRequest();
-                x.open("GET", "http://localhost:3001/logout", true);
+                x.open("GET", `https://${window.location.host}/api/logout`, true);
                 x.onload = function (){
                     window.location.href = '/';
                 };

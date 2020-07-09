@@ -9,7 +9,7 @@ const App = React.lazy(() => import(/* webpackChunkName: "App" */'./App' ));
 
 if (window.location.pathname && window.location.pathname !== '/user/login') {
   var x = new XMLHttpRequest();
-  x.open("GET", "http://localhost:3001/account", true);
+  x.open("GET", `https://${window.location.host}/api/account`, true);
   x.onload = function (){
       var res = x.responseText && JSON.parse(x.responseText);
       var user = res && res.user;
@@ -19,7 +19,7 @@ if (window.location.pathname && window.location.pathname !== '/user/login') {
         FB.setAccessToken(user.accessToken);
         FB.api('/me', { fields: 'id,name,picture' }, function(response) {
           if (user.id !== response.id) {
-            window.location.href = '/user/login'; //'http://localhost:3001/auth/facebook';
+            window.location.href = '/user/login';
           } else {
             console.log(user.id, response);
             ReactDOM.render(
@@ -33,7 +33,7 @@ if (window.location.pathname && window.location.pathname !== '/user/login') {
           }
         });
       } else {
-        window.location.href = '/user/login'; // 'http://localhost:3001/auth/facebook';
+        window.location.href = '/user/login';
       }
   };
   x.withCredentials = true;
