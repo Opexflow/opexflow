@@ -71,15 +71,15 @@ app.get('/api', function(req, res){
   // console.log('/', req, res);
 
   if (req.isAuthenticated()) {
-    res.redirect('https://localhost:3000/');
+    res.redirect(`https://${req.hostname}/`);
   } else {
-    res.redirect('http://localhost:3001/auth/facebook');
+    res.redirect(`https://${req.hostname}/api/auth/facebook`);
   }
 });
 
 app.get('/api/account', function(req, res){
   res.setHeader('Content-Type', 'application/json');
-  res.setHeader('Access-Control-Allow-Origin', 'https://localhost:3000');
+  res.setHeader('Access-Control-Allow-Origin', `https://${req.hostname}`);
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Set-Cookie, *');
