@@ -64,13 +64,12 @@ app.use(session({ secret: 'secret123', key: 'sid'}));
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.get('/', function(req, res){
+app.get('/api', function(req, res){
   // res.render('index', { user: req.user });
   // res.setHeader('Content-Type', 'application/json');
   // res.end(JSON.stringify({ user: req.user }));
-  
   // console.log('/', req, res);
-  
+
   if (req.isAuthenticated()) {
     res.redirect('https://localhost:3000/');
   } else {
@@ -78,7 +77,7 @@ app.get('/', function(req, res){
   }
 });
 
-app.get('/account', function(req, res){
+app.get('/api/account', function(req, res){
   res.setHeader('Content-Type', 'application/json');
   res.setHeader('Access-Control-Allow-Origin', 'https://localhost:3000');
   res.setHeader('Access-Control-Allow-Credentials', 'true');
@@ -93,7 +92,7 @@ app.get('/account', function(req, res){
   res.end(JSON.stringify({ user: req.user }));
 });
 
-app.get('/account/:id', function(req, res){
+app.get('/api/account/:id', function(req, res){
   pool.query("SELECT * from Users where id="+req.params.id, (err,rows) => {
     if (err) {
       return res.end('{}');
@@ -103,10 +102,10 @@ app.get('/account/:id', function(req, res){
 });
 
 
-app.get('/auth/facebook', passport.authenticate('facebook',{scope:'email'}));
+app.get('/api/auth/facebook', passport.authenticate('facebook',{scope:'email'}));
 
 
-app.get('/auth/facebook/callback',
+app.get('/api/auth/facebook/callback',
   passport.authenticate('facebook', { successRedirect : '/', failureRedirect: '/user/login' }),
   function(req, res) {
     // console.log('/callback', req, res);
@@ -114,7 +113,7 @@ app.get('/auth/facebook/callback',
     res.redirect('/');
   });
 
-app.get('/logout', function(req, res){
+app.get('/api/logout', function(req, res){
   req.logout();
   return res.end('{}');
 });
