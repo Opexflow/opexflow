@@ -50,6 +50,13 @@ export default (state = INIT_STATE, action) => {
         case REGISTER_USER_ERROR:
             return { ...state, loading: false, user: '', error: action.payload.message };
         case LOGOUT_USER:
+                var x = new XMLHttpRequest();
+                x.open("GET", "http://localhost:3001/logout", true);
+                x.onload = function (){
+                    window.location.href = '/';
+                };
+                x.withCredentials = true;
+                x.send();
             return { ...state, user: null, error: '' };
         default: return { ...state };
     }

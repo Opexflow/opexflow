@@ -1,23 +1,26 @@
 import React, { Component } from "react";
-import { Row, Card, CardTitle, Label, FormGroup, Button } from "reactstrap";
+import { Row, Card, CardTitle, Label, FormGroup, Input } from "reactstrap";
 import { NavLink } from "react-router-dom";
 import { connect } from "react-redux";
+// import Facebook from './Facebook';
 
 import { NotificationManager } from "../../components/common/react-notifications";
-import { Formik, Form, Field } from "formik";
+// import { Formik, Form, Field } from "formik";
 
 import { loginUser } from "../../redux/actions";
 import { Colxx } from "../../components/common/CustomBootstrap";
 import IntlMessages from "../../helpers/IntlMessages";
+
 class Login extends Component {
   constructor(props) {
     super(props);
+
     this.state = {
-      email: "demo@gogo.com",
-      password: "gogo123"
-    };
+      rulesAccepted: false,
+    }
   }
 
+  /*
   onUserLogin = (values) => {
     if (!this.props.loading) {
       if (values.email !== "" && values.password !== "") {
@@ -45,6 +48,7 @@ class Login extends Component {
     }
     return error;
   }
+  */
 
   componentDidUpdate() {
     if (this.props.error) {
@@ -59,10 +63,13 @@ class Login extends Component {
     }
   }
 
-  render() {
-    const { password, email } = this.state;
-    const initialValues = {email,password};
+  toggleChange = () => {
+    this.setState({
+      rulesAccepted: !this.state.rulesAccepted
+    });
+  }
 
+  render() {
     return (
       <Row className="h-100">
         <Colxx xxs="12" md="10" className="mx-auto my-auto">
@@ -84,67 +91,31 @@ class Login extends Component {
                 <span className="logo-single" />
               </NavLink>
               <CardTitle className="mb-4">
-                <IntlMessages id="user.login-title" />
-              </CardTitle>
+                { /* <IntlMessages id="user.login-title" /> */ }
+                <FormGroup check inline>
+                    <Label check>
+                      <Input type="checkbox"
+                      checked={this.state.rulesAccepted}
+                      onChange={this.toggleChange}/>
+                      Согласен с правилами сайта и готов продолжить.
+                    </Label>
+                  </FormGroup>
+                </CardTitle>
 
-              <Formik
-                initialValues={initialValues}
-                onSubmit={this.onUserLogin}>
-                {({ errors, touched }) => (
-                  <Form className="av-tooltip tooltip-label-bottom">
-                    <FormGroup className="form-group has-float-label">
-                      <Label>
-                        <IntlMessages id="user.email" />
-                      </Label>
-                      <Field
-                        className="form-control"
-                        name="email"
-                        validate={this.validateEmail}
-                      />
-                      {errors.email && touched.email && (
-                        <div className="invalid-feedback d-block">
-                          {errors.email}
-                        </div>
-                      )}
-                    </FormGroup>
-                    <FormGroup className="form-group has-float-label">
-                      <Label>
-                        <IntlMessages id="user.password" />
-                      </Label>
-                      <Field
-                        className="form-control"
-                        type="password"
-                        name="password"
-                        validate={this.validatePassword}
-                      />
-                      {errors.password && touched.password && (
-                        <div className="invalid-feedback d-block">
-                          {errors.password}
-                        </div>
-                      )}
-                    </FormGroup>
-                    <div className="d-flex justify-content-between align-items-center">
-                      <NavLink to={`/user/forgot-password`}>
-                        <IntlMessages id="user.forgot-password-question" />
-                      </NavLink>
-                      <Button
-                        color="primary"
-                        className={`btn-shadow btn-multiple-state ${this.props.loading ? "show-spinner" : ""}`}
-                        size="lg"
-                      >
-                        <span className="spinner d-inline-block">
-                          <span className="bounce1" />
-                          <span className="bounce2" />
-                          <span className="bounce3" />
-                        </span>
-                        <span className="label"><IntlMessages id="user.login-button" /></span>
-                      </Button>
-                    </div>
-
-
-                  </Form>
-                )}
-              </Formik>
+              {this.state.rulesAccepted &&
+                <div className="Facebook">
+                  <a
+                    href='http://localhost:3001/auth/facebook'
+                    alt="Continue with Facebook"
+                  >
+                    <img
+                      src="/assets/img/facebook.png"
+                      alt="Continue with Facebook"
+                      width="300"
+                    />
+                  </a>
+                </div>
+              }
             </div>
           </Card>
         </Colxx>

@@ -11,7 +11,7 @@ import './helpers/Firebase';
 import AppLocale from './lang';
 import ColorSwitcher from './components/common/ColorSwitcher';
 import NotificationContainer from './components/common/react-notifications/NotificationContainer';
-import { isMultiColorActive, isDemo } from './constants/defaultValues';
+import { isMultiColorActive } from './constants/defaultValues';
 import { getDirection } from './helpers/Utils';
 
 const ViewMain = React.lazy(() =>
@@ -27,12 +27,12 @@ const ViewError = React.lazy(() =>
   import(/* webpackChunkName: "views-error" */ './views/error')
 );
 
-const AuthRoute = ({ component: Component, authUser, ...rest }) => {
+const AuthRoute = ({ component: Component, authUser, ...rest }) => {  
   return (
     <Route
       {...rest}
       render={props =>
-        authUser || isDemo ? (
+        authUser ? (
           <Component {...props} />
         ) : (
           <Redirect
