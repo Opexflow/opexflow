@@ -26,25 +26,6 @@ module.exports = {
     "plugins": ["react", "react-hooks", "jsx-a11y", "optimize-regex", "sonarjs", "no-loops", "no-use-extend-native", "promise"],
     rules: {
         'valid-jsdoc': 'off',
-        'jsdoc/check-alignment': 'error',
-        'jsdoc/check-tag-names': ['warn', {
-            definedTags: [
-                'counter',
-                'owner',
-                'path',
-                'metrika',
-                'params',
-            ],
-        }],
-        'jsdoc/require-param-name': 'warn',
-        'jsdoc/require-param-type': 'warn',
-        'jsdoc/require-param-description': 'warn',
-        'jsdoc/require-returns-type': 'warn',
-        'jsdoc/newline-after-description': 'error',
-        'jsdoc/empty-tags': ['error', {
-            tags: ['counter'],
-        }],
-
         semi: ['error', 'always', { omitLastInOneLineBlock: true }],
         'semi-spacing': ['error', { before: false, after: true }],
         'wrap-iife': ['error', 'inside'],
@@ -85,7 +66,6 @@ module.exports = {
         'no-sequences': 'error',
         yoda: 'error',
         'no-restricted-globals': ['error', 'fdescribe', 'fit'],
-        'no-unsafe-regex/no-unsafe-regex': 'error',
         'arrow-parens': ['error', 'always'],
         'array-bracket-spacing': ['error', 'never'],
         'brace-style': ['error', '1tbs', { allowSingleLine: true }],
@@ -109,7 +89,6 @@ module.exports = {
         'no-multi-spaces': 'error',
         'no-multiple-empty-lines': ['error', { max: 1, maxBOF: 0, maxEOF: 0 }],
         'no-trailing-spaces': 'error',
-        'ascii/valid-name': 'error',
         'no-unneeded-ternary': 'error',
         'object-curly-spacing': ['error', 'always'],
         'one-var-declaration-per-line': ['error', 'initializations'],
