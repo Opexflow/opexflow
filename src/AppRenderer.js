@@ -9,7 +9,14 @@ const App = React.lazy(() => import(/* webpackChunkName: "App" */'./App' ));
 
 if (window.location.pathname && window.location.pathname !== '/user/login') {
   var x = new XMLHttpRequest();
-  x.open("GET", `https://${window.location.host}/api/account`, true);
+
+  // Костыль для локальной разработки, чтобы порты сервера и клиента разнести.
+  var host = `https://${window.location.host}/api/account`;
+  if (host.indexOf('3000') !== -1) {
+    host = host.replace('3000', '3001').replace('https', 'http');
+  }
+
+  x.open("GET", host, true);
   x.onload = function (){
       var res = x.responseText && JSON.parse(x.responseText);
       var user = res && res.user;

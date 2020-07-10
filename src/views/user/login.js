@@ -70,6 +70,11 @@ class Login extends Component {
   }
 
   render() {
+    let host = `https://${window.location.host}`;
+    if (host.indexOf(3000) !== -1) {
+      host = host.replace('3000', '3001').replace('https', 'http');
+    }
+
     return (
       <Row className="h-100">
         <Colxx xxs="12" md="10" className="mx-auto my-auto">
@@ -105,7 +110,7 @@ class Login extends Component {
               {this.state.rulesAccepted &&
                 <div className="Facebook">
                   <a
-                    href={`https://${window.location.host}/api/auth/facebook`}
+                    href={`${host}/api/auth/facebook`}
                     alt="Continue with Facebook"
                   >
                     <img

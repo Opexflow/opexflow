@@ -59,7 +59,7 @@
     "yup": "^0.29.1"
   },
   "scripts": {
-    "start": "set HTTPS=true && HTTPS=true react-scripts start",
+    "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

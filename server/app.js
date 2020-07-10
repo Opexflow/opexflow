@@ -18,21 +18,23 @@ const pool = mysql.createPool({
 
 // Passport session setup.
 passport.serializeUser(function(user, done) {
-    console.log('serializeUser');
   done(null, user);
 });
 
 passport.deserializeUser(function(obj, done) {
-    console.log('deserializeUser');
   done(null, obj);
 });
 
+let HOSTNAME = 'http://localhost:3000';
+config.callback_url = 'http://localhost:3001/api/auth/facebook/callback';
+config.facebook_api_secret = '8f891ee90229fd861d4c71bdf648ad14';
+config.facebook_api_key = '2640133479605924';
 
-// Use the FacebookStrategy within Passport.
+// let HOSTNAME = 'https://opexflow.com';
 
 passport.use(new FacebookStrategy({
     clientID: config.facebook_api_key,
-    clientSecret:config.facebook_api_secret ,
+    clientSecret: config.facebook_api_secret,
     callbackURL: config.callback_url
   },
   function(accessToken, refreshToken, profile, done) {
@@ -59,6 +61,10 @@ passport.use(new FacebookStrategy({
 // app.set('views', __dirname + '/views');
 // app.set('view engine', 'ejs');
 
+function replaceHost(host) {
+  return host.replace('http:', 'https:').replace('3001', '3000');
+}
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(session({ secret: 'secret123', key: 'sid'}));
 app.use(passport.initialize());
@@ -71,15 +77,15 @@ app.get('/api', function(req, res){
   // console.log('/', req, res);
 
   if (req.isAuthenticated()) {
-    res.redirect(`https://${req.hostname}/`);
+    res.redirect(replaceHost(HOSTNAME));
   } else {
-    res.redirect(`https://${req.hostname}/api/auth/facebook`);
+    res.redirect(HOSTNAME + `api/auth/facebook`);
   }
 });
 
 app.get('/api/account', function(req, res){
   res.setHeader('Content-Type', 'application/json');
-  res.setHeader('Access-Control-Allow-Origin', `https://${req.hostname}`);
+  res.setHeader('Access-Control-Allow-Origin', replaceHost(HOSTNAME));
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Set-Cookie, *');
