@@ -9,14 +9,14 @@ import {
     isMultiColorActive, defaultColor, themeColorStorageKey, isDarkSwitchActive,
 } from './constants/defaultValues';
 
-const color = (isMultiColorActive || isDarkSwitchActive) && localStorage.getItem(themeColorStorageKey)
-    ? localStorage.getItem(themeColorStorageKey)
-    : defaultColor;
+const color = (isMultiColorActive || isDarkSwitchActive) && localStorage.getItem(themeColorStorageKey) ?
+    localStorage.getItem(themeColorStorageKey) :
+    defaultColor;
 
 localStorage.setItem(themeColorStorageKey, color);
 
 const render = () => {
-    import(`./assets/css/sass/themes/gogo.${ color }.scss`).then((x) => {
+    import(`./assets/css/sass/themes/gogo.${ color }.scss`).then(x => {
         require('./AppRenderer');
     });
 };

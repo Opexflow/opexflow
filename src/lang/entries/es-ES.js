@@ -3,9 +3,9 @@ import esMessages from '../locales/es_ES';
 
 const EsLang = {
     messages: {
-        ...esMessages
+        ...esMessages,
     },
     locale: 'es-ES',
-    data: appLocaleData
+    data: appLocaleData,
 };
 export default EsLang;

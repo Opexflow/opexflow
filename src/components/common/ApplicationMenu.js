@@ -1,67 +1,64 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import { NavLink } from "reactstrap";
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { NavLink } from 'reactstrap';
+
 export default class ApplicationMenu extends React.Component {
-  constructor(...params) {
-    super(...params);
-    this.handleDocumentClick = this.handleDocumentClick.bind(this);
-    this.toggle = this.toggle.bind(this);
+    constructor(...params) {
+        super(...params);
+        this.handleDocumentClick = this.handleDocumentClick.bind(this);
+        this.toggle = this.toggle.bind(this);
 
-    this.state = {
-      isOpen: false
-    };
-  }
-
-  handleDocumentClick(e) {
-    const container = ReactDOM.findDOMNode(this);
-    if (container.contains(e.target) || container === e.target) {
-      return;
+        this.state = {
+            isOpen: false,
+        };
     }
 
-    this.toggle(e);
-  }
+    handleDocumentClick(e) {
+        const container = ReactDOM.findDOMNode(this);
+        if (container.contains(e.target) || container === e.target) {
+            return;
+        }
 
-  toggle(e) {
-    e.preventDefault();
-    const isOpen = this.state.isOpen;
-    if (!isOpen) {
-      this.addEvents();
-    } else {
-      this.removeEvents();
+        this.toggle(e);
     }
-    this.setState({
-      isOpen: !isOpen
-    });
-  }
 
-  componentWillUnmount() {
-    this.removeEvents();
-  }
+    toggle(e) {
+        e.preventDefault();
+        const { isOpen } = this.state;
+        if (!isOpen) {
+            this.addEvents();
+        } else {
+            this.removeEvents();
+        }
+        this.setState({
+            isOpen: !isOpen,
+        });
+    }
 
-  addEvents() {
-    ["click", "touchstart"].forEach(event =>
-      document.addEventListener(event, this.handleDocumentClick, true)
-    );
-  }
+    componentWillUnmount() {
+        this.removeEvents();
+    }
 
-  removeEvents() {
-    ["click", "touchstart"].forEach(event =>
-      document.removeEventListener(event, this.handleDocumentClick, true)
-    );
-  }
+    addEvents() {
+        ['click', 'touchstart'].forEach(event => document.addEventListener(event, this.handleDocumentClick, true));
+    }
 
-  render() {
-    return (
-      <div className={`app-menu ${this.state.isOpen ? "shown" : ""}`}>
-        {this.props.children}
+    removeEvents() {
+        ['click', 'touchstart'].forEach(event => document.removeEventListener(event, this.handleDocumentClick, true));
+    }
 
-        <NavLink
-          className="app-menu-button d-inline-block d-xl-none"
-          onClick={this.toggle}
-        >
-          <i className="simple-icon-options" />
-        </NavLink>
-      </div>
-    );
-  }
+    render() {
+        return (
+            <div className={`app-menu ${this.state.isOpen ? 'shown' : ''}`}>
+                {this.props.children}
+
+                <NavLink
+                    className="app-menu-button d-inline-block d-xl-none"
+                    onClick={this.toggle}
+              >
+                    <i className="simple-icon-options" />
+              </NavLink>
+          </div>
+        );
+    }
 }
