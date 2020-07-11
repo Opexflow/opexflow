@@ -7,9 +7,9 @@ import {
     Redirect,
 } from 'react-router-dom';
 import { IntlProvider } from 'react-intl';
-import './helpers/Firebase';
+// import './helpers/Firebase';
 import AppLocale from './lang';
-import ColorSwitcher from './components/common/ColorSwitcher';
+// import ColorSwitcher from './components/common/ColorSwitcher';
 import NotificationContainer from './components/common/react-notifications/NotificationContainer';
 import { isMultiColorActive } from './constants/defaultValues';
 import { getDirection } from './helpers/Utils';
@@ -60,7 +60,7 @@ class App extends Component {
               >
                     <>
                     <NotificationContainer />
-                    {isMultiColorActive && <ColorSwitcher />}
+                    { /* isMultiColorActive && <ColorSwitcher /> */ }
                     <Suspense fallback={<div className="loading" />}>
                           <Router>
                               <Switch>

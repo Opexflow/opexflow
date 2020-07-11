@@ -276,7 +276,35 @@ export default class Start extends Component {
         };
     }
 
+    lastDate = 1538884800000
+    // [Timestamp, O, H, L, C]
+    lastTick = [6604.98, 6606, 6604.07, 6606]
+
+    componentDidMount() {
+        setInterval(() => {
+            this.lastDate += 1000000;
+            var h = this.lastTick[3] + 2;
+            var l = this.lastTick[3] - 2;
+            var c = this.lastTick[3] + 1;
+            this.lastTick = [this.lastTick[3], h, l, c];
+
+            var series = this.state.series.slice(0);
+            var data = this.state.series[0].data.splice(1, 0);
+
+            data.push({
+                x: new Date(this.lastDate),
+                y: this.lastTick.slice(0),
+            });
+
+            series[0].data = data;
+
+            this.setState({ series });
+        }, 5000);
+    }
+
     render() {
+        console.log(this.state.series[0].data[this.state.series[0].data.length - 1]);
+
         return (
             <>
                 <Row>

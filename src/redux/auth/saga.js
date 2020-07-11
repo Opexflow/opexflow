@@ -1,7 +1,7 @@
 import {
     all, call, fork, put, takeEvery,
 } from 'redux-saga/effects';
-import { auth } from '../../helpers/Firebase';
+// import { auth } from '../../helpers/Firebase';
 import {
     LOGIN_USER,
     REGISTER_USER,
@@ -20,6 +20,8 @@ import {
     resetPasswordSuccess,
     resetPasswordError,
 } from './actions';
+
+const auth = {};
 
 export function* watchLoginUser() {
     yield takeEvery(LOGIN_USER, loginWithEmailPassword);

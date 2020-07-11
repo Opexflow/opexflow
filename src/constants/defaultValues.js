@@ -13,6 +13,7 @@ export const localeOptions = [
     { id: 'enrtl', name: 'English - RTL', direction: 'rtl' },
 ];
 
+/*
 export const firebaseConfig = {
     apiKey: 'AIzaSyBBksq-Asxq2M4Ot-75X19IyrEYJqNBPcg',
     authDomain: 'gogo-react-login.firebaseapp.com',
@@ -21,6 +22,7 @@ export const firebaseConfig = {
     storageBucket: 'gogo-react-login.appspot.com',
     messagingSenderId: '216495999563',
 };
+*/
 
 export const searchPath = '/app/pages/search';
 export const servicePath = 'https://api.coloredstrategies.com';
@@ -29,10 +31,10 @@ export const servicePath = 'https://api.coloredstrategies.com';
 Color Options:
 "light.purple", "light.blue", "light.green", "light.orange", "light.red", "dark.purple", "dark.blue", "dark.green", "dark.orange", "dark.red"
 */
-export const isMultiColorActive = true;
-export const defaultColor = 'light.purple';
+export const isMultiColorActive = false;
+export const defaultColor = 'light.blue';
 export const defaultDirection = 'ltr';
-export const isDarkSwitchActive = true;
+export const isDarkSwitchActive = false;
 export const themeColorStorageKey = '__theme_color';
 export const themeRadiusStorageKey = '__theme_radius';
 export const isDemo = false;
