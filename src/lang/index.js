@@ -6,7 +6,7 @@ import enRtlLang from './entries/en-US-rtl';
 const AppLocale = {
     en: enLang,
     es: esLang,
-    enrtl:enRtlLang
+    enrtl: enRtlLang,
 };
 addLocaleData(AppLocale.en.data);
 addLocaleData(AppLocale.es.data);

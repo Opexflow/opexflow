@@ -4,50 +4,50 @@ import NotificationManager from './NotificationManager';
 import Notifications from './Notifications';
 
 class NotificationContainer extends React.Component {
-  constructor(props) {
-    super(props);
-    NotificationManager.addChangeListener(this.handleStoreChange);
-  }
+    constructor(props) {
+        super(props);
+        NotificationManager.addChangeListener(this.handleStoreChange);
+    }
 
   static propTypes = {
-    enterTimeout: PropTypes.number,
-    leaveTimeout: PropTypes.number
+      enterTimeout: PropTypes.number,
+      leaveTimeout: PropTypes.number,
   };
 
   static defaultProps = {
-    enterTimeout: 400,
-    leaveTimeout: 400
+      enterTimeout: 400,
+      leaveTimeout: 400,
   };
 
   state = {
-    notifications: []
+      notifications: [],
   };
 
   componentWillUnmount = () => {
-    NotificationManager.removeChangeListener(this.handleStoreChange);
+      NotificationManager.removeChangeListener(this.handleStoreChange);
   };
 
-  handleStoreChange = (notifications) => {
-    this.setState({
-      notifications
-    });
+  handleStoreChange = notifications => {
+      this.setState({
+          notifications,
+      });
   };
 
-  handleRequestHide = (notification) => {
-    NotificationManager.remove(notification);
+  handleRequestHide = notification => {
+      NotificationManager.remove(notification);
   };
 
   render() {
-    const { notifications } = this.state;
-    const { enterTimeout, leaveTimeout } = this.props;
-    return (
-      <Notifications
-        enterTimeout={enterTimeout}
-        leaveTimeout={leaveTimeout}
-        notifications={notifications}
-        onRequestHide={this.handleRequestHide}
-      />
-    );
+      const { notifications } = this.state;
+      const { enterTimeout, leaveTimeout } = this.props;
+      return (
+          <Notifications
+              enterTimeout={enterTimeout}
+              leaveTimeout={leaveTimeout}
+              notifications={notifications}
+              onRequestHide={this.handleRequestHide}
+        />
+      );
   }
 }
 
