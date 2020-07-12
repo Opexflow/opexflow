@@ -11,8 +11,10 @@ if (window.location.pathname && window.location.pathname !== '/user/login') {
     const x = new XMLHttpRequest();
 
     // Костыль для локальной разработки, чтобы порты сервера и клиента разнести.
+    // TODO: сделать в едином месте
     let host = `https://${window.location.host}/api/account`;
     if (host.indexOf('3000') !== -1) {
+        // TODO: сделать в едином месте
         host = host.replace('3000', '3001').replace('https', 'http');
     }
 
