@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { Row, Button } from 'reactstrap';
 import Chart from 'react-apexcharts';
-/* import ApexCharts from 'apexcharts'; */
+import ApexCharts from 'apexcharts';
 import IntlMessages from '../../../helpers/IntlMessages';
 import { Colxx, Separator } from '../../../components/common/CustomBootstrap';
 import Breadcrumb from '../../../containers/navs/Breadcrumb';
@@ -16,7 +16,7 @@ export default class Start extends PureComponent {
             }],
             options: {
                 chart: {
-                    /* id: 'realtime', */
+                    id: 'ticks_chart',
                     type: 'candlestick',
                     height: 350,
                 },
@@ -25,7 +25,8 @@ export default class Start extends PureComponent {
                     align: 'left',
                 },
                 xaxis: {
-                    type: 'datetime',
+                    // type: 'datetime',
+                    type: 'numeric'
                 },
                 yaxis: {
                     tooltip: {
@@ -48,12 +49,25 @@ export default class Start extends PureComponent {
 
     componentDidUpdate() {
         this.getChartData();
+
+        if (this.state.series[0].data && this.state.series[0].data.length) {
+            console.log('update', this.state.series[0].data);
+            ApexCharts.exec('ticks_chart', 'updateSeries', [{
+                data: this.state.series[0].data.slice(0)
+            }]);
+            ApexCharts.exec('ticks_chart', 'render', [{
+                data: this.state.series[0].data.slice(0)
+            }])
+        }
     }
 
     getChartData() {
         this.loadedData || (this.loadedData = {});
         const current = this.loadedData[this.state.currentTicks];
-        if (current) {
+        if (this.loadedData[this.state.currentTicks] === true) {
+            return;
+        } else if (current) {
+            this.setState(this.loadedData[this.state.currentTicks]);
             return;
         } else {
             this.loadedData[this.state.currentTicks] = true;
@@ -81,7 +95,7 @@ export default class Start extends PureComponent {
             const series = this.state.series.slice(0);
             let name;
 
-            series[0].data = !res || !Object.keys(res).length ? [] : res.map(t => {
+            series[0].data = !res || !Object.keys(res).length ? [] : res.map((t, i) => {
                 // ticker, per, date, time, open, hight, low, close, vol (объём торгов)
                 // SBER,5,08/07/20,12:30:00,210.6100000,210.6800000,210.4700000,210.6000000,73370
                 const tick = t.split(',');
@@ -90,15 +104,21 @@ export default class Start extends PureComponent {
                     name = tick[0];
                 }
 
+                if (!tick[2] || !tick[3]) {
+                    return;
+                }
+
+                // console.log(`${tick[2]} ${tick[3]}`, [parseFloat(tick[4]), parseFloat(tick[5]), parseFloat(tick[6]), parseFloat(tick[7])]);
                 // [Timestamp, O, H, L, C]
                 return {
-                    x: `${tick[2] } ${ tick[3]}`,
-                    y: [tick[4], tick[5], tick[6], tick[7]],
+                    x: `${tick[2]} ${tick[3]}`,
+                    y: [parseFloat(tick[4]), parseFloat(tick[5]), parseFloat(tick[6]), parseFloat(tick[7])],
                     
                 };
-            });
+            })
+            .filter(Boolean);
 
-            this.setState({
+            this.loadedData[this.state.currentTicks] = {
                 series,
                 options: {
                     ...this.state.options,
@@ -107,8 +127,9 @@ export default class Start extends PureComponent {
                         text: name,
                     },
                 },
-            });
+            };
 
+            this.setState(this.loadedData[this.state.currentTicks]);
             console.log(res);
         };
         x.withCredentials = true;
