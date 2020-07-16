@@ -30,8 +30,8 @@ passport.deserializeUser((obj, done) => {
 
 const HOSTNAME = 'http://localhost:3000';
 config.callback_url = 'http://localhost:3001/api/auth/facebook/callback';
-config.facebook_api_secret = '8f891ee90229fd861d4c71bdf648ad14';
-config.facebook_api_key = '2640133479605924';
+config.facebook_api_secret = '13f9f790ee0de527a44ac561c4786b7c';
+config.facebook_api_key = '2908344615961117';
 
 // let HOSTNAME = 'https://opexflow.com';
 
@@ -137,6 +137,24 @@ app.get('/api/stocks/ticks', ensureAuthenticated, (req, res) => {
     console.log(__dirname);
     // Вместо этого файла будут данные из БД
     const ticks = fs.readFileSync(path.join(__dirname, 'SBER_200708_200708.txt')).toString()
+        .split('\r\n')
+        .slice(1);
+    return res.end(JSON.stringify(ticks));
+});
+
+// 10 min ticks
+app.get('/api/stocks/ticks_10min', ensureAuthenticated, (req, res) => {
+    // TODO: сделать общее решение для локальной разработки.
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Access-Control-Allow-Origin', replaceHost(HOSTNAME));
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Set-Cookie, *');
+
+    console.log(req.params);
+    console.log(__dirname);
+    // Вместо этого файла будут данные из БД
+    const ticks = fs.readFileSync(path.join(__dirname, 'SBER_200716_200716_10min.txt')).toString()
         .split('\r\n')
         .slice(1);
     return res.end(JSON.stringify(ticks));

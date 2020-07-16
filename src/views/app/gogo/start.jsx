@@ -1,22 +1,25 @@
 import React, { Component, Fragment } from 'react';
 import { Row } from 'reactstrap';
 import Chart from 'react-apexcharts';
+/* import ApexCharts from 'apexcharts'; */
 import IntlMessages from '../../../helpers/IntlMessages';
 import { Colxx, Separator } from '../../../components/common/CustomBootstrap';
 import Breadcrumb from '../../../containers/navs/Breadcrumb';
+import Button from "react-bootstrap/Button";
 
 export default class Start extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
-
+            host:``,
             series: [{
                 data: [
                 ],
             }],
             options: {
                 chart: {
+                    /* id: 'realtime', */
                     type: 'candlestick',
                     height: 350,
                 },
@@ -40,11 +43,16 @@ export default class Start extends Component {
     // lastDate = 1538884800000
     // [Timestamp, O, H, L, C]
     // lastTick = [6604.98, 6606, 6604.07, 6606]
+    
+
 
     componentDidMount() {
         // Костыль для локальной разработки, чтобы порты сервера и клиента разнести.
         // TODO: сделать в едином месте
         let host = `https://${window.location.host}/api/stocks/ticks`;
+        let ActionLink = () => {
+            host = `https://${window.location.host}/api/stocks/ticks_10min`;
+        }
         if (host.indexOf('3000') !== -1) {
             // TODO: сделать в едином месте
             host = host.replace('3000', '3001').replace('https', 'http');
@@ -78,6 +86,7 @@ export default class Start extends Component {
                     return {
                         x: `${tick[2] } ${ tick[3]}`,
                         y: [tick[4], tick[5], tick[6], tick[7]],
+                        
                     };
                 });
 
@@ -96,6 +105,13 @@ export default class Start extends Component {
         };
         x.withCredentials = true;
         x.send();
+    }
+        componentDidUpdate() {
+            if (this.componentDidMount.host===`https://${window.location.host}/api/stocks/ticks_10min`) {
+                console.log("update")
+            }
+        }
+        
 
         /*
 
@@ -119,7 +135,7 @@ export default class Start extends Component {
             this.setState({ series });
         }, 5000);
         */
-    }
+    
 
     render() {
         // console.log(this.state.series[0].data[this.state.series[0].data.length - 1]);
@@ -135,6 +151,9 @@ export default class Start extends Component {
                 <Row>
                     <Colxx xxs="12" className="mb-4">
                         <p><IntlMessages id="menu.start" /></p>
+                        <Button variant="secondary" onClick={this.componentDidMount.ActionLink} size="lg">
+                            1min
+                        </Button>
                   </Colxx>
               </Row>
                 <Row>
