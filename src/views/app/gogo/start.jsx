@@ -48,15 +48,36 @@ export default class Start extends PureComponent {
     }
 
     componentDidUpdate() {
-        this.getChartData();
+        if(!this.state.interactive) {
+            this.getChartData();
+            this.interval && window.clearInterval(this.interval);
+        } else {
+            if (!this.interval) {
+                this.interval = window.setInterval(() => {
+                    const dataBuff = this.state.dataBuff.slice(0);
+                    const data = this.state.series[0].data.slice(0);
+                    let nextData;
+
+                    if (this.state.dataBuff.length) {
+                        nextData = dataBuff.shift();
+                        data.push(nextData);
+
+                        this.setState({
+                            dataBuff,
+                            series: [{
+                                data
+                            }] 
+                        });
+                    } else {
+                        window.clearInterval(this.interval);
+                    }
+                }, 250);
+            }
+        }
 
         if (this.state.series[0].data && this.state.series[0].data.length) {
-            console.log('update', this.state.series[0].data);
-            ApexCharts.exec('ticks_chart', 'updateSeries', [{
-                data: this.state.series[0].data.slice(0)
-            }]);
             ApexCharts.exec('ticks_chart', 'render', [{
-                data: this.state.series[0].data.slice(0)
+               data: this.state.series[0].data
             }])
         }
     }
@@ -67,6 +88,9 @@ export default class Start extends PureComponent {
         if (this.loadedData[this.state.currentTicks] === true) {
             return;
         } else if (current) {
+            ApexCharts.exec('ticks_chart', 'updateSeries', [{
+                data: this.loadedData[this.state.currentTicks].series[0].data,
+            }]);
             this.setState(this.loadedData[this.state.currentTicks]);
             return;
         } else {
@@ -130,7 +154,10 @@ export default class Start extends PureComponent {
             };
 
             this.setState(this.loadedData[this.state.currentTicks]);
-            console.log(res);
+
+            ApexCharts.exec('ticks_chart', 'updateSeries', [{
+                data: series[0].data,
+            }]);
         };
         x.withCredentials = true;
         x.send();
@@ -149,7 +176,7 @@ export default class Start extends PureComponent {
                     <Colxx xxs="12" className="mb-4">
                         <p><IntlMessages id="menu.start" /></p>
                         {[
-                            '1min',
+                          //  '1min',
                             '5min',
                             '10min',
                         ].map((t, i) => 
@@ -158,13 +185,37 @@ export default class Start extends PureComponent {
                                 key={i}
                                 onClick={() => {
                                     window.localStorage.setItem('ticks', t);
-                                    this.setState({ currentTicks: t });
+                                    this.interval && window.clearInterval(this.interval);
+                                    this.setState({
+                                        currentTicks: t,
+                                        interactive: false,
+                                        dataBuff: undefined,
+                                    });
                                 }}
                                 size="lg"
                             >
                                 {t}
                             </Button>
                         )}
+                        <Button
+                            variant="secondary"
+                            onClick={() => {
+                                if (!this.state.series[0].data.length || this.state.interactive) {
+                                    return;
+                                }
+
+                                this.setState({
+                                    interactive: true,
+                                    dataBuff: this.state.series[0].data.slice(parseInt(this.state.series[0].data.length / 4, 10) + 1),
+                                    series: [{
+                                        data: this.state.series[0].data.slice(0, parseInt(this.state.series[0].data.length / 4, 10))
+                                    }] 
+                                });
+                            }}
+                            size="lg"
+                        >
+                            Interactive
+                        </Button>
                   </Colxx>
               </Row>
                 <Row>
