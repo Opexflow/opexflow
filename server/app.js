@@ -8,8 +8,10 @@ const mysql = require('mysql');
 const fs = require('fs');
 const path = require('path');
 const config = require('./config');
+const params = require('express-route-params');
 
 const app = express();
+params(express);
 
 // Define MySQL parameter in Config.js file.
 const pool = mysql.createPool({
@@ -124,8 +126,11 @@ app.get('/api/logout', (req, res) => {
     return res.end('{}');
 });
 
+
+app.param('tick', /^\d+(min|h|d|m)$/i)
+
 // ========= Работа с тиками ==========
-app.get('/api/stocks/ticks', ensureAuthenticated, (req, res) => {
+app.get('/api/stocks/ticks/:tick', ensureAuthenticated, (req, res) => {
     // TODO: сделать общее решение для локальной разработки.
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('Access-Control-Allow-Origin', replaceHost(HOSTNAME));
@@ -133,12 +138,25 @@ app.get('/api/stocks/ticks', ensureAuthenticated, (req, res) => {
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Set-Cookie, *');
 
+    const filename = path.join(__dirname, `SBER_${req.params.tick[0]}.txt`);
+
     console.log(req.params);
     console.log(__dirname);
+    console.log(filename);
+
+    if (!fs.existsSync(filename)) {
+        return res.end('{}');
+    }
+
+    console.log(filename);
+
     // Вместо этого файла будут данные из БД
-    const ticks = fs.readFileSync(path.join(__dirname, 'SBER_200708_200708.txt')).toString()
-        .split('\r\n')
-        .slice(1);
+    const ticks = fs.readFileSync(filename).toString()
+        .split('\n')
+        .slice(1)
+        .map(s => s.trim())
+        .filter(Boolean);
+
     return res.end(JSON.stringify(ticks));
 });
 
