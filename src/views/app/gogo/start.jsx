@@ -19,6 +19,13 @@ export default class Start extends PureComponent {
                     id: 'ticks_chart',
                     type: 'candlestick',
                     height: 350,
+                    toolbar: {
+                        autoSelected: "pan",
+                        show: true,
+                      },
+                      zoom: {
+                        enabled: true,
+                      },
                 },
                 title: {
                     text: 'CandleStick Chart',
@@ -26,7 +33,7 @@ export default class Start extends PureComponent {
                 },
                 xaxis: {
                     // type: 'datetime',
-                    type: 'numeric'
+                    type: 'category',
                 },
                 yaxis: {
                     tooltip: {
@@ -163,6 +170,15 @@ export default class Start extends PureComponent {
         x.send();
     }
 
+    handleClick = () => {
+        this.setState({ active: !this.state.active });
+      };
+
+       
+         
+        
+      
+
     render() {
         return (
             <>
@@ -176,23 +192,28 @@ export default class Start extends PureComponent {
                     <Colxx xxs="12" className="mb-4">
                         <p><IntlMessages id="menu.start" /></p>
                         {[
-                          //  '1min',
+                            '1min',
                             '5min',
                             '10min',
                         ].map((t, i) => 
-                            <Button
+                            <Button                                
                                 variant="secondary"
                                 key={i}
+                                id={i}
+                                defaultChecked="false"
+                                active = {this.state.active}
                                 onClick={() => {
                                     window.localStorage.setItem('ticks', t);
                                     this.interval && window.clearInterval(this.interval);
+                                    this.state.active = (!this.state.active)
                                     this.setState({
                                         currentTicks: t,
                                         interactive: false,
                                         dataBuff: undefined,
                                     });
                                 }}
-                                size="lg"
+                                size="sm"
+
                             >
                                 {t}
                             </Button>
@@ -203,7 +224,7 @@ export default class Start extends PureComponent {
                                 if (!this.state.series[0].data.length || this.state.interactive) {
                                     return;
                                 }
-
+                                
                                 this.setState({
                                     interactive: true,
                                     dataBuff: this.state.series[0].data.slice(parseInt(this.state.series[0].data.length / 4, 10) + 1),
@@ -212,7 +233,7 @@ export default class Start extends PureComponent {
                                     }] 
                                 });
                             }}
-                            size="lg"
+                            size="sm"
                         >
                             Interactive
                         </Button>
