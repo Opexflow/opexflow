@@ -21,4 +21,7 @@ export function getData() {
 		.then(response => response.text())
 		.then(data => tsvParse(data, parseData(parseDate)))
 	return promiseMSFT;
+	console.log(promiseMSFT)
 }
+
+
