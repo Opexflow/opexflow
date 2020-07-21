@@ -3,17 +3,19 @@ import { Row, Button } from 'reactstrap';
 import IntlMessages from '../../../helpers/IntlMessages';
 import { Colxx, Separator } from '../../../components/common/CustomBootstrap';
 import Breadcrumb from '../../../containers/navs/Breadcrumb';
+
 //Stockchart
 import Chart from './Chart';
-import { getData } from "./utils"
+import { getChartData } from "./data"
 import { TypeChooser } from "react-stockcharts/lib/helper";
 
 export default class Start extends PureComponent {  
     componentDidMount() {
-		getData().then(data => {
-			this.setState({ data })
-		})
-	}
+		getChartData().data(data => {
+            this.setState({ data })
+            console.log(data)
+        })
+    }
 	render() {
 		if (this.state == null) {
 			return <div>Loading...</div>
