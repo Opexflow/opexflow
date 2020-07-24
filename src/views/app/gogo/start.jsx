@@ -6,16 +6,24 @@ import Breadcrumb from '../../../containers/navs/Breadcrumb';
 
 //Stockchart
 import Chart from './Chart';
-import { getChartData } from "./data"
+import  Data from "./data"
 import { TypeChooser } from "react-stockcharts/lib/helper";
 
 export default class Start extends PureComponent {  
+    constructor(props){
+        super(props);
+        this.setState = {
+            data: []
+        }
+    }
+
     componentDidMount() {
-		getChartData().data(data => {
+		this.getChartData().Chart(data => {
             this.setState({ data })
             console.log(data)
         })
     }
+
 	render() {
 		if (this.state == null) {
 			return <div>Loading...</div>

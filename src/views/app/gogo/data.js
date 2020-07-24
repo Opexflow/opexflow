@@ -1,10 +1,21 @@
+import React from 'react';
+import Chart from "./Chart"
 
+let data;
 
+export default class Data extends React.Component {
+    constructor(props) {
+        super(props);
+        this.setState = {
+            data: null,
+            currentTicks: window.localStorage.getItem('ticks') || '5min'
+        }
+    }
     componentDidMount() {
         this.getChartData();
     }
 
-    componentDidUpdate() {
+   /*  componentDidUpdate() {
         if(!this.state.interactive) {
             this.getChartData();
             this.interval && window.clearInterval(this.interval);
@@ -37,7 +48,7 @@
                data: this.state.data
             }])
         }
-    }
+    } */
 
     getChartData() {
         this.loadedData || (this.loadedData = {});
@@ -70,7 +81,7 @@
             const series = this.state.slice(0);
             let name;
 
-            data = !res || !Object.keys(res).length ? [] : res.map((t, i) => {
+            this.state.data = !res || !Object.keys(res).length ? [] : res.map((t, i) => {
                 // ticker, per, date, time, open, hight, low, close, vol (объём торгов)
                 // SBER,5,08/07/20,12:30:00,210.6100000,210.6800000,210.4700000,210.6000000,73370
                 const tick = t.split(',');
@@ -101,5 +112,7 @@
         };
         x.withCredentials = true;
         x.send();
+        console.log(this.setState.data);
     }
-export function getChartData()
+}
+
