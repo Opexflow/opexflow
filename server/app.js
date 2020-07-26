@@ -87,6 +87,15 @@ app.get('/api', (req, res) => {
     }
 });
 
+app.get('/', (req, res) => {
+    if (req.isAuthenticated()) {
+        res.redirect(replaceHost(HOSTNAME));
+    } else {
+        res.redirect(`${HOSTNAME}api/auth/facebook`);
+    }
+});
+
+
 app.get('/api/account', (req, res) => {
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('Access-Control-Allow-Origin', replaceHost(HOSTNAME));
@@ -116,8 +125,7 @@ app.get('/api/auth/facebook', passport.authenticate('facebook', { scope: 'email'
 app.get('/api/auth/facebook/callback',
     passport.authenticate('facebook', { successRedirect: '/', failureRedirect: '/user/login' }),
     (req, res) => {
-    // console.log('/callback', req, res);
-
+        // console.log('/callback', req, res);
         res.redirect('/');
     });
 
