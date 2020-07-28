@@ -4,6 +4,10 @@ import IntlMessages from '../../../helpers/IntlMessages';
 import { Colxx, Separator } from '../../../components/common/CustomBootstrap';
 import Breadcrumb from '../../../containers/navs/Breadcrumb';
 
+//parse
+import { tsvParse, csvParse } from  "d3-dsv";
+import { timeParse } from "d3-time-format";
+
 //Stockchart
 import Chart from './Chart';
 import { TypeChooser } from "react-stockcharts/lib/helper";
@@ -12,16 +16,23 @@ export default class Start extends PureComponent {
     constructor(props){
         super(props);
         this.state = {
-            data: []
+            currentTicks: window.localStorage.getItem('ticks') || '5min',
+            d:{
+                data: [],
+                open: '',
+                high: '',
+                low: '',
+                close: '',
+                volume: '',
+            }
         }
     }
 
     componentDidMount() {
-        this.getChartData();
-        /*.Chart(data => {
-            this.setState({ data })
-            console.log(data)
-        })*/
+        this.getChartData(data => {
+			this.setState({ data })
+			console.log(data)
+		})
     }
 
     getChartData() {
@@ -30,9 +41,9 @@ export default class Start extends PureComponent {
         if (this.loadedData[this.state.currentTicks] === true) {
             return;
         } else if (current) {
-            Chart('ticks_chart', 'updateSeries', [{
+/*             Chart('ticks_chart', 'updateSeries', [{
                 data: this.loadedData[this.state.currentTicks].data,
-            }]);
+            }]); */
             this.setState(this.loadedData[this.state.currentTicks]);
             return;
         } else {
@@ -52,7 +63,6 @@ export default class Start extends PureComponent {
         x.onload = () => {
             const res = x.responseText && JSON.parse(x.responseText);
 
-            const series = this.state.slice(0);
             let name;
 
             const data = !res || !Object.keys(res).length ? [] : res.map((t, i) => {
@@ -71,23 +81,25 @@ export default class Start extends PureComponent {
                 // console.log(`${tick[2]} ${tick[3]}`, [parseFloat(tick[4]), parseFloat(tick[5]), parseFloat(tick[6]), parseFloat(tick[7])]);
                 // [Timestamp, O, H, L, C]
                 return {
-                    x: `${tick[2]} ${tick[3]}`,
-                    y: [parseFloat(tick[4]), parseFloat(tick[5]), parseFloat(tick[6]), parseFloat(tick[7]), parseFloat(tick[8]) ],
-                    
+                    date: `${tick[2]} ${tick[3]}`,
+                    open: parseFloat(tick[4]), 
+                    high: parseFloat(tick[5]),
+                    low: parseFloat(tick[6]),
+                    close: parseFloat(tick[7]),
+                    volume: parseFloat(tick[8])
                 };
             })
             .filter(Boolean);
-
+            console.log(data)
             //this.setState(this.loadedData[this.state.currentTicks]);
             this.setState({ data });
 
-            Chart('ticks_chart', 'updateSeries', [{
+/*             Chart('ticks_chart', 'updateSeries', [{
                 data
-            }]);
+            }]); */
         };
         x.withCredentials = true;
         x.send();
-        console.log(this.setState.data);
     }
 
 	render() {
