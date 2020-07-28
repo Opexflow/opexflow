@@ -15,6 +15,7 @@
     "classnames": "2.2.6",
     "cookie-parser": "^1.4.5",
     "d3-dsv": "^1.2.0",
+    "d3-format": "^1.4.4",
     "d3-time-format": "^2.2.3",
     "eslint-config-airbnb": "^18.2.0",
     "eslint-plugin-import": "^2.22.0",
