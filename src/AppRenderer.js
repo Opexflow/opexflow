@@ -21,21 +21,22 @@ if (window.location.pathname && window.location.pathname !== '/user/login') {
     x.open('GET', host, true);
     x.onload = function() {
         const res = x.responseText && JSON.parse(x.responseText);
-        const user = res && res.user;
+        const { user, finance } = res;
 
         console.log(x.responseText);
+        console.log(user, res);
         if (user && user.accessToken) {
             FB.setAccessToken(user.accessToken);
             FB.api('/me', { fields: 'id,name,picture' }, response => {
                 if (user.id !== response.id) {
                     window.location.href = '/user/login';
                 } else {
-                    console.log(user.id, response);
+                    // console.log(user.id, response);
                     ReactDOM.render(
-                      <Provider store={configureStore({ authUser: { user: { ...response }, FB } })}>
+                      <Provider store={configureStore({ authUser: { user: { ...response }, finance, FB } })}>
                           <Suspense fallback={<div className="loading" />}>
                               <App />
-                            </Suspense>
+                          </Suspense>
                         </Provider>,
                         document.getElementById('root'),
                     );
