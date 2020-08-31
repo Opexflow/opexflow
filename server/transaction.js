@@ -19,34 +19,37 @@ connection.connect(err => {
     console.log(`connected as id ${connection.threadId}`);
 });
 
-// Create values
-const name = 'INSERT INTO Transactions(balance,prise,name) VALUES(10000, \'Alexandr Kamynin\', 1000)';
+/* // Create values
+const name = 'INSERT INTO Transactions(id,balance,name,price) VALUES('1','10000','Alexandr Kamynin','1000');
 const balance = 'VALUES(1, 10000)';
 
 connection.query(name, (err, results) => {
     if (err) console.log(err);
     console.log(results);
-});
+}); */
 
 /* Begin transaction */
 connection.beginTransaction(err => {
-    if (err) {
-        throw err
-    }
-    connection.query('INSERT INTO Transactions SET (id,balance) VALUES('
-    1
-    ', '
-    10000
-    ')', (error, results, fields) => {
+    if (err) { throw err }
+
+    connection.query({
+        sql: 'UPDATE Transactions Set balance = balance - ? where ?',
+        values: [1000, { id: 1 }],
+    },
+    (error, results, fields) => {
         if (error) {
             return connection.rollback(() => {
                 throw error;
             });
         }
 
-        const log = `Transactions ${results.insertId} added`;
+        const log = `Transactions ${ results.insertId } added`;
 
-        connection.query('INSERT INTO log SET data=?', log, (error, results, fields) => {
+        connection.query({
+            sql: 'UPDATE Transactions Set balance = balance + ? where ?',
+            values: [1000, { id: 2 }],
+        },
+        (error, results, fields) => {
             if (error) {
                 return connection.rollback(() => {
                     throw error;
@@ -61,8 +64,6 @@ connection.beginTransaction(err => {
                 console.log('success!');
             });
         });
-    }
-)
-    ;
+    });
 });
 /* End transaction */
