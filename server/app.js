@@ -7,8 +7,8 @@ const bodyParser = require('body-parser');
 const mysql = require('mysql');
 const fs = require('fs');
 const path = require('path');
-const config = require('./config');
 const params = require('express-route-params');
+const config = require('./config');
 
 const app = express();
 params(express);
@@ -95,7 +95,6 @@ app.get('/', (req, res) => {
     }
 });
 
-
 app.get('/api/account', (req, res) => {
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('Access-Control-Allow-Origin', replaceHost(HOSTNAME));
@@ -134,8 +133,7 @@ app.get('/api/logout', (req, res) => {
     return res.end('{}');
 });
 
-
-app.param('tick', /^\d+(min|h|d|m)$/i)
+app.param('tick', /^\d+(min|h|d|m)$/i);
 
 // ========= Работа с тиками ==========
 app.get('/api/stocks/ticks/:tick', ensureAuthenticated, (req, res) => {
@@ -173,5 +171,36 @@ function ensureAuthenticated(req, res, next) {
     // res.redirect('/user/login')
     return next();
 }
+
+// Transaction
+
+connection.beginTransaction(err => {
+    if (err) { throw err }
+    connection.query('INSERT INTO posts SET title=?', balance, (error, results, fields) => {
+        if (error) {
+            return connection.rollback(() => {
+                throw error;
+            });
+        }
+
+        const log = `Post ${ results.insertId } added`;
+
+        connection.query('INSERT INTO log SET data=?', log, (error, results, fields) => {
+            if (error) {
+                return connection.rollback(() => {
+                    throw error;
+                });
+            }
+            connection.commit(err => {
+                if (err) {
+                    return connection.rollback(() => {
+                        throw err;
+                    });
+                }
+                console.log('success!');
+            });
+        });
+    });
+});
 
 app.listen(3001);
