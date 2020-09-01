@@ -50,15 +50,31 @@ passport.use(new FacebookStrategy({
             const photo = profile.photos && profile.photos[0] && profile.photos[0].value || '';
             const email = profile.emails && profile.emails[0] && profile.emails[0].value || '';
 
-            pool.query(`INSERT INTO Users SET 
-                    id = '${profile.id}', login = '${profile.displayName}', email = '${email}', photo='${photo}', createdAt = NOW(), balance = 10000
-                    ON DUPLICATE KEY UPDATE login = '${profile.displayName}', email = '${email}', photo='${photo}' 
-                `);
+            pool.query(`SELECT * from Users where id=${profile.id}`, (err, rows) => {
+                if (err) throw err;
+                if (rows && rows.length === 0) {
+                    console.log('There is no such user, adding now');
+                    pool.query(`INSERT INTO Users SET
+                        id = '${profile.id}', login = '${profile.displayName}', email = '${email}', photo='${photo}', createdAt = NOW(), balance = 10000
+                        ON DUPLICATE KEY UPDATE login = '${profile.displayName}', email = '${email}', photo='${photo}'
+                        `);
+                } else {
+                    console.log('User already exists in database');
+                }
+            });
 
-            pool.query(`INSERT INTO Transactions SET
-                     id = '${profile.id}', login = '${profile.displayName}'  balance = 0, date = '${new Date()}'
-                     ON DUPLICATE KEY UPDATE login = '${profile.displayName}', date = '${new Date()}'
-                 `);
+            pool.query(`SELECT * from Transactions where id='${profile.id}'`, (err, rows) => {
+                if (err) throw err;
+                if (rows && rows.length === 0) {
+                    console.log('There is no balance User in Transaction, adding now');
+                    pool.query(`INSERT INTO Transactions SET
+                        id = '${profile.id}', login = '${profile.displayName}'  
+                        ON DUPLICATE KEY UPDATE login = '${profile.displayName}'
+                        `);
+                } else {
+                    console.log('Balance for User already exists in database');
+                }
+            });
 
             profile.accessToken = accessToken;
         }
@@ -222,7 +238,7 @@ app.get('/api/stocks/trades/buy/:price', ensureAuthenticated, (req, res) => {
                 }
                 connection.query({
                     sql: 'UPDATE Transactions Set balance = balance - ? where ?',
-                    values: [`'${req.params.price}', '${profile.id}`],
+                    values: [`'${req.params.price}', '${req.user.id}`],
                 },
                 (error, results, fields) => {
                     if (error) {
@@ -272,7 +288,7 @@ app.get('/api/stocks/trades/sell/:price', ensureAuthenticated, (req, res) => {
         }
         console.log(`connected as id ${connection.threadId}`);
     });
-    const sql = `SELECT balance FROM Transactions  WHERE id='${req.user.id}' AND balance>='${req.params.price}'`;
+    const sql = `SELECT balance FROM Transactions  WHERE id='${req.user.id}' AND balance>='${req.params.price} FOR UPDATE'`;
 
     connection.query(sql, (err, results) => {
         if (err) throw err;
@@ -288,7 +304,7 @@ app.get('/api/stocks/trades/sell/:price', ensureAuthenticated, (req, res) => {
                 }
                 connection.query({
                     sql: 'UPDATE Transactions Set balance = balance + ? where ?',
-                    values: [`'${req.params.price}', '${profile.id}`],
+                    values: [`'${req.params.price}', '${req.user.id}`],
                 },
                 (error, results, fields) => {
                     if (error) {
