@@ -202,7 +202,7 @@ class TopNav extends Component {
   render() {
       const { containerClassnames, menuClickCount, locale } = this.props;
       const { messages } = this.props.intl;
-      const { user } = this.props.authUser;
+      const { user, finance } = this.props.authUser;
 
       return (
           <nav className="navbar fixed-top">
@@ -306,7 +306,7 @@ class TopNav extends Component {
                   <div className="user d-inline-block">
                       <UncontrolledDropdown className="dropdown-menu-right">
                           <DropdownToggle className="p-0" color="empty">
-                              <span className="name mr-1">{user.name}</span>
+                            <span className="name mr-1">{user.name}<br/>Баланс: {finance.balance} ₽</span>
                               <span>
                                   <img alt="Profile" src={user.picture.data.url} />
                             </span>

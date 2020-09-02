@@ -1899,6 +1899,12 @@ button {
       width: 40px;
     }
 
+    .name {
+      float: left;
+      max-width: 200px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
     @include respond-below(md) {
       .name {
         display: none;

@@ -82,6 +82,18 @@ export default class Start extends PureComponent {
         }
     }
 
+    getHost(postfix) {
+        // Костыль для локальной разработки, чтобы порты сервера и клиента разнести.
+        // TODO: сделать в едином месте
+        let host = `https://${window.location.host}/api/stocks/${postfix}`;
+        if (host.indexOf('3000') !== -1) {
+            // TODO: сделать в едином месте
+            host = host.replace('3000', '3001').replace('https', 'http');
+        }
+
+        return host;
+    }
+
     getChartData() {
         this.loadedData || (this.loadedData = {});
         const current = this.loadedData[this.state.currentTicks];
@@ -97,14 +109,6 @@ export default class Start extends PureComponent {
             this.loadedData[this.state.currentTicks] = true;
         }
 
-        // Костыль для локальной разработки, чтобы порты сервера и клиента разнести.
-        // TODO: сделать в едином месте
-        let host = `https://${window.location.host}/api/stocks/ticks/${this.state.currentTicks}`;
-        if (host.indexOf('3000') !== -1) {
-            // TODO: сделать в едином месте
-            host = host.replace('3000', '3001').replace('https', 'http');
-        }
-
         /*
         {
             x: new Date(1538874000000),
@@ -112,7 +116,7 @@ export default class Start extends PureComponent {
         },
         */
         const x = new XMLHttpRequest();
-        x.open('GET', host, true);
+        x.open('GET', this.getHost(`ticks/${this.state.currentTicks}`), true);
         x.onload = () => {
             const res = x.responseText && JSON.parse(x.responseText);
 
@@ -168,7 +172,7 @@ export default class Start extends PureComponent {
             <>
                 <Row>
                     <Colxx xxs="12">
-                        <Breadcrumb heading="menu.start" match={this.props.match} />
+                        {this.props.match && <Breadcrumb heading="menu.start" match={this.props.match} />}
                         <Separator className="mb-5" />
                   </Colxx>
               </Row>
@@ -229,6 +233,39 @@ export default class Start extends PureComponent {
                             />
                         )}
                   </Colxx>
+              </Row>
+
+              <Row>
+              <Button
+                    variant="secondary"
+                    onClick={() => {
+                        const price = this.state.series[0].data[this.state.series[0].data.length - 1].y[0];
+
+                        const x = new XMLHttpRequest();
+                        x.open('GET', this.getHost(`trades/buy/${price}`), true);
+                        x.withCredentials = true;
+                        x.send();
+
+                        console.log('buy', price);
+                    }}
+                    size="lg"
+                >
+                    Купить
+                </Button>
+                <Button
+                    variant="secondary"
+                    onClick={() => {
+                        const price = this.state.series[0].data[this.state.series[0].data.length - 1].y[0];
+
+                        const x = new XMLHttpRequest();
+                        x.open('GET', this.getHost(`trades/sell/${price}`), true);
+                        x.withCredentials = true;
+                        x.send();
+                    }}
+                    size="lg"
+                >
+                    Продать
+                </Button>
               </Row>
           </>
         );

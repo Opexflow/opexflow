@@ -1,0 +1,64 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Start Should render chart 1`] = `
+Array [
+  <div
+    className="row"
+  >
+    <div
+      className="col-12"
+    >
+      <div
+        className="separator mb-5"
+      />
+    </div>
+  </div>,
+  <div
+    className="row"
+  >
+    <div
+      className="mb-4 col-12"
+    >
+      <p>
+        <span>
+          Start
+        </span>
+      </p>
+      <button
+        aria-label={null}
+        className="btn btn-secondary btn-lg"
+        onClick={[Function]}
+        type="button"
+        variant="secondary"
+      >
+        5min
+      </button>
+      <button
+        aria-label={null}
+        className="btn btn-secondary btn-lg"
+        onClick={[Function]}
+        type="button"
+        variant="secondary"
+      >
+        10min
+      </button>
+      <button
+        aria-label={null}
+        className="btn btn-secondary btn-lg"
+        onClick={[Function]}
+        type="button"
+        variant="secondary"
+      >
+        Interactive
+      </button>
+    </div>
+  </div>,
+  <div
+    className="row"
+  >
+    <div
+      className="mb-34 col-12"
+    />
+  </div>,
+]
+`;
