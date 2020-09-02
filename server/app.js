@@ -211,56 +211,52 @@ app.get('/api/stocks/trades/buy/:price', ensureAuthenticated, (req, res) => {
         return res.end('{}');
     }
 
-    const connection = mysql.createConnection(
-        {
-            host: '78.24.216.16',
-            user: 'opexbetausr',
-            password: 'P6y5H0e9',
-            database: 'opexbetadb',
-        },
-    );
-
-
-    connection.connect(err => {
-        if (err) {
-            console.error(`error connecting: ${err.stack}`);
-            return;
-        }
-        console.log(`connected as id ${connection.threadId}`);
-    });
-    const sql = `SELECT balance FROM Transactions  WHERE id='${req.user.id}' AND balance>='${req.params.price}'`;
+    const sql = `SELECT balance FROM Transactions  WHERE id='${req.user.id}' AND balance>=${req.params.price}`;
     const transaction = `UPDATE Transactions Set balance = balance - ${req.params.price} WHERE id='${req.user.id}'`
 
-    connection.query(sql, (err, results) => {
-        if (err) throw err;
-        if (results && results.length === 0) {
-            console.log('Not enough money');
-        } else {
-            console.log(results);
+    pool.getConnection(function (err, connection) {
 
-            /* Begin transaction */
-            connection.beginTransaction(err => {
-                if (err) {
-                    throw err;
-                }
-                connection.query(transaction,
-                    (error, results, fields) => {
-                        if (error) {
-                            return connection.rollback(() => {
-                                throw error;
-                            });
-                        }
-                        connection.commit(err => {
-                            if (err) {
-                                return connection.rollback(() => {
-                                    throw err;
+        connection.query(sql, (err, results) => {
+            if (err) throw err;
+            if (results && results.length === 0) {
+                connection.release();
+                console.log('Not enough money');
+            } else {
+                connection.beginTransaction(function (err) {
+                    if (err) {                  //Transaction Error (Rollback and release connection)
+                        connection.rollback(function () {
+                            connection.release();
+                            console.log('connection is lost')
+                            //Failure
+                        });
+                    } else {
+                        connection.query(transaction, function (err, results) {
+                            if (err) {          //Query Error (Rollback and release connection)
+                                connection.rollback(function () {
+                                    connection.release();
+                                    console.log('no money');
+                                });
+                            } else {
+                                connection.commit(function (err) {
+                                    if (err) {
+                                        connection.rollback(function () {
+                                            connection.release();
+                                            console.log('lost!');
+                                        });
+                                    } else {
+                                        connection.release();
+                                        console.log(`'balance update - '${req.params.price}`);
+                                        console.log('success!');
+
+                                    }
                                 });
                             }
-                            console.log('success!');
                         });
-                    });
-            });
-        }});
+                    }
+                });
+            }
+        });
+    });
 });
 
 
@@ -275,62 +271,50 @@ app.get('/api/stocks/trades/sell/:price', ensureAuthenticated, (req, res) => {
     if (!req.isAuthenticated() || !req.user || !req.user.id) {
         return res.end('{}');
     }
-
-    const connection = mysql.createConnection(
-        {
-            host: '78.24.216.16',
-            user: 'opexbetausr',
-            password: 'P6y5H0e9',
-            database: 'opexbetadb',
-        },
-    );
-
-    connection.connect(err => {
-        if (err) {
-            console.error(`error connecting: ${err.stack}`);
-            return;
-        }
-        console.log(`connected as id ${connection.threadId}`);
-    });
-    const sql = `SELECT balance FROM Transactions  WHERE id='${req.user.id}' AND balance>='${req.params.price}'`;
+    const sql = `SELECT id FROM Transactions  WHERE id='${req.user.id}'`;
     const transaction = `UPDATE Transactions Set balance = balance + ${req.params.price} WHERE id='${req.user.id}'`
 
-    connection.query(sql, (err, results) => {
-        if (err) throw err;
-        if (results && results.length === 0) {
-            console.log('Not enough money');
-
-        } else {
-            console.log(results);
-
-            /* Begin transaction */
-            connection.beginTransaction(err => {
-                if (err) {
-                    throw err;
-                }
-                connection.query(transaction,
-                    (error, results, fields) => {
-                        if (error) {
-                            return connection.rollback(() => {
-                                throw error;
-                            });
-                        }
-                        connection.commit(err => {
-                            if (err) {
-                                return connection.rollback(() => {
-                                    throw err;
+    pool.getConnection(function (err, connection) {
+        connection.query(sql, (err, results) => {
+            if (err) throw err;
+            if (results && results.length === 0) {
+                connection.release();
+                console.log('Not enough money');
+            } else {
+                connection.beginTransaction(function (err) {
+                    if (err) {                  //Transaction Error (Rollback and release connection)
+                        connection.rollback(function () {
+                            connection.release();
+                            console.log('connection is lost')
+                            //Failure
+                        });
+                    } else {
+                        connection.query(transaction, function (err, results) {
+                            if (err) {          //Query Error (Rollback and release connection)
+                                connection.rollback(function () {
+                                    connection.release();
+                                    console.log('no money');
+                                });
+                            } else {
+                                connection.commit(function (err) {
+                                    if (err) {
+                                        connection.rollback(function () {
+                                            connection.release();
+                                            console.log('lost!');
+                                        });
+                                    } else {
+                                        connection.release();
+                                        console.log(`'balance update + '${req.params.price}`)
+                                        console.log('success!');
+                                    }
                                 });
                             }
-                            console.log('success!');
                         });
-                    });
-            });
-        }});
-    /* End transaction */
-
-    /*
-        pool.query(`UPDATE Users SET balance = balance + '${req.params.price}' WHERE id = '${req.user.id}'`);
-        return res.end(JSON.stringify({}));*/
+                    }
+                });
+            }
+        })
+    })
 });
 
 function ensureAuthenticated(req, res, next) {
