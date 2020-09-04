@@ -68,9 +68,9 @@ passport.use(new FacebookStrategy({
                     if (rows && rows.length === 0) {
                         console.log('There is no balance User in Transaction, adding now');
                         pool.query(`INSERT INTO Transactions SET
-                        id = '${profile.id}', login = '${profile.displayName}'  
-                        ON DUPLICATE KEY UPDATE login = '${profile.displayName}'
-                        `);
+                            id = '${profile.id}', login = '${profile.displayName}'  
+                            ON DUPLICATE KEY UPDATE login = '${profile.displayName}'
+                            `);
                     } else {
                         console.log('Balance for User already exists in database');
                     }
@@ -131,10 +131,10 @@ app.get('/api/account', (req, res) => {
         return res.end('{}');
     }
 
-    /*pool.query(`SELECT * from Users where id=${req.user.id}`, (err, rows) => {
-        res.end(JSON.stringify({ user: req.user, finance: { balance: rows && rows[0] && rows[0].balance }}));
-    })*/
-    pool.query(`SELECT * from Transactions where id=${req.user.id}`, (err, rows) => {
+    /*    pool.query(`SELECT user from Users where id=${req.user.id}` , (err, rows) => {
+            res.end(JSON.stringify({ user: req.user, finance: { balance: rows && rows[0] && rows[0].balance }}));
+        })*/
+    pool.query(`SELECT * from Users,Transactions WHERE Users.id=Transactions.id`, (err, rows) => {
         res.end(JSON.stringify({ user: req.user, finance: { balance: rows && rows[0] && rows[0].balance }}));
     })
 });
@@ -212,8 +212,8 @@ app.get('/api/stocks/trades/buy/:price', ensureAuthenticated, (req, res) => {
     }
 
     const sql = `SELECT balance FROM Transactions  WHERE id='${req.user.id}' AND balance>=${req.params.price}`;
-    const transaction = `UPDATE Transactions Set balance = balance - ${req.params.price} WHERE id='${req.user.id}'`
-
+    const transaction = `UPDATE Transactions Set stock='SBER',commission=0, price=${req.params.price}+commission, balance = balance - price   WHERE id='${req.user.id}'`
+    const logs = `INSERT INTO Transactions_logs SET id=(SELECT id FROM Transactions WHERE id='${req.user.id}'), balance=(SELECT balance FROM Transactions WHERE id='${req.user.id}'), price=(SELECT price FROM Transactions WHERE id='${req.user.id}'), commission=(SELECT commission FROM Transactions WHERE id='${req.user.id}'), stock=(SELECT stock FROM Transactions WHERE id='${req.user.id}')`
     pool.getConnection(function (err, connection) {
 
         connection.query(sql, (err, results) => {
@@ -247,7 +247,9 @@ app.get('/api/stocks/trades/buy/:price', ensureAuthenticated, (req, res) => {
                                         connection.release();
                                         console.log(`'balance update - '${req.params.price}`);
                                         console.log('success!');
-
+                                        connection.query(logs, (err, results) => {
+                                            console.log('Transactions logs added');
+                                        });
                                     }
                                 });
                             }
@@ -258,6 +260,7 @@ app.get('/api/stocks/trades/buy/:price', ensureAuthenticated, (req, res) => {
         });
     });
 });
+
 
 
 app.get('/api/stocks/trades/sell/:price', ensureAuthenticated, (req, res) => {
@@ -271,10 +274,11 @@ app.get('/api/stocks/trades/sell/:price', ensureAuthenticated, (req, res) => {
     if (!req.isAuthenticated() || !req.user || !req.user.id) {
         return res.end('{}');
     }
-    const sql = `SELECT id FROM Transactions  WHERE id='${req.user.id}'`;
-    const transaction = `UPDATE Transactions Set balance = balance + ${req.params.price} WHERE id='${req.user.id}'`
-
+    const sql = `SELECT balance FROM Transactions  WHERE id='${req.user.id}' AND balance>=${req.params.price}`;
+    const transaction = `UPDATE Transactions Set stock='SBER',commission=0, price=${req.params.price}+commission, balance = balance + price   WHERE id='${req.user.id}'`
+    const logs = `INSERT INTO Transactions_logs SET id=(SELECT id FROM Transactions WHERE id='${req.user.id}'), balance=(SELECT balance FROM Transactions WHERE id='${req.user.id}'), price=(SELECT price FROM Transactions WHERE id='${req.user.id}'), commission=(SELECT commission FROM Transactions WHERE id='${req.user.id}'), stock=(SELECT stock FROM Transactions WHERE id='${req.user.id}')`
     pool.getConnection(function (err, connection) {
+
         connection.query(sql, (err, results) => {
             if (err) throw err;
             if (results && results.length === 0) {
@@ -304,8 +308,11 @@ app.get('/api/stocks/trades/sell/:price', ensureAuthenticated, (req, res) => {
                                         });
                                     } else {
                                         connection.release();
-                                        console.log(`'balance update + '${req.params.price}`)
+                                        console.log(`'balance update - '${req.params.price}`);
                                         console.log('success!');
+                                        connection.query(logs, (err, results) => {
+                                            console.log('Transactions logs added');
+                                        });
                                     }
                                 });
                             }
@@ -313,8 +320,8 @@ app.get('/api/stocks/trades/sell/:price', ensureAuthenticated, (req, res) => {
                     }
                 });
             }
-        })
-    })
+        });
+    });
 });
 
 function ensureAuthenticated(req, res, next) {
