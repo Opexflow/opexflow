@@ -50,10 +50,25 @@ passport.use(new FacebookStrategy({
                 const photo = profile.photos && profile.photos[0] && profile.photos[0].value || '';
                 const email = profile.emails && profile.emails[0] && profile.emails[0].value || '';
 
-                pool.query(`INSERT INTO Users SET
-                    id = '${profile.id}', login = '${profile.displayName}', email = '${email}', photo='${photo}', createdAt = NOW(), balance = 10000
-                    ON DUPLICATE KEY UPDATE login = '${profile.displayName}', email = '${email}', photo='${photo}'
-                `);
+                pool.query(`SELECT * from Users where id=${profile.id}`, (err, rows) => {
+                    if (err) throw err;
+                    if (rows && rows.length === 0) {
+                        console.log('There is no such user, adding now');
+                        pool.query(`INSERT INTO Users SET id = '${profile.id}', login = '${profile.displayName}', email = '${email}', photo='${photo}'`);
+                    } else {
+                        console.log('User already exists in database');
+                    }
+                });
+
+                pool.query(`SELECT * from Transactions where id='${profile.id}'`, (err, rows) => {
+                    if (err) throw err;
+                    if (rows && rows.length === 0) {
+                        console.log('There is no balance User in Transaction, adding now');
+                        pool.query(`INSERT INTO Transactions SET id = '${profile.id}'`);
+                    } else {
+                        console.log('Balance for User already exists in database');
+                    }
+                });
 
                 profile.accessToken = accessToken;
             }
@@ -61,6 +76,8 @@ passport.use(new FacebookStrategy({
         });
     }))
 );
+
+
 
 // app.set('views', __dirname + '/views');
 // app.set('view engine', 'ejs');
@@ -108,7 +125,10 @@ app.get('/api/account', (req, res) => {
         return res.end('{}');
     }
 
-    pool.query(`SELECT * from Users where id=${req.user.id}`, (err, rows) => {
+    /*    pool.query(`SELECT user from Users where id=${req.user.id}` , (err, rows) => {
+            res.end(JSON.stringify({ user: req.user, finance: { balance: rows && rows[0] && rows[0].balance }}));
+        })*/
+    pool.query(`SELECT * from Users,Transactions WHERE Users.id=Transactions.id`, (err, rows) => {
         res.end(JSON.stringify({ user: req.user, finance: { balance: rows && rows[0] && rows[0].balance }}));
     })
 });
@@ -172,6 +192,7 @@ app.get('/api/stocks/ticks/:tick', ensureAuthenticated, (req, res) => {
 
 app.param('price', /^\d+\.?\d*$/i)
 
+
 // ========= Работа с тиками ==========
 app.get('/api/stocks/trades/buy/:price', ensureAuthenticated, (req, res) => {
     // TODO: сделать общее решение для локальной разработки.
@@ -185,9 +206,58 @@ app.get('/api/stocks/trades/buy/:price', ensureAuthenticated, (req, res) => {
         return res.end('{}');
     }
 
-    pool.query(`UPDATE Users SET balance = balance - '${req.params.price}' WHERE id = '${req.user.id}'`);
-    return res.end(JSON.stringify({}));
+    const sql = `SELECT balance FROM Transactions  WHERE id='${req.user.id}' AND balance>=${req.params.price}`;
+    const transaction = `UPDATE Transactions SET stock='SBER', commission=0, price=${req.params.price}+commission, balance = balance - price WHERE id='${req.user.id}'`
+    const logs = `INSERT INTO Transactions_logs(id,balance,price,commission,stock) SELECT id,balance,price,commission,stock FROM Transactions WHERE id='${req.user.id}')`
+
+    pool.getConnection(function (err, connection) {
+
+        connection.query(sql, (err, results) => {
+            if (err) throw err;
+            if (results && results.length === 0) {
+                connection.release();
+                console.log('Not enough money');
+            } else {
+                connection.beginTransaction(function (err) {
+                    if (err) {                  //Transaction Error (Rollback and release connection)
+                        connection.rollback(function () {
+                            connection.release();
+                            console.log('connection is lost')
+                            //Failure
+                        });
+                    } else {
+                        connection.query(transaction, function (err, results) {
+                            if (err) {          //Query Error (Rollback and release connection)
+                                connection.rollback(function () {
+                                    connection.release();
+                                    console.log('no money');
+                                });
+                            } else {
+                                connection.commit(function (err) {
+                                    if (err) {
+                                        connection.rollback(function () {
+                                            connection.release();
+                                            console.log('lost!');
+                                        });
+                                    } else {
+                                        connection.release();
+                                        console.log(`'balance update - '${req.params.price}`);
+                                        console.log('success!');
+                                        connection.query(logs, (err, results) => {
+                                            console.log('Transactions logs added');
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    });
 });
+
+
 
 app.get('/api/stocks/trades/sell/:price', ensureAuthenticated, (req, res) => {
     // TODO: сделать общее решение для локальной разработки.
@@ -201,8 +271,55 @@ app.get('/api/stocks/trades/sell/:price', ensureAuthenticated, (req, res) => {
         return res.end('{}');
     }
 
-    pool.query(`UPDATE Users SET balance = balance + '${req.params.price}' WHERE id = '${req.user.id}'`);
-    return res.end(JSON.stringify({}));
+    const sql = `SELECT balance FROM Transactions  WHERE id='${req.user.id}' AND balance>=${req.params.price}`;
+    const transaction = `UPDATE Transactions SET stock='SBER', commission=0, price=${req.params.price}+commission, balance = balance + price WHERE id='${req.user.id}'`
+    const logs = `INSERT INTO Transactions_logs(id,balance,price,commission,stock) SELECT id,balance,price,commission,stock FROM Transactions WHERE id='${req.user.id}')`
+
+    pool.getConnection(function (err, connection) {
+
+        connection.query(sql, (err, results) => {
+            if (err) throw err;
+            if (results && results.length === 0) {
+                connection.release();
+                console.log('Not enough money');
+            } else {
+                connection.beginTransaction(function (err) {
+                    if (err) {                  //Transaction Error (Rollback and release connection)
+                        connection.rollback(function () {
+                            connection.release();
+                            console.log('connection is lost')
+                            //Failure
+                        });
+                    } else {
+                        connection.query(transaction, function (err, results) {
+                            if (err) {          //Query Error (Rollback and release connection)
+                                connection.rollback(function () {
+                                    connection.release();
+                                    console.log('no money');
+                                });
+                            } else {
+                                connection.commit(function (err) {
+                                    if (err) {
+                                        connection.rollback(function () {
+                                            connection.release();
+                                            console.log('lost!');
+                                        });
+                                    } else {
+                                        connection.release();
+                                        console.log(`'balance update + '${req.params.price}`);
+                                        console.log('success!');
+                                        connection.query(logs, (err, results) => {
+                                            console.log('Transactions logs added');
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    });
 });
 
 function ensureAuthenticated(req, res, next) {
@@ -210,5 +327,8 @@ function ensureAuthenticated(req, res, next) {
     // res.redirect('/user/login')
     return next();
 }
+
+// Transaction
+
 
 app.listen(3001);
