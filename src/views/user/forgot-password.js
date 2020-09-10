@@ -1,3 +1,4 @@
+/*
 import React, { Component } from 'react';
 import {
     Row, Card, CardTitle, Label, FormGroup, Button,
@@ -149,3 +150,4 @@ export default connect(
         forgotPassword,
     },
 )(ForgotPassword);
+*/
