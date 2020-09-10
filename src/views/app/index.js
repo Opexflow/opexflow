@@ -1,53 +1,43 @@
-import React, { Component, Suspense } from 'react';
-import {
-    Route, withRouter, Switch, Redirect,
-} from 'react-router-dom';
-import { connect } from 'react-redux';
+import React, { Component } from "react";
+import { Route, withRouter, Switch, Redirect } from "react-router-dom";
+import { connect } from "react-redux";
 
-import AppLayout from '../../layout/AppLayout';
-
-const Gogo = React.lazy(() => import(/* webpackChunkName: "viwes-gogo" */ './gogo'));
-const SecondMenu = React.lazy(() => import(/* webpackChunkName: "viwes-second-menu" */ './second-menu'));
-const BlankPage = React.lazy(() => import(/* webpackChunkName: "viwes-blank-page" */ './blank-page'));
+import AppLayout from "../../layout/AppLayout";
+import dashboards from "./dashboards";
+import pages from "./pages";
+import applications from "./applications";
+import ui from "./ui";
+import menu from "./menu";
+import blankPage from "./blank-page";
 
 class App extends Component {
-    render() {
-        const { match } = this.props;
+  render() {
+    const { match } = this.props;
 
-        return (
-            <AppLayout>
-                <div className="dashboard-wrapper">
-                    <Suspense fallback={<div className="loading" />}>
-                        <Switch>
-                            <Redirect exact from={`${match.url}/`} to={`${match.url}/gogo`} />
-                            <Route
-                                path={`${match.url}/gogo`}
-                                render={props => <Gogo {...props} />}
-                          />
-                            <Route
-                                path={`${match.url}/second-menu`}
-                                render={props => <SecondMenu {...props} />}
-                          />
-                            <Route
-                                path={`${match.url}/blank-page`}
-                                render={props => <BlankPage {...props} />}
-                          />
-                            <Redirect to="/error" />
-                      </Switch>
-                  </Suspense>
-              </div>
-          </AppLayout>
-        );
-    }
+    return (
+      <AppLayout>
+        <Switch>
+          <Redirect exact from={`${match.url}/`} to={`${match.url}/dashboards`} />
+          <Route path={`${match.url}/dashboards`} component={dashboards} />
+          <Route path={`${match.url}/applications`} component={applications} />
+          <Route path={`${match.url}/pages`} component={pages} />
+          <Route path={`${match.url}/ui`} component={ui} />
+          <Route path={`${match.url}/menu`} component={menu} />
+          <Route path={`${match.url}/blank-page`} component={blankPage} />
+          <Redirect to="/error" />
+        </Switch>
+      </AppLayout>
+    );
+  }
 }
 const mapStateToProps = ({ menu }) => {
-    const { containerClassnames } = menu;
-    return { containerClassnames };
+  const { containerClassnames } = menu;
+  return { containerClassnames };
 };
 
 export default withRouter(
-    connect(
-        mapStateToProps,
-        {},
-    )(App),
+  connect(
+    mapStateToProps,
+    {}
+  )(App)
 );

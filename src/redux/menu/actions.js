@@ -3,63 +3,70 @@ import {
     MENU_CONTAINER_ADD_CLASSNAME,
     MENU_CLICK_MOBILE_MENU,
     MENU_CHANGE_DEFAULT_CLASSES,
-    MENU_CHANGE_HAS_SUB_ITEM_STATUS,
+    MENU_CHANGE_HAS_SUB_ITEM_STATUS
 } from '../actions';
 
-export const changeSelectedMenuHasSubItems = payload => (
-    {
-        type: MENU_CHANGE_HAS_SUB_ITEM_STATUS,
-        payload,
-    }
-);
+export const changeSelectedMenuHasSubItems = (payload) => {
+    return (
+        {
+            type: MENU_CHANGE_HAS_SUB_ITEM_STATUS,
+            payload: payload
+        }
+    )
+}
 
-export const changeDefaultClassnames = strCurrentClasses => (
-    {
-        type: MENU_CHANGE_DEFAULT_CLASSES,
-        payload: strCurrentClasses,
-    }
-);
+export const changeDefaultClassnames = (strCurrentClasses) => {
+    return (
+        {
+            type: MENU_CHANGE_DEFAULT_CLASSES,
+            payload: strCurrentClasses
+        }
+    )
+}
 
 export const addContainerClassname = (classname, strCurrentClasses) => {
-    const newClasses = !strCurrentClasses.indexOf(classname) > -1 ? `${strCurrentClasses } ${ classname}` : strCurrentClasses;
+    const newClasses = !strCurrentClasses.indexOf(classname) > -1 ? strCurrentClasses + ' ' + classname : strCurrentClasses;
     return (
         {
             type: MENU_CONTAINER_ADD_CLASSNAME,
-            payload: newClasses,
+            payload: newClasses
         }
-    );
-};
+    )
+}
 
-export const clickOnMobileMenu = strCurrentClasses => {
+export const clickOnMobileMenu = (strCurrentClasses) => {
     const currentClasses = strCurrentClasses ? strCurrentClasses.split(' ').filter(x => x !== '' && x !== 'sub-show-temporary') : '';
     let nextClasses = '';
     if (currentClasses.includes('main-show-temporary')) {
         nextClasses = (currentClasses.filter(x => x !== 'main-show-temporary')).join(' ');
     } else {
-        nextClasses = `${currentClasses.join(' ') } main-show-temporary`;
+        nextClasses = currentClasses.join(' ') + ' main-show-temporary';
     }
     return (
         {
             type: MENU_CLICK_MOBILE_MENU,
-            payload: { containerClassnames: nextClasses, menuClickCount: 0 },
+            payload: { containerClassnames: nextClasses, menuClickCount: 0 }
         }
-    );
-};
+    )
+}
 
-export const setContainerClassnames = (clickIndex, strCurrentClasses, selectedMenuHasSubItems) => {
+export const setContainerClassnames = (clickIndex, strCurrentClasses,selectedMenuHasSubItems) => {
     const currentClasses = strCurrentClasses ? strCurrentClasses.split(' ').filter(x => x !== '') : '';
     let nextClasses = '';
     if (!selectedMenuHasSubItems) {
-        if (currentClasses.includes('menu-default') && (clickIndex % 4 === 0 || clickIndex % 4 === 3)) {
-            clickIndex = 1;
+        if (currentClasses.includes("menu-default") && (clickIndex % 4 === 0 || clickIndex % 4 === 3)) {
+          clickIndex=1;
         }
-        if (currentClasses.includes('menu-sub-hidden') && (clickIndex % 4 === 2)) {
-            clickIndex = 0;
+        if (currentClasses.includes("menu-sub-hidden") && (clickIndex % 4 === 2)) {
+          clickIndex=0;
         }
-        if (currentClasses.includes('menu-hidden') && (clickIndex % 4 === 2 || clickIndex % 4 === 3)) {
-            clickIndex = 0;
-        }
-    }
+        if (currentClasses.includes("menu-hidden") && (clickIndex % 4 === 2 || clickIndex % 4 === 3 )) {
+            clickIndex=0;
+          }
+
+      }
+
+
 
     if (clickIndex % 4 === 0) {
         if (currentClasses.includes('menu-default') && currentClasses.includes('menu-sub-hidden')) {
@@ -109,7 +116,7 @@ export const setContainerClassnames = (clickIndex, strCurrentClasses, selectedMe
     return (
         {
             type: MENU_SET_CLASSNAMES,
-            payload: { containerClassnames: nextClasses, menuClickCount: clickIndex },
+            payload: { containerClassnames: nextClasses, menuClickCount: clickIndex }
         }
-    );
-};
+    )
+}
