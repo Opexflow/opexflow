@@ -7,8 +7,8 @@ exports.default = function(func, wait, immediate) {
     _arguments = arguments;
     let timeout = void 0;
     return function() {
-        const context; let 
-            args = _arguments;
+        const context = undefined;
+        let args = _arguments;
         const later = function later() {
             timeout = null;
             if (!immediate) func.apply(context, args);

@@ -18,7 +18,7 @@ const ViewMain = React.lazy(() => import(/* webpackChunkName: "views" */ './view
 const ViewApp = React.lazy(() => import(/* webpackChunkName: "views-app" */ './views/app'));
 const ViewUser = React.lazy(() => import(/* webpackChunkName: "views-user" */ './views/user'));
 const ViewError = React.lazy(() => import(/* webpackChunkName: "views-error" */ './views/error'));
-const BotsSber = React.lazy(() => import(/* webpackChunkName: "bots-sber" */ './views/bots/sber'));
+const BotsSber = React.lazy(() => import(/* webpackChunkName: "bots-sber" */ './views/app/bots/sber'));
 
 const AuthRoute = ({ component: Component, authUser, ...rest }) => (
     <Route
@@ -75,7 +75,7 @@ class App extends Component {
                                       render={props => <ViewUser {...props} />}
                                     />
                                   <Route
-                                      path="/bots/sber"
+                                      path="/app/bots/sber"
                                       render={props => <BotsSber {...props} />}
                                     />
                                   <Route

@@ -5,7 +5,7 @@ import { Card, CardBody, CardTitle } from 'reactstrap';
 import IntlMessages from '../../helpers/IntlMessages';
 import data from '../../data/logs';
 
-const Logs = () => (
+const Logs = (params = [{ logsData: []}]) => (
     <div>
     <Card>
           <CardBody>
@@ -18,7 +18,7 @@ const Logs = () => (
                     >
                       <table className="table table-sm table-borderless">
                           <tbody>
-                              {data.map((log, index) => (
+                              {params && params.logsData.map((log, index) => (
                                     <tr key={index}>
                                         <td>
                                             <span

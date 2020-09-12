@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 
 import AppLayout from '../../layout/AppLayout';
 import dashboards from './dashboards';
+import bots from './bots';
 import pages from './pages';
 import applications from './applications';
 import ui from './ui';
@@ -19,8 +20,9 @@ class App extends Component {
         return (
             <AppLayout>
                 <Switch>
-                    <Redirect exact from={`${match.url}/`} to={`${match.url}/dashboards`} />
+                    <Redirect exact from={`${match.url}/`} to={`${match.url}/bots`} />
                     <Route path={`${match.url}/dashboards`} component={dashboards} />
+                    <Route path={`${match.url}/bots`} component={bots} />
                     <Route path={`${match.url}/applications`} component={applications} />
                     <Route path={`${match.url}/pages`} component={pages} />
                     <Route path={`${match.url}/ui`} component={ui} />
