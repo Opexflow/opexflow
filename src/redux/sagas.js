@@ -6,11 +6,11 @@ import surveyListSagas from './surveyList/saga';
 import surveyDetailSagas from './surveyDetail/saga';
 
 export default function* rootSaga(getState) {
-  yield all([
-    authSagas(),
-    todoSagas(),
-    chatSagas(),
-    surveyListSagas(),
-    surveyDetailSagas()
-  ]);
+    yield all([
+        authSagas(),
+        todoSagas(),
+        chatSagas(),
+        surveyListSagas(),
+        surveyDetailSagas(),
+    ]);
 }

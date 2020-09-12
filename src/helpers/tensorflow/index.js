@@ -17,8 +17,8 @@
 
 import * as tf from '@tensorflow/tfjs';
 
-import {ALL_ACTIONS, getStateTensor, SnakeGame} from './snake_game';
-import {renderSnakeGame} from './snake_graphics';
+import { ALL_ACTIONS, getStateTensor, SnakeGame } from './snake_game';
+import { renderSnakeGame } from './snake_graphics';
 
 const gameCanvas = document.getElementById('game-canvas');
 
@@ -40,16 +40,16 @@ let autoPlayIntervalJob;
 
 /** Reset the game state. */
 async function reset() {
-  if (game == null) {
-    return;
-  }
-  game.reset();
-  await calcQValuesAndBestAction();
-  renderSnakeGame(gameCanvas, game,
-      showQValuesCheckbox.checked ? currentQValues : null);
-  gameStatusSpan.textContent = 'Game started.';
-  stepButton.disabled = false;
-  autoPlayStopButton.disabled = false;
+    if (game == null) {
+        return;
+    }
+    game.reset();
+    await calcQValuesAndBestAction();
+    renderSnakeGame(gameCanvas, game,
+        showQValuesCheckbox.checked ? currentQValues : null);
+    gameStatusSpan.textContent = 'Game started.';
+    stepButton.disabled = false;
+    autoPlayStopButton.disabled = false;
 }
 
 /**
@@ -62,28 +62,28 @@ async function reset() {
  * - Render the game in the canvas.
  */
 async function step() {
-  const {reward, done, fruitEaten} = game.step(bestAction);
-  invalidateQValuesAndBestAction();
-  cumulativeReward += reward;
-  if (fruitEaten) {
-    cumulativeFruits++;
-  }
-  gameStatusSpan.textContent =
-      `Reward=${cumulativeReward.toFixed(1)}; Fruits=${cumulativeFruits}`;
-  if (done) {
-    gameStatusSpan.textContent += '. Game Over!';
-    cumulativeReward = 0;
-    cumulativeFruits = 0;
-    if (autoPlayIntervalJob) {
-      clearInterval(autoPlayIntervalJob);
-      autoPlayStopButton.click();
+    const { reward, done, fruitEaten } = game.step(bestAction);
+    invalidateQValuesAndBestAction();
+    cumulativeReward += reward;
+    if (fruitEaten) {
+        cumulativeFruits++;
     }
-    autoPlayStopButton.disabled = true;
-    stepButton.disabled = true;
-  }
-  await calcQValuesAndBestAction();
-  renderSnakeGame(gameCanvas, game,
-      showQValuesCheckbox.checked ? currentQValues : null);
+    gameStatusSpan.textContent =
+      `Reward=${cumulativeReward.toFixed(1)}; Fruits=${cumulativeFruits}`;
+    if (done) {
+        gameStatusSpan.textContent += '. Game Over!';
+        cumulativeReward = 0;
+        cumulativeFruits = 0;
+        if (autoPlayIntervalJob) {
+            clearInterval(autoPlayIntervalJob);
+            autoPlayStopButton.click();
+        }
+        autoPlayStopButton.disabled = true;
+        stepButton.disabled = true;
+    }
+    await calcQValuesAndBestAction();
+    renderSnakeGame(gameCanvas, game,
+        showQValuesCheckbox.checked ? currentQValues : null);
 }
 
 let currentQValues;
@@ -91,88 +91,88 @@ let bestAction;
 
 /** Calculate the current Q-values and the best action. */
 async function calcQValuesAndBestAction() {
-  if (currentQValues != null) {
-    return;
-  }
-  tf.tidy(() => {
-    const stateTensor = getStateTensor(game.getState(), game.height, game.width);
-    const predictOut = qNet.predict(stateTensor);
-    currentQValues = predictOut.dataSync();
-    bestAction = ALL_ACTIONS[predictOut.argMax(-1).dataSync()[0]];
-  });
+    if (currentQValues != null) {
+        return;
+    }
+    tf.tidy(() => {
+        const stateTensor = getStateTensor(game.getState(), game.height, game.width);
+        const predictOut = qNet.predict(stateTensor);
+        currentQValues = predictOut.dataSync();
+        bestAction = ALL_ACTIONS[predictOut.argMax(-1).dataSync()[0]];
+    });
 }
 
 function invalidateQValuesAndBestAction() {
-  currentQValues = null;
-  bestAction = null;
+    currentQValues = null;
+    bestAction = null;
 }
 
 const LOCAL_MODEL_URL = './dqn/model.json';
 const REMOTE_MODEL_URL = 'https://storage.googleapis.com/tfjs-examples/snake-dqn/models/model.json';
 
 function enableGameButtons() {
-  autoPlayStopButton.disabled = false;
-  stepButton.disabled = false;
-  resetButton.disabled = false;
+    autoPlayStopButton.disabled = false;
+    stepButton.disabled = false;
+    resetButton.disabled = false;
 }
 
 async function initGame() {
-  game = new SnakeGame({
-    height: 9,
-    width: 9,
-    numFruits: 1,
-    initLen: 2
-  });
+    game = new SnakeGame({
+        height: 9,
+        width: 9,
+        numFruits: 1,
+        initLen: 2,
+    });
 
-  // Warm up qNet.
-  for (let i = 0; i < 3; ++i) {
-    qNet.predict(getStateTensor(game.getState(), game.height, game.width));
-  }
-
-  await reset();
-
-  stepButton.addEventListener('click', step);
-
-  autoPlayStopButton.addEventListener('click', () => {
-    if (autoPlaying) {
-      autoPlayStopButton.textContent = 'Auto Play';
-      if (autoPlayIntervalJob) {
-        clearInterval(autoPlayIntervalJob);
-      }
-    } else {
-      autoPlayIntervalJob = setInterval(() => {
-        step(game, qNet);
-      }, 100);
-      autoPlayStopButton.textContent = 'Stop';
+    // Warm up qNet.
+    for (let i = 0; i < 3; ++i) {
+        qNet.predict(getStateTensor(game.getState(), game.height, game.width));
     }
-    autoPlaying = !autoPlaying;
-    stepButton.disabled = autoPlaying;
-  });
 
-  resetButton.addEventListener('click',  () => reset(game));
+    await reset();
+
+    stepButton.addEventListener('click', step);
+
+    autoPlayStopButton.addEventListener('click', () => {
+        if (autoPlaying) {
+            autoPlayStopButton.textContent = 'Auto Play';
+            if (autoPlayIntervalJob) {
+                clearInterval(autoPlayIntervalJob);
+            }
+        } else {
+            autoPlayIntervalJob = setInterval(() => {
+                step(game, qNet);
+            }, 100);
+            autoPlayStopButton.textContent = 'Stop';
+        }
+        autoPlaying = !autoPlaying;
+        stepButton.disabled = autoPlaying;
+    });
+
+    resetButton.addEventListener('click', () => reset(game));
 }
 
 (async function() {
-  try {
-    qNet = await tf.loadLayersModel(LOCAL_MODEL_URL);
-    loadHostedModelButton.textContent = `Loaded model from ${LOCAL_MODEL_URL}`;
-    initGame();
-    enableGameButtons();
-  } catch (err) {
-    console.log('Loading local model failed.');
-    loadHostedModelButton.disabled = false;
-  }
-
-  loadHostedModelButton.addEventListener('click', async () => {
     try {
-      qNet = await tf.loadLayersModel(REMOTE_MODEL_URL);
-      loadHostedModelButton.textContent = `Loaded hosted model.`;
-      loadHostedModelButton.disabled = true;
-      initGame();
-      enableGameButtons();
+        qNet = await tf.loadLayersModel(LOCAL_MODEL_URL);
+        loadHostedModelButton.textContent = `Loaded model from ${LOCAL_MODEL_URL}`;
+        initGame();
+        enableGameButtons();
     } catch (err) {
-      loadHostedModelButton.textContent = 'Failed to load model.'
-      loadHostedModelButton.disabled = true;
+        console.log('Loading local model failed.');
+        loadHostedModelButton.disabled = false;
     }
-  });
+
+    loadHostedModelButton.addEventListener('click', async () => {
+        try {
+            qNet = await tf.loadLayersModel(REMOTE_MODEL_URL);
+            loadHostedModelButton.textContent = 'Loaded hosted model.';
+            loadHostedModelButton.disabled = true;
+            initGame();
+            enableGameButtons();
+        } catch (err) {
+            loadHostedModelButton.textContent = 'Failed to load model.';
+            loadHostedModelButton.disabled = true;
+        }
+    });
 })();

@@ -15,30 +15,30 @@
  * =============================================================================
  */
 
-import {getRandomInteger, getRandomIntegers} from "./utils";
+import { getRandomInteger, getRandomIntegers } from './utils';
 
 describe('getRandomInteger()', () => {
-  it('max > min', () => {
-    const values = [];
-    for (let i = 0; i < 10; ++i) {
-      const v = getRandomInteger(3, 6);
-      expect(v).toBeGreaterThanOrEqual(3);
-      expect(v).toBeLessThan(6);
-      if (values.indexOf(v) === -1) {
-          values.push(v);
-      }
-    }
-    expect(values.length).toBeGreaterThan(1);
-  });
+    it('max > min', () => {
+        const values = [];
+        for (let i = 0; i < 10; ++i) {
+            const v = getRandomInteger(3, 6);
+            expect(v).toBeGreaterThanOrEqual(3);
+            expect(v).toBeLessThan(6);
+            if (values.indexOf(v) === -1) {
+                values.push(v);
+            }
+        }
+        expect(values.length).toBeGreaterThan(1);
+    });
 });
 
 describe('getRandomIntegers()', () => {
-  it('max > min', () => {
-    const values = getRandomIntegers(3, 6, 10);
-    expect(values.length).toEqual(10);
-    values.forEach(v => {
-      expect(v).toBeGreaterThanOrEqual(3);
-      expect(v).toBeLessThan(6);
+    it('max > min', () => {
+        const values = getRandomIntegers(3, 6, 10);
+        expect(values.length).toEqual(10);
+        values.forEach(v => {
+            expect(v).toBeGreaterThanOrEqual(3);
+            expect(v).toBeLessThan(6);
+        });
     });
-  });
 });

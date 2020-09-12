@@ -8,13 +8,13 @@ import surveyListApp from './surveyList/reducer';
 import surveyDetailApp from './surveyDetail/reducer';
 
 const reducers = combineReducers({
-  menu,
-  settings,
-  authUser,
-  todoApp,
-  chatApp,
-  surveyListApp,
-  surveyDetailApp
+    menu,
+    settings,
+    authUser,
+    todoApp,
+    chatApp,
+    surveyListApp,
+    surveyDetailApp,
 });
 
 export default reducers;

@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
 import { Formik, Form, Field } from 'formik';
 
 import {
@@ -8,8 +8,8 @@ import {
     FormGroup,
     Label,
     Button,
-} from "reactstrap";
-import { Colxx } from "../../components/common/CustomBootstrap";
+} from 'reactstrap';
+import { Colxx } from '../../components/common/CustomBootstrap';
 
 class FormikBasicFormLevel extends Component {
     constructor(props) {
@@ -23,7 +23,7 @@ class FormikBasicFormLevel extends Component {
     }
 
     validate(values) {
-        let errors = {};
+        const errors = {};
 
         if (!values.email) {
             errors.email = 'Please enter your email address';
@@ -41,38 +41,39 @@ class FormikBasicFormLevel extends Component {
 
     render() {
         return (
-            <Row className="mb-4">
-                <Colxx xxs="12">
-                    <Card>
-                        <CardBody>
-                            <h6 className="mb-4">Form Level Validation</h6>
-                            <Formik
-                                validate={this.validate}
-                                initialValues={{
+          <Row className="mb-4">
+              <Colxx xxs="12">
+                  <Card>
+                      <CardBody>
+                          <h6 className="mb-4">Form Level Validation</h6>
+                          <Formik
+                              validate={this.validate}
+                              initialValues={{
                                     name: '',
                                     email: '',
                                 }}
-                                onSubmit={this.handleSubmit}>
-                                {({ errors, touched, isValidating }) => (
-                                    <Form className="av-tooltip tooltip-label-right">
+                              onSubmit={this.handleSubmit}
+                            >
+                              {({ errors, touched, isValidating }) => (
+                                  <Form className="av-tooltip tooltip-label-right">
 
-                                        <FormGroup>
-                                            <Label>
-                                                Name
+                                      <FormGroup>
+                                          <Label>
+                                              Name
                                             </Label>
-                                            <Field className="form-control" name="name" />
-                                            {errors.name && touched.name && <div className="invalid-feedback d-block">{errors.name}</div>}
+                                          <Field className="form-control" name="name" />
+                                          {errors.name && touched.name && <div className="invalid-feedback d-block">{errors.name}</div>}
                                         </FormGroup>
 
-                                        <FormGroup>
-                                            <Label>
-                                                Email
+                                      <FormGroup>
+                                          <Label>
+                                              Email
                                             </Label>
-                                            <Field className="form-control" name="email" />
-                                            {errors.email && touched.email && <div className="invalid-feedback d-block">{errors.email}</div>}
+                                          <Field className="form-control" name="email" />
+                                          {errors.email && touched.email && <div className="invalid-feedback d-block">{errors.email}</div>}
                                         </FormGroup>
 
-                                        <Button color="primary" type="submit">Submit</Button>
+                                      <Button color="primary" type="submit">Submit</Button>
                                     </Form>
                                 )}
                             </Formik>
@@ -80,9 +81,8 @@ class FormikBasicFormLevel extends Component {
                     </Card>
                 </Colxx>
             </Row>
-        )
+        );
     }
 }
 
 export default FormikBasicFormLevel;
-

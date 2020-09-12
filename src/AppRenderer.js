@@ -36,7 +36,7 @@ if (window.location.pathname && window.location.pathname !== '/user/login') {
                       <Provider store={configureStore({ authUser: { user: { ...response }, finance, FB } })}>
                           <Suspense fallback={<div className="loading" />}>
                               <App />
-                          </Suspense>
+                            </Suspense>
                         </Provider>,
                         document.getElementById('root'),
                     );

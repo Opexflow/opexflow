@@ -16,6 +16,6 @@
  */
 
 const jasmine_util = require('@tensorflow/tfjs-core/dist/jasmine_util');
-const runTests = require('../test_util').runTests;
+const { runTests } = require('../test_util');
 
 runTests(jasmine_util, ['./*test.js']);

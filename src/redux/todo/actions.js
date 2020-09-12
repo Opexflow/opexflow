@@ -8,55 +8,54 @@ import {
     TODO_ADD_ITEM,
     TODO_ADD_ITEM_SUCCESS,
     TODO_ADD_ITEM_ERROR,
-    TODO_SELECTED_ITEMS_CHANGE
+    TODO_SELECTED_ITEMS_CHANGE,
 } from '../actions';
 
-
 export const getTodoList = () => ({
-    type: TODO_GET_LIST
+    type: TODO_GET_LIST,
 });
 
-export const getTodoListSuccess = (items) => ({
+export const getTodoListSuccess = items => ({
     type: TODO_GET_LIST_SUCCESS,
-    payload: items
+    payload: items,
 });
 
-export const getTodoListError = (error) => ({
+export const getTodoListError = error => ({
     type: TODO_GET_LIST_ERROR,
-    payload: error
+    payload: error,
 });
 
 export const getTodoListWithFilter = (column, value) => ({
     type: TODO_GET_LIST_WITH_FILTER,
-    payload: { column, value }
+    payload: { column, value },
 });
 
-export const getTodoListWithOrder = (column) => ({
+export const getTodoListWithOrder = column => ({
     type: TODO_GET_LIST_WITH_ORDER,
-    payload: column
+    payload: column,
 });
 
-export const getTodoListSearch = (keyword) => ({
+export const getTodoListSearch = keyword => ({
     type: TODO_GET_LIST_SEARCH,
-    payload: keyword
+    payload: keyword,
 });
 
-export const addTodoItem = (item) => ({
+export const addTodoItem = item => ({
     type: TODO_ADD_ITEM,
-    payload: item
+    payload: item,
 });
 
-export const addTodoItemSuccess = (items) => ({
+export const addTodoItemSuccess = items => ({
     type: TODO_ADD_ITEM_SUCCESS,
-    payload: items
+    payload: items,
 });
 
-export const addTodoItemError = (error) => ({
+export const addTodoItemError = error => ({
     type: TODO_ADD_ITEM_ERROR,
-    payload: error
+    payload: error,
 });
 
-export const selectedTodoItemsChange = (selectedItems) => ({
+export const selectedTodoItemsChange = selectedItems => ({
     type: TODO_SELECTED_ITEMS_CHANGE,
-    payload: selectedItems
+    payload: selectedItems,
 });

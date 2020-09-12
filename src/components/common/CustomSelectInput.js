@@ -1,11 +1,11 @@
-import React from "react";
-import { components } from "react-select";
+import React from 'react';
+import { components } from 'react-select';
 
 const CustomSelectInput = props => {
-  var customProps = Object.assign({}, props);
-  delete customProps.autoCorrect;
-  delete customProps.autoCapitalize;
-  return <components.Input {...customProps} />;
+    const customProps = { ...props };
+    delete customProps.autoCorrect;
+    delete customProps.autoCapitalize;
+    return <components.Input {...customProps} />;
 };
 
-export default CustomSelectInput
+export default CustomSelectInput;
