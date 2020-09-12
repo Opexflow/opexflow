@@ -1,16 +1,25 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Component } from 'react';
 import { Row, Button } from 'reactstrap';
 import Chart from 'react-apexcharts';
 import ApexCharts from 'apexcharts';
-import IntlMessages from '../../helpers/IntlMessages';
-import { Colxx, Separator } from '../../components/common/CustomBootstrap';
-import Breadcrumb from '../../containers/navs/Breadcrumb';
+import IntlMessages from '../../../helpers/IntlMessages';
+import { Colxx, Separator } from '../../../components/common/CustomBootstrap';
+import Breadcrumb from '../../../containers/navs/Breadcrumb';
+import IconCard from '../../../components/cards/IconCard';
+import Logs from '../../../containers/dashboards/Logs'
 
-export default class Start extends PureComponent {    
+export default class Sber extends Component {    
     constructor(props) {
         super(props);
 
         this.state = {
+            balance: 10000,
+            stocks: 0,
+            maxBuyStocks: 40,
+            lastStockPrice: 0,
+            commission: 0.05,
+            logs: [],
+
             series: [{
                 data: [],
             }],
@@ -49,36 +58,7 @@ export default class Start extends PureComponent {
 
     componentDidUpdate() {
         if(!this.state.interactive) {
-            this.getChartData();
-            this.interval && window.clearInterval(this.interval);
-        } else {
-            if (!this.interval) {
-                this.interval = window.setInterval(() => {
-                    const dataBuff = this.state.dataBuff.slice(0);
-                    const data = this.state.series[0].data.slice(0);
-                    let nextData;
-
-                    if (this.state.dataBuff.length) {
-                        nextData = dataBuff.shift();
-                        data.push(nextData);
-
-                        this.setState({
-                            dataBuff,
-                            series: [{
-                                data
-                            }] 
-                        });
-                    } else {
-                        window.clearInterval(this.interval);
-                    }
-                }, 250);
-            }
-        }
-
-        if (this.state.series[0].data && this.state.series[0].data.length) {
-            ApexCharts.exec('ticks_chart', 'render', [{
-               data: this.state.series[0].data
-            }])
+            // this.getChartData();
         }
     }
 
@@ -168,6 +148,9 @@ export default class Start extends PureComponent {
     }
 
     render() {
+        const stockPrice = this.state.series[0].data.length && this.state.series[0].data[this.state.series[0].data.length-1].y[1];
+        const time = this.state.series[0].data.length && this.state.series[0].data[this.state.series[0].data.length-1].x;
+
         return (
             <>
                 <Row>
@@ -177,19 +160,16 @@ export default class Start extends PureComponent {
                   </Colxx>
               </Row>
                 <Row>
-                    <Colxx xxs="12" className="mb-4">
+                    {/* <Colxx xxs="12" className="mb-4">
                         <p><IntlMessages id="menu.start" /></p>
                         {[
-                          //  '1min',
                             '5min',
-                            '10min',
                         ].map((t, i) => 
                             <Button
                                 variant="secondary"
                                 key={i}
                                 onClick={() => {
                                     window.localStorage.setItem('ticks', t);
-                                    this.interval && window.clearInterval(this.interval);
                                     this.setState({
                                         currentTicks: t,
                                         interactive: false,
@@ -201,26 +181,7 @@ export default class Start extends PureComponent {
                                 {t}
                             </Button>
                         )}
-                        <Button
-                            variant="secondary"
-                            onClick={() => {
-                                if (!this.state.series[0].data.length || this.state.interactive) {
-                                    return;
-                                }
-
-                                this.setState({
-                                    interactive: true,
-                                    dataBuff: this.state.series[0].data.slice(parseInt(this.state.series[0].data.length / 4, 10) + 1),
-                                    series: [{
-                                        data: this.state.series[0].data.slice(0, parseInt(this.state.series[0].data.length / 4, 10))
-                                    }] 
-                                });
-                            }}
-                            size="lg"
-                        >
-                            Interactive
-                        </Button>
-                  </Colxx>
+                  </Colxx> */}
               </Row>
                 <Row>
                     <Colxx xxs="12" className="mb-34">
@@ -236,24 +197,136 @@ export default class Start extends PureComponent {
               </Row>
 
               <Row>
-              <Button
+              <IconCard
+                    title="Balance"
+                    icon=""
+                    value={this.state.balance.toFixed(2)}
+                  />
+              <IconCard
+                    title="Balance with stocks"
+                    icon=""
+                    value={(this.state.balance + this.state.stocks * stockPrice).toFixed(2)}
+                  />
+              <IconCard
+                    title="Stocks delta"
+                    icon=""
+                    value={(this.state.stocks * stockPrice - this.state.stocks * this.state.lastStockPrice).toFixed(2)}
+                  />
+              <IconCard
+                    title="Current price"
+                    icon=""
+                    value={stockPrice}
+                  />
+                <IconCard
+                    title="Stocks count"
+                    icon=""
+                    value={this.state.stocks}
+                  />
+                <IconCard
+                    title="Commission"
+                    icon=""
+                    value={this.state.commission}
+                  />
+                </Row>
+                <Row><br/></Row>
+                <Row>
+              {!this.state.inProgress && <Button
                     variant="secondary"
                     onClick={() => {
-                        
+                        let data;
+
+                        this._savedData = data = this.state.series[0].data.slice(0);
+                        let i = 1;
+                        this._interval = window.setInterval(() => {
+                            let slicedData = data.slice(0, i);
+                            let inProgress = slicedData.length !== data.length;
+
+                            if (!inProgress) {
+                                window.clearInterval(this._interval);
+                            }
+
+                            this.setState({
+                                series: [
+                                    {
+                                        data: slicedData
+                                    }
+                                ],
+                                inProgress
+                            })
+                            ++i;
+                        }, 500);
                     }}
                     size="lg"
                 >
                     Start
-                </Button>
-                <Button
+                </Button>}
+                {this.state.inProgress && <Button
                     variant="secondary"
                     onClick={() => {
-                        
+                        window.clearInterval(this._interval);
+                        this.setState({
+                            series: [
+                                {
+                                    data: this._savedData
+                                }
+                            ],
+                            inProgress: false
+                        })
+                        // ApexCharts.exec('ticks_chart', 'updateSeries', [{
+                        //     data: this.state.series[0].data
+                        // }]);
                     }}
                     size="lg"
                 >
                     Stop
-                </Button>
+                </Button>}
+               
+                {(this.state.balance >= stockPrice + this.state.commission || this.state.stocks) && (!this.state.stocks ? <Button
+                    variant="secondary"
+                    onClick={() => {
+                       const buyStocks = parseInt(Math.min(this.state.maxBuyStocks, this.state.balance / stockPrice), 10);
+
+                       const balance = this.state.balance - buyStocks * (stockPrice - this.state.commission);
+                       const log = {
+                            label: `Buy ${this.state.stocks} stock, price: ${stockPrice}`,
+                            time: time
+                       };
+
+                       this.setState({
+                            balance,
+                            stocks: buyStocks,
+                            lastStockPrice: stockPrice,
+                            logs: [].concat(this.state.logs, log)
+                       });
+                    }}
+                    size="lg"
+                >
+                    Buy
+                </Button> :
+                <Button
+                    variant="secondary"
+                    onClick={() => {
+                        const balance = this.state.balance + this.state.stocks * (stockPrice - this.state.commission);
+                        const log = {
+                             label: `Sell ${this.state.stocks} stock, price: ${stockPrice}`,
+                             time: time
+                        };
+ 
+                        this.setState({
+                             balance,
+                             stocks: 0,
+                             lastStockPrice: stockPrice,
+                             logs: [].concat(this.state.logs, log)
+                        });
+                    }}
+                    size="lg"
+                >
+                    Sell
+                </Button>)}
+              </Row>
+              <Row><br/></Row>
+              <Row>
+               <Logs logsData={this.state.logs} />
               </Row>
           </>
         );

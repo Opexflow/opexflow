@@ -7,8 +7,8 @@ const bodyParser = require('body-parser');
 const mysql = require('mysql');
 const fs = require('fs');
 const path = require('path');
-const config = require('./config');
 const params = require('express-route-params');
+const config = require('./config');
 
 const app = express();
 params(express);
@@ -38,29 +38,28 @@ config.facebook_api_key = '2640133479605924';
 // let HOSTNAME = 'https://opexflow.com';
 
 passport.use(new FacebookStrategy({
-        clientID: config.facebook_api_key,
-        clientSecret: config.facebook_api_secret,
-        callbackURL: config.callback_url,
-        profileFields: ['id', 'displayName', 'name', 'gender', 'profileUrl', 'emails', 'photos']
-    },
-    ((accessToken, refreshToken, profile, done) => {
-        process.nextTick(() => {
-            console.log(profile);
-            if (profile && profile.id) {
-                const photo = profile.photos && profile.photos[0] && profile.photos[0].value || '';
-                const email = profile.emails && profile.emails[0] && profile.emails[0].value || '';
+    clientID: config.facebook_api_key,
+    clientSecret: config.facebook_api_secret,
+    callbackURL: config.callback_url,
+    profileFields: ['id', 'displayName', 'name', 'gender', 'profileUrl', 'emails', 'photos'],
+},
+((accessToken, refreshToken, profile, done) => {
+    process.nextTick(() => {
+        console.log(profile);
+        if (profile && profile.id) {
+            const photo = profile.photos && profile.photos[0] && profile.photos[0].value || '';
+            const email = profile.emails && profile.emails[0] && profile.emails[0].value || '';
 
-                pool.query(`INSERT INTO Users SET
+            pool.query(`INSERT INTO Users SET
                     id = '${profile.id}', login = '${profile.displayName}', email = '${email}', photo='${photo}', createdAt = NOW(), balance = 10000
                     ON DUPLICATE KEY UPDATE login = '${profile.displayName}', email = '${email}', photo='${photo}'
                 `);
 
-                profile.accessToken = accessToken;
-            }
-            return done(null, profile);
-        });
-    }))
-);
+            profile.accessToken = accessToken;
+        }
+        return done(null, profile);
+    });
+})));
 
 // app.set('views', __dirname + '/views');
 // app.set('view engine', 'ejs');
@@ -95,7 +94,6 @@ app.get('/', (req, res) => {
     }
 });
 
-
 app.get('/api/account', (req, res) => {
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('Access-Control-Allow-Origin', replaceHost(HOSTNAME));
@@ -109,8 +107,8 @@ app.get('/api/account', (req, res) => {
     }
 
     pool.query(`SELECT * from Users where id=${req.user.id}`, (err, rows) => {
-        res.end(JSON.stringify({ user: req.user, finance: { balance: rows && rows[0] && rows[0].balance }}));
-    })
+        res.end(JSON.stringify({ user: req.user, finance: { balance: rows && rows[0] && rows[0].balance } }));
+    });
 });
 
 app.get('/api/account/:id', (req, res) => {
@@ -136,8 +134,7 @@ app.get('/api/logout', (req, res) => {
     return res.end('{}');
 });
 
-
-app.param('tick', /^\d+(min|h|d|m)$/i)
+app.param('tick', /^\d+(min|h|d|m)$/i);
 
 // ========= Работа с тиками ==========
 app.get('/api/stocks/ticks/:tick', ensureAuthenticated, (req, res) => {
@@ -170,7 +167,7 @@ app.get('/api/stocks/ticks/:tick', ensureAuthenticated, (req, res) => {
     return res.end(JSON.stringify(ticks));
 });
 
-app.param('price', /^\d+\.?\d*$/i)
+app.param('price', /^\d+\.?\d*$/i);
 
 // ========= Работа с тиками ==========
 app.get('/api/stocks/trades/buy/:price', ensureAuthenticated, (req, res) => {

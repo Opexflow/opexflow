@@ -25,9 +25,9 @@ import * as tf from '@tensorflow/tfjs';
  * @return {number} The random integers.
  */
 export function getRandomInteger(min, max) {
-  // Note that we don't reuse the implementation in the more generic
-  // `getRandomIntegers()` (plural) below, for performance optimization.
-  return Math.floor((max - min) * Math.random()) + min;
+    // Note that we don't reuse the implementation in the more generic
+    // `getRandomIntegers()` (plural) below, for performance optimization.
+    return Math.floor((max - min) * Math.random()) + min;
 }
 
 /**
@@ -39,21 +39,22 @@ export function getRandomInteger(min, max) {
  * @return {number[]} The random integers.
  */
 export function getRandomIntegers(min, max, numIntegers) {
-  const output = [];
-  for (let i = 0; i < numIntegers; ++i) {
-    output.push(Math.floor((max - min) * Math.random()) + min);
-  }
-  return output;
+    const output = [];
+    for (let i = 0; i < numIntegers; ++i) {
+        output.push(Math.floor((max - min) * Math.random()) + min);
+    }
+    return output;
 }
 
-
 export function assertPositiveInteger(x, name) {
-  if (!Number.isInteger(x)) {
-    throw new Error(
-        `Expected ${name} to be an integer, but received ${x}`);
-  }
-  if (!(x > 0)) {
-    throw new Error(
-        `Expected ${name} to be a positive number, but received ${x}`);
-  }
+    if (!Number.isInteger(x)) {
+        throw new Error(
+        `Expected ${name} to be an integer, but received ${x}`,
+        );
+    }
+    if (x <= 0) {
+        throw new Error(
+        `Expected ${name} to be a positive number, but received ${x}`,
+        );
+    }
 }

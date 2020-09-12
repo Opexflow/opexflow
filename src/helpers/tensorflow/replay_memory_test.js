@@ -15,30 +15,30 @@
  * =============================================================================
  */
 
-import {ReplayMemory} from "./replay_memory";
+import { ReplayMemory } from './replay_memory';
 
 describe('ReplayMemory', () => {
-  it('Not going over limit', () => {
-    const memory = new ReplayMemory(5);
-    expect(memory.length).toEqual(0);
-    memory.append(10);
-    memory.append(20);
-    memory.append(30);
-    memory.append(40);
-    memory.append(50);
-    expect(memory.length).toEqual(5);
+    it('Not going over limit', () => {
+        const memory = new ReplayMemory(5);
+        expect(memory.length).toEqual(0);
+        memory.append(10);
+        memory.append(20);
+        memory.append(30);
+        memory.append(40);
+        memory.append(50);
+        expect(memory.length).toEqual(5);
 
-    for (let i = 0; i < 10; ++i) {
-      const batch = memory.sample(4);
-      const uniqueItems = [];
-      expect(batch.length).toEqual(4);
-      batch.forEach(x => {
-        expect([10, 20, 30, 40, 50].indexOf(x)).toBeGreaterThanOrEqual(0);
-        if (uniqueItems.indexOf(x) === -1) {
-          uniqueItems.push(x);
+        for (let i = 0; i < 10; ++i) {
+            const batch = memory.sample(4);
+            const uniqueItems = [];
+            expect(batch.length).toEqual(4);
+            batch.forEach(x => {
+                expect([10, 20, 30, 40, 50].indexOf(x)).toBeGreaterThanOrEqual(0);
+                if (uniqueItems.indexOf(x) === -1) {
+                    uniqueItems.push(x);
+                }
+            });
+            expect(uniqueItems.length).toEqual(batch.length);
         }
-      });
-      expect(uniqueItems.length).toEqual(batch.length);
-    }
-  });
+    });
 });

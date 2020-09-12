@@ -1,41 +1,53 @@
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+const _typeof = typeof Symbol === 'function' && typeof Symbol.iterator === 'symbol' ? function(obj) { return typeof obj } : function(obj) { return obj && typeof Symbol === 'function' && obj.constructor === Symbol && obj !== Symbol.prototype ? 'symbol' : typeof obj };
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+const _createClass = (function() { function defineProperties(target, props) { for (let i = 0; i < props.length; i++) { const descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor) } } return function(Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor } })();
 
-var _react = require('react');
-var _proptypes = require('prop-types');
+const _react = require('react');
+const _proptypes = require('prop-types');
 
-var _react2 = _interopRequireDefault(_react);
+const _react2 = _interopRequireDefault(_react);
 
-var _debounce = require('./utils/debounce');
+const _debounce = require('./utils/debounce');
 
-var _debounce2 = _interopRequireDefault(_debounce);
+const _debounce2 = _interopRequireDefault(_debounce);
 
-var _transformProperty = require('./utils/transformProperty');
+const _transformProperty = require('./utils/transformProperty');
 
-var _transformProperty2 = _interopRequireDefault(_transformProperty);
+const _transformProperty2 = _interopRequireDefault(_transformProperty);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj } }
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+function _defineProperty(obj, key, value) {
+    if (key in obj) {
+        Object.defineProperty(obj, key, {
+            value, enumerable: true, configurable: true, writable: true,
+        });
+    } else { obj[key] = value } return obj;
+}
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function') } }
 
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called") } return call && (typeof call === 'object' || typeof call === 'function') ? call : self }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+function _inherits(subClass, superClass) {
+    if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError(`Super expression must either be null or a function, not ${ typeof superClass}`) } subClass.prototype = Object.create(superClass && superClass.prototype, {
+        constructor: {
+            value: subClass, enumerable: false, writable: true, configurable: true,
+        },
+    }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+}
 
-var ReactSiema = function (_Component) {
+const ReactSiema = (function(_Component) {
     _inherits(ReactSiema, _Component);
 
     function ReactSiema(props) {
         _classCallCheck(this, ReactSiema);
 
-        var _this = _possibleConstructorReturn(this, (ReactSiema.__proto__ || Object.getPrototypeOf(ReactSiema)).call(this));
+        const _this = _possibleConstructorReturn(this, (ReactSiema.__proto__ || Object.getPrototypeOf(ReactSiema)).call(this));
 
         _this.events = ['onTouchStart', 'onTouchEnd', 'onTouchMove', 'onMouseDown', 'onMouseUp', 'onMouseLeave', 'onMouseMove'];
 
-        _this.config = Object.assign({}, {
+        _this.config = {
             resizeDebounce: 250,
             duration: 200,
             easing: 'ease-out',
@@ -43,10 +55,11 @@ var ReactSiema = function (_Component) {
             startIndex: 0,
             draggable: true,
             threshold: 20,
-            loop: false
-        }, props);
+            loop: false,
+            ...props,
+        };
 
-        _this.events.forEach(function (handler) {
+        _this.events.forEach(handler => {
             _this[handler] = _this[handler].bind(_this);
         });
         return _this;
@@ -55,14 +68,14 @@ var ReactSiema = function (_Component) {
     _createClass(ReactSiema, [{
         key: 'componentDidMount',
         value: function componentDidMount() {
-            var _this2 = this;
+            const _this2 = this;
 
             this.config.selector = this.selector;
             this.currentSlide = this.config.startIndex;
 
             this.init();
 
-            this.onResize = (0, _debounce2.default)(function () {
+            this.onResize = (0, _debounce2.default)(() => {
                 _this2.resize();
                 _this2.slideToCurrent();
             }, this.config.resizeDebounce);
@@ -73,20 +86,20 @@ var ReactSiema = function (_Component) {
                 this.pointerDown = false;
                 this.drag = {
                     start: 0,
-                    end: 0
+                    end: 0,
                 };
             }
-        }
+        },
     }, {
         key: 'componentDidUpdate',
         value: function componentDidUpdate() {
             this.init();
-        }
+        },
     }, {
         key: 'componentWillUnmount',
         value: function componentWillUnmount() {
-            window.removeEventListener("resize", this.onResize);
-        }
+            window.removeEventListener('resize', this.onResize);
+        },
     }, {
         key: 'init',
         value: function init() {
@@ -95,29 +108,29 @@ var ReactSiema = function (_Component) {
             this.resolveSlidesNumber();
 
             this.setStyle(this.sliderFrame, {
-                width: this.selectorWidth / this.perPage * this.innerElements.length + 'px',
-                webkitTransition: 'all ' + this.config.duration + 'ms ' + this.config.easing,
-                transition: 'all ' + this.config.duration + 'ms ' + this.config.easing
+                width: `${this.selectorWidth / this.perPage * this.innerElements.length }px`,
+                webkitTransition: `all ${ this.config.duration }ms ${ this.config.easing}`,
+                transition: `all ${ this.config.duration }ms ${ this.config.easing}`,
             });
 
-            for (var i = 0; i < this.innerElements.length; i++) {
+            for (let i = 0; i < this.innerElements.length; i++) {
                 this.setStyle(this.innerElements[i], {
-                    width: 100 / this.innerElements.length + '%'
+                    width: `${100 / this.innerElements.length }%`,
                 });
             }
 
             this.slideToCurrent();
-        }
+        },
     }, {
         key: 'setSelectorWidth',
         value: function setSelectorWidth() {
             this.selectorWidth = this.selector.getBoundingClientRect().width;
-        }
+        },
     }, {
         key: 'setInnerElements',
         value: function setInnerElements() {
             this.innerElements = [].slice.call(this.sliderFrame.children);
-        }
+        },
     }, {
         key: 'resolveSlidesNumber',
         value: function resolveSlidesNumber() {
@@ -125,13 +138,13 @@ var ReactSiema = function (_Component) {
                 this.perPage = this.config.perPage;
             } else if (_typeof(this.config.perPage) === 'object') {
                 this.perPage = 1;
-                for (var viewport in this.config.perPage) {
+                for (const viewport in this.config.perPage) {
                     if (window.innerWidth > viewport) {
                         this.perPage = this.config.perPage[viewport];
                     }
                 }
             }
-        }
+        },
     }, {
         key: 'prev',
         value: function prev() {
@@ -141,7 +154,7 @@ var ReactSiema = function (_Component) {
                 this.currentSlide = Math.max(this.currentSlide - 1, 0);
             }
             this.slideToCurrent();
-        }
+        },
     }, {
         key: 'next',
         value: function next() {
@@ -151,27 +164,27 @@ var ReactSiema = function (_Component) {
                 this.currentSlide = Math.min(this.currentSlide + 1, this.innerElements.length - this.perPage);
             }
             this.slideToCurrent();
-        }
-    },{
+        },
+    }, {
         key: 'getPerPage',
         value: function getPerPage() {
             return this.perPage;
-        }
+        },
     }, {
         key: 'goTo',
         value: function goTo(index) {
             this.currentSlide = Math.min(Math.max(index, 0), this.innerElements.length - 1);
             this.slideToCurrent();
-        }
+        },
     }, {
         key: 'slideToCurrent',
         value: function slideToCurrent() {
-            this.sliderFrame.style[_transformProperty2.default] = 'translate3d(-' + this.currentSlide * (this.selectorWidth / this.perPage) + 'px, 0, 0)';
-        }
+            this.sliderFrame.style[_transformProperty2.default] = `translate3d(-${ this.currentSlide * (this.selectorWidth / this.perPage) }px, 0, 0)`;
+        },
     }, {
         key: 'updateAfterDrag',
         value: function updateAfterDrag() {
-            var movement = this.drag.end - this.drag.start;
+            const movement = this.drag.end - this.drag.start;
             if (movement > 0 && Math.abs(movement) > this.config.threshold) {
                 this.prev();
             } else if (movement < 0 && Math.abs(movement) > this.config.threshold) {
@@ -180,7 +193,7 @@ var ReactSiema = function (_Component) {
             this.slideToCurrent();
 
             this.props.updateAfterDrag();
-        }
+        },
     }, {
         key: 'resize',
         value: function resize() {
@@ -188,48 +201,47 @@ var ReactSiema = function (_Component) {
 
             this.selectorWidth = this.selector.getBoundingClientRect().width;
             this.setStyle(this.sliderFrame, {
-                width: this.selectorWidth / this.perPage * this.innerElements.length + 'px'
+                width: `${this.selectorWidth / this.perPage * this.innerElements.length }px`,
             });
 
             this.props.onResize(this.perPage);
-
-        }
+        },
     }, {
         key: 'clearDrag',
         value: function clearDrag() {
             this.drag = {
                 start: 0,
-                end: 0
+                end: 0,
             };
-        }
+        },
     }, {
         key: 'setStyle',
         value: function setStyle(target, styles) {
-            Object.keys(styles).forEach(function (attribute) {
+            Object.keys(styles).forEach(attribute => {
                 target.style[attribute] = styles[attribute];
             });
-        }
+        },
     }, {
         key: 'onTouchStart',
         value: function onTouchStart(e) {
             e.stopPropagation();
             this.pointerDown = true;
             this.drag.start = e.touches[0].pageX;
-        }
+        },
     }, {
         key: 'onTouchEnd',
         value: function onTouchEnd(e) {
             e.stopPropagation();
             this.pointerDown = false;
             this.setStyle(this.sliderFrame, {
-                webkitTransition: 'all ' + this.config.duration + 'ms ' + this.config.easing,
-                transition: 'all ' + this.config.duration + 'ms ' + this.config.easing
+                webkitTransition: `all ${ this.config.duration }ms ${ this.config.easing}`,
+                transition: `all ${ this.config.duration }ms ${ this.config.easing}`,
             });
             if (this.drag.end) {
                 this.updateAfterDrag();
             }
             this.clearDrag();
-        }
+        },
     }, {
         key: 'onTouchMove',
         value: function onTouchMove(e) {
@@ -238,11 +250,11 @@ var ReactSiema = function (_Component) {
                 this.drag.end = e.touches[0].pageX;
 
                 this.setStyle(this.sliderFrame, _defineProperty({
-                    webkitTransition: 'all 0ms ' + this.config.easing,
-                    transition: 'all 0ms ' + this.config.easing
-                }, _transformProperty2.default, 'translate3d(' + (this.currentSlide * (this.selectorWidth / this.perPage) + (this.drag.start - this.drag.end)) * -1 + 'px, 0, 0)'));
+                    webkitTransition: `all 0ms ${ this.config.easing}`,
+                    transition: `all 0ms ${ this.config.easing}`,
+                }, _transformProperty2.default, `translate3d(${ (this.currentSlide * (this.selectorWidth / this.perPage) + (this.drag.start - this.drag.end)) * -1 }px, 0, 0)`));
             }
-        }
+        },
     }, {
         key: 'onMouseDown',
         value: function onMouseDown(e) {
@@ -250,7 +262,7 @@ var ReactSiema = function (_Component) {
             e.stopPropagation();
             this.pointerDown = true;
             this.drag.start = e.pageX;
-        }
+        },
     }, {
         key: 'onMouseUp',
         value: function onMouseUp(e) {
@@ -258,14 +270,14 @@ var ReactSiema = function (_Component) {
             this.pointerDown = false;
             this.setStyle(this.sliderFrame, {
                 cursor: '-webkit-grab',
-                webkitTransition: 'all ' + this.config.duration + 'ms ' + this.config.easing,
-                transition: 'all ' + this.config.duration + 'ms ' + this.config.easing
+                webkitTransition: `all ${ this.config.duration }ms ${ this.config.easing}`,
+                transition: `all ${ this.config.duration }ms ${ this.config.easing}`,
             });
             if (this.drag.end) {
                 this.updateAfterDrag();
             }
             this.clearDrag();
-        }
+        },
     }, {
         key: 'onMouseMove',
         value: function onMouseMove(e) {
@@ -274,11 +286,11 @@ var ReactSiema = function (_Component) {
                 this.drag.end = e.pageX;
                 this.setStyle(this.sliderFrame, _defineProperty({
                     cursor: '-webkit-grabbing',
-                    webkitTransition: 'all 0ms ' + this.config.easing,
-                    transition: 'all 0ms ' + this.config.easing
-                }, _transformProperty2.default, 'translate3d(' + (this.currentSlide * (this.selectorWidth / this.perPage) + (this.drag.start - this.drag.end)) * -1 + 'px, 0, 0)'));
+                    webkitTransition: `all 0ms ${ this.config.easing}`,
+                    transition: `all 0ms ${ this.config.easing}`,
+                }, _transformProperty2.default, `translate3d(${ (this.currentSlide * (this.selectorWidth / this.perPage) + (this.drag.start - this.drag.end)) * -1 }px, 0, 0)`));
             }
-        }
+        },
     }, {
         key: 'onMouseLeave',
         value: function onMouseLeave(e) {
@@ -287,46 +299,45 @@ var ReactSiema = function (_Component) {
                 this.drag.end = e.pageX;
                 this.setStyle(this.sliderFrame, {
                     cursor: '-webkit-grab',
-                    webkitTransition: 'all ' + this.config.duration + 'ms ' + this.config.easing,
-                    transition: 'all ' + this.config.duration + 'ms ' + this.config.easing
+                    webkitTransition: `all ${ this.config.duration }ms ${ this.config.easing}`,
+                    transition: `all ${ this.config.duration }ms ${ this.config.easing}`,
                 });
                 this.updateAfterDrag();
                 this.clearDrag();
             }
-        }
+        },
     }, {
         key: 'render',
         value: function render() {
-            var _this3 = this;
+            const _this3 = this;
 
             return _react2.default.createElement(
                 'div',
-                Object.assign({
+                {
                     ref: function ref(selector) {
                         return _this3.selector = selector;
                     },
-                    className: "react-siema-container"
-                }, this.events.reduce(function (props, event) {
-                    return Object.assign({}, props, _defineProperty({}, event, _this3[event]));
-                }, {})),
+                    className: 'react-siema-container',
+                    ...this.events.reduce((props, event) => ({ ...props, ..._defineProperty({}, event, _this3[event]) }), {}),
+                },
                 _react2.default.createElement(
                     'div',
-                    { ref: function ref(sliderFrame) {
+                    {
+                        ref: function ref(sliderFrame) {
                             return _this3.sliderFrame = sliderFrame;
-                        } },
-                    _react2.default.Children.map(this.props.children, function (children, index) {
-                        return _react2.default.cloneElement(children, {
-                            key: index,
-                            style: { float: 'left' }
-                        });
-                    })
-                )
+                        },
+                    },
+                    _react2.default.Children.map(this.props.children, (children, index) => _react2.default.cloneElement(children, {
+                        key: index,
+                        style: { float: 'left' },
+                    })),
+                ),
             );
-        }
+        },
     }]);
 
     return ReactSiema;
-}(_react.Component);
+})(_react.Component);
 
 ReactSiema.propTypes = {
     resizeDebounce: _proptypes.number,
@@ -337,6 +348,6 @@ ReactSiema.propTypes = {
     draggable: _proptypes.number,
     threshold: _proptypes.number,
     loop: _proptypes.bool,
-    children: _proptypes.oneOfType([_proptypes.element, _proptypes.arrayOf(_proptypes.element)])
+    children: _proptypes.oneOfType([_proptypes.element, _proptypes.arrayOf(_proptypes.element)]),
 };
-export default  ReactSiema;
+export default ReactSiema;

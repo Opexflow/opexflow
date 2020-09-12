@@ -3,31 +3,29 @@ import {
     SURVEY_GET_DETAILS_SUCCESS,
     SURVEY_GET_DETAILS_ERROR,
     SURVEY_DELETE_QUESTION,
-    SURVEY_SAVE
+    SURVEY_SAVE,
 } from '../actions';
 
-
 export const getSurveyDetail = () => ({
-    type: SURVEY_GET_DETAILS
+    type: SURVEY_GET_DETAILS,
 });
 
-export const getSurveyDetailSuccess = (items) => ({
+export const getSurveyDetailSuccess = items => ({
     type: SURVEY_GET_DETAILS_SUCCESS,
-    payload: items
+    payload: items,
 });
 
-export const getSurveyDetailError = (error) => ({
+export const getSurveyDetailError = error => ({
     type: SURVEY_GET_DETAILS_ERROR,
-    payload: error
+    payload: error,
 });
 
-
-export const deleteSurveyQuestion = (questionId,survey) => ({
+export const deleteSurveyQuestion = (questionId, survey) => ({
     type: SURVEY_DELETE_QUESTION,
-    payload: {questionId,survey}
+    payload: { questionId, survey },
 });
 
-export const saveSurvey = (survey) => ({
+export const saveSurvey = survey => ({
     type: SURVEY_SAVE,
-    payload: survey
+    payload: survey,
 });
