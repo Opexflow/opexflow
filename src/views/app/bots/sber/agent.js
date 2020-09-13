@@ -17,12 +17,12 @@
 
 import * as tf from '@tensorflow/tfjs';
 
-import { createDeepQNetwork } from './dqn';
+import { createDeepQNetwork } from '../../../../helpers/tensorflow/dqn';
 import {
     getRandomAction, SnakeGame, NUM_ACTIONS, ALL_ACTIONS, getStateTensor,
 } from './snake_game';
-import { ReplayMemory } from './replay_memory';
-import { assertPositiveInteger } from './utils';
+import { ReplayMemory } from '../../../../helpers/tensorflow/replay_memory';
+import { assertPositiveInteger } from '../../../../helpers/tensorflow/utils';
 
 export class SnakeGameAgent {
     /**
@@ -59,6 +59,8 @@ export class SnakeGameAgent {
         // the online network.
         this.targetNetwork.trainable = false;
 
+        console.log(config.learningRate);
+        
         this.optimizer = tf.train.adam(config.learningRate);
 
         this.replayBufferSize = config.replayBufferSize;

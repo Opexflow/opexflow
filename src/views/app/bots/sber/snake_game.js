@@ -17,7 +17,7 @@
 
 import * as tf from '@tensorflow/tfjs';
 
-import { assertPositiveInteger, getRandomInteger } from './utils';
+import { assertPositiveInteger, getRandomInteger } from '../../../../helpers/tensorflow/utils';
 
 const DEFAULT_HEIGHT = 16;
 const DEFAULT_WIDTH = 16;
