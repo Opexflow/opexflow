@@ -32,6 +32,7 @@ Table of Contents
   07.18.Sortable
   07.19.Maps
   07.20.Tables
+08.Indicators
 */
 
 module.exports = {
@@ -55,7 +56,13 @@ module.exports = {
     /* 03.Menu */
     'menu.app': 'Home',
     'menu.dashboards': 'Dashboards',
+    'menu.gogo': 'Gogo',
+    'menu.start': 'Start',
+    'menu.second-menu': 'Second menu',
+    'menu.second': 'Second',
     'menu.default': 'Default',
+    'menu.bots': 'Bots',
+    'menu.sber': 'Sber',
     'menu.analytics': 'Analytics',
     'menu.ecommerce': 'Ecommerce',
     'menu.content': 'Content',
@@ -574,4 +581,12 @@ module.exports = {
     'table.react-scrollable': 'Scrollable',
     'table.react-advanced': 'Filter, Length and Jump',
 
+
+/* 08.Indicators */
+    'Balance': 'Balance',
+    'Balance with stocks': 'Balance with stocks',
+    'Stocks delta': 'Stocks delta',
+    'Current price': 'Current price',
+    'Stocks count': 'Stocks count',
+    'Commission': 'Commission',
 };

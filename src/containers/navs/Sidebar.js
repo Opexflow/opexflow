@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import ReactDOM from 'react-dom';
 import { Nav, NavItem, UncontrolledCollapse } from 'reactstrap';
@@ -292,7 +292,7 @@ class Sidebar extends Component {
               <div className="main-menu">
                   <div className="scroll">
                       <PerfectScrollbar
-                          option={{ suppressScrollX: true, wheelPropagation: false }}
+                          options={{ suppressScrollX: true, wheelPropagation: false }}
                     >
                           <Nav vertical className="list-unstyled">
                               {menuItems &&
@@ -337,7 +337,7 @@ class Sidebar extends Component {
               <div className="sub-menu">
                   <div className="scroll">
                       <PerfectScrollbar
-                          option={{ suppressScrollX: true, wheelPropagation: false }}
+                          options={{ suppressScrollX: true, wheelPropagation: false }}
                     >
                           {menuItems &&
                 menuItems.map(item => (

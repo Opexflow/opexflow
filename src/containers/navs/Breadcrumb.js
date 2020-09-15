@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import { Breadcrumb, BreadcrumbItem } from 'reactstrap';
 import { NavLink } from 'react-router-dom';
 import IntlMessages from '../../helpers/IntlMessages';

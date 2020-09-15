@@ -10,7 +10,7 @@ import data from '../../data/products';
 
 const CustomTbodyComponent = props => (
     <div {...props} className={classnames('rt-tbody', props.className || [])}>
-        <PerfectScrollbar option={{ suppressScrollX: true }}>
+        <PerfectScrollbar options={{ suppressScrollX: true }}>
             {props.children}
       </PerfectScrollbar>
   </div>

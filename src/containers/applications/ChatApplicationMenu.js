@@ -135,7 +135,7 @@ class ChatApplicationMenu extends Component {
             >
                   <TabPane tabId="messages" className="chat-app-tab-pane">
                       <PerfectScrollbar
-                          option={{ suppressScrollX: true, wheelPropagation: false }}
+                          options={{ suppressScrollX: true, wheelPropagation: false }}
                     >
                           <div className="pt-2 pr-4 pl-4 pb-2">
                               {loadingContacts &&
@@ -180,7 +180,7 @@ class ChatApplicationMenu extends Component {
                 </TabPane>
                   <TabPane tabId="contacts" className="chat-app-tab-pane">
                       <PerfectScrollbar
-                          option={{ suppressScrollX: true, wheelPropagation: false }}
+                          options={{ suppressScrollX: true, wheelPropagation: false }}
                     >
                           <div className="pt-2 pr-4 pl-4 pb-2">
                               {loadingContacts &&

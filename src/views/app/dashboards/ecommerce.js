@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
 import { Row } from 'reactstrap';
 
@@ -9,7 +9,6 @@ import IconCardsCarousel from '../../../containers/dashboards/IconCardsCarousel'
 import RecentOrders from '../../../containers/dashboards/RecentOrders';
 import Tickets from '../../../containers/dashboards/Tickets';
 import Calendar from '../../../containers/dashboards/Calendar';
-import BestSellers from '../../../containers/dashboards/BestSellers';
 import Cakes from '../../../containers/dashboards/Cakes';
 import SalesChartCard from '../../../containers/dashboards/SalesChartCard';
 import ProductCategoriesDoughnut from '../../../containers/dashboards/ProductCategoriesDoughnut';

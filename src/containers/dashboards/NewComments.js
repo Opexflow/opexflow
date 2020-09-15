@@ -16,7 +16,7 @@ const NewComments = ({ className = '', displayRate = false }) => (
             </CardTitle>
           <div className="dashboard-list-with-user">
               <PerfectScrollbar
-                  option={{ suppressScrollX: true, wheelPropagation: false }}
+                  options={{ suppressScrollX: true, wheelPropagation: false }}
                 >
                   {comments.map((item, index) => (
                         <div

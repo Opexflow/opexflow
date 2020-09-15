@@ -5,13 +5,11 @@ import {
     DropdownItem,
     DropdownToggle,
     DropdownMenu,
-    Input,
 } from 'reactstrap';
 
 import { NavLink } from 'react-router-dom';
 import { connect } from 'react-redux';
 
-import IntlMessages from '../../helpers/IntlMessages';
 import {
     setContainerClassnames,
     clickOnMobileMenu,
@@ -22,14 +20,11 @@ import {
 import {
     menuHiddenBreakpoint,
     searchPath,
-    localeOptions,
-    isDarkSwitchActive,
 } from '../../constants/defaultValues';
 
 import { MobileMenuIcon, MenuIcon } from '../../components/svg';
 import TopnavEasyAccess from './Topnav.EasyAccess';
 import TopnavNotifications from './Topnav.Notifications';
-import TopnavDarkSwitch from './Topnav.DarkSwitch';
 
 import { getDirection, setDirection } from '../../helpers/Utils';
 
@@ -200,8 +195,7 @@ class TopNav extends Component {
   };
 
   render() {
-      const { containerClassnames, menuClickCount, locale } = this.props;
-      const { messages } = this.props.intl;
+      const { containerClassnames, menuClickCount } = this.props;
       const { user, finance } = this.props.authUser;
 
       return (
