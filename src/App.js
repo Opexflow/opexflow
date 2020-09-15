@@ -11,7 +11,6 @@ import { IntlProvider } from 'react-intl';
 import AppLocale from './lang';
 // import ColorSwitcher from './components/common/ColorSwitcher';
 import NotificationContainer from './components/common/react-notifications/NotificationContainer';
-import { isMultiColorActive } from './constants/defaultValues';
 import { getDirection } from './helpers/Utils';
 
 const ViewMain = React.lazy(() => import(/* webpackChunkName: "views" */ './views'));

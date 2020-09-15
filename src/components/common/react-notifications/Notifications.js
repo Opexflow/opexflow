@@ -35,9 +35,9 @@ class Notifications extends React.Component {
       return (
           <div className={className}>
               <CSSTransitionGroup
-                  transitionName="notification"
-                  transitionEnterTimeout={enterTimeout}
-                  transitionLeaveTimeout={leaveTimeout}
+                  transitionname="notification"
+                  transitionentertimeout={enterTimeout}
+                  transitionleavetimeout={leaveTimeout}
             >
                   {notifications.map(notification => {
                       const key = notification.id || new Date().getTime();

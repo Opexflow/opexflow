@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
 import { Row } from 'reactstrap';
 

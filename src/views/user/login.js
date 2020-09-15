@@ -11,7 +11,6 @@ import { NotificationManager } from '../../components/common/react-notifications
 
 import { loginUser } from '../../redux/actions';
 import { Colxx } from '../../components/common/CustomBootstrap';
-import IntlMessages from '../../helpers/IntlMessages';
 
 class Login extends Component {
     constructor(props) {

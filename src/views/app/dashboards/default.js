@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component} from 'react';
 import { injectIntl } from 'react-intl';
 import { Row } from 'reactstrap';
 
@@ -10,12 +10,10 @@ import RecentOrders from '../../../containers/dashboards/RecentOrders';
 import Logs from '../../../containers/dashboards/Logs';
 import Tickets from '../../../containers/dashboards/Tickets';
 import Calendar from '../../../containers/dashboards/Calendar';
-import BestSellers from '../../../containers/dashboards/BestSellers';
 import ProfileStatuses from '../../../containers/dashboards/ProfileStatuses';
 import GradientCardContainer from '../../../containers/dashboards/GradientCardContainer';
 import Cakes from '../../../containers/dashboards/Cakes';
 import GradientWithRadialProgressCard from '../../../components/cards/GradientWithRadialProgressCard';
-import SortableStaticticsRow from '../../../containers/dashboards/SortableStaticticsRow';
 import AdvancedSearch from '../../../containers/dashboards/AdvancedSearch';
 import SmallLineCharts from '../../../containers/dashboards/SmallLineCharts';
 import SalesChartCard from '../../../containers/dashboards/SalesChartCard';

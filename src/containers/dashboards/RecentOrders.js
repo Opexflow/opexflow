@@ -22,7 +22,7 @@ export default function RecentOrders() {
               </CardTitle>
                 <div className="scroll dashboard-list-with-thumbs">
                     <PerfectScrollbar
-                        option={{ suppressScrollX: true, wheelPropagation: false }}
+                        options={{ suppressScrollX: true, wheelPropagation: false }}
                   >
                         {data.slice(0, 6).map((order, index) => (
                         <div key={index} className="d-flex flex-row mb-3">

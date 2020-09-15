@@ -14,7 +14,7 @@ const Tickets = () => (
             </CardTitle>
           <div className="dashboard-list-with-user">
               <PerfectScrollbar
-                  option={{ suppressScrollX: true, wheelPropagation: false }}
+                  options={{ suppressScrollX: true, wheelPropagation: false }}
                 >
                   {data.map((ticket, index) => (
                         <div

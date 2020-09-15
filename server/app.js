@@ -32,8 +32,8 @@ passport.deserializeUser((obj, done) => {
 
 const HOSTNAME = 'http://localhost:3000';
 config.callback_url = 'http://localhost:3001/api/auth/facebook/callback';
-config.facebook_api_secret = '8f891ee90229fd861d4c71bdf648ad14';
-config.facebook_api_key = '2640133479605924';
+config.facebook_api_secret = '28d6d64b25d647d30f08f3e9c489eb04';
+config.facebook_api_key = '3606748869337149';
 
 // let HOSTNAME = 'https://opexflow.com';
 
@@ -69,7 +69,7 @@ function replaceHost(host) {
 }
 
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(session({ secret: 'secret123', key: 'sid' }));
+app.use(session({ secret: 'secret123', key: 'sid', resave: false, saveUninitialized: false }));
 app.use(passport.initialize());
 app.use(passport.session());
 

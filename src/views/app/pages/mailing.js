@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import { Row, Card, CardBody } from 'reactstrap';
 import Breadcrumb from '../../../containers/navs/Breadcrumb';
 import { Separator, Colxx } from '../../../components/common/CustomBootstrap';

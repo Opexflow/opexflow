@@ -3,7 +3,6 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 import { Card, CardBody, CardTitle } from 'reactstrap';
 
 import IntlMessages from '../../helpers/IntlMessages';
-import data from '../../data/logs';
 
 const Logs = (params = [{ logsData: []}]) => (
     <div>
@@ -14,7 +13,7 @@ const Logs = (params = [{ logsData: []}]) => (
                 </CardTitle>
               <div className="dashboard-logs">
                   <PerfectScrollbar
-                      option={{ suppressScrollX: true, wheelPropagation: false }}
+                      options={{ suppressScrollX: true, wheelPropagation: false }}
                     >
                       <table className="table table-sm table-borderless">
                           <tbody>

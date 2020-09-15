@@ -1,8 +1,7 @@
-import React, { PureComponent, Component } from 'react';
+import React, { Component } from 'react';
 import { Row, Button } from 'reactstrap';
 import Chart from 'react-apexcharts';
 import ApexCharts from 'apexcharts';
-import IntlMessages from '../../../helpers/IntlMessages';
 import { Colxx, Separator } from '../../../components/common/CustomBootstrap';
 import Breadcrumb from '../../../containers/navs/Breadcrumb';
 import IconCard from '../../../components/cards/IconCard';
@@ -113,7 +112,7 @@ export default class Sber extends Component {
                 }
 
                 if (!tick[2] || !tick[3]) {
-                    return;
+                    return false;
                 }
 
                 // console.log(`${tick[2]} ${tick[3]}`, [parseFloat(tick[4]), parseFloat(tick[5]), parseFloat(tick[6]), parseFloat(tick[7])]);

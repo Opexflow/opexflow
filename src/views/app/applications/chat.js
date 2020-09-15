@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 import PerfectScrollbar from 'react-perfect-scrollbar';
@@ -128,7 +128,7 @@ class ChatApp extends Component {
                                   this._scrollBarRef = ref;
                               }}
                             containerRef={ref => {}}
-                            option={{ suppressScrollX: true, wheelPropagation: false }}
+                            options={{ suppressScrollX: true, wheelPropagation: false }}
                           >
                               {selectedConversation.messages.map((item, index) => {
                                   const sender = allContacts.find(x => x.id === item.sender);

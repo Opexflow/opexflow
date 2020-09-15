@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import ChartComponent, { Chart } from 'react-chartjs-2';
 
 import { smallLineChartOptions } from './config';

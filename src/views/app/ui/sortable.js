@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import { Row, Card, CardBody } from 'reactstrap';
 import { Sortable } from 'react-sortablejs';
 import IntlMessages from '../../../helpers/IntlMessages';
