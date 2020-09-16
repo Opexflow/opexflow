@@ -66,8 +66,6 @@ export default class Sber extends Component {
     componentDidMount() {
         this.getChartData();
         this.resetState();
-
-        main();
     }
 
     componentDidUpdate() {
@@ -337,6 +335,35 @@ export default class Sber extends Component {
                 >
                     Sell
                 </Button>)}
+              </Row>
+              <Row><br/></Row>
+              <Row>{!this.state.botTraining ? <Button
+                    variant="secondary"
+                    onClick={() => {
+                       this.setState({
+                           botTraining: true,
+                       });
+
+                       window.trainInProgress = true;
+                       main();
+                    }}
+                    size="lg"
+                >
+                    Train start
+                </Button> :
+                <Button
+                    variant="secondary"
+                    onClick={() => {
+                        this.setState({
+                            botTraining: false,
+                        });
+
+                        window.trainInProgress = false;
+                    }}
+                    size="lg"
+                >
+                    Train stop
+                </Button>}
               </Row>
               <Row><br/></Row>
               <Row>

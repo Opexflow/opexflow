@@ -14,11 +14,7 @@
  * limitations under the License.
  * =============================================================================
  */
-
-import * as fs from 'fs';
-
 import * as argparse from 'argparse';
-import { mkdir } from 'shelljs';
 
 import { SnakeGameAgent } from './agent';
 import { copyWeights } from '../../../../helpers/tensorflow/dqn';
@@ -86,7 +82,14 @@ export async function train(
     let tPrev = new Date().getTime();
     let frameCountPrev = agent.frameCount;
     let averageReward100Best = -Infinity;
-    while (true) {
+
+    async function trainLoop() {
+        console.log(window.trainInProgress);
+
+        if (!window.trainInProgress) {
+            return;
+        }
+
         agent.trainOnReplayBatch(batchSize, gamma, optimizer);
         const { cumulativeReward, done, fruitsEaten } = agent.playStep();
         if (done) {
@@ -119,16 +122,16 @@ export async function train(
                 );
             }
             if (averageReward100 >= cumulativeRewardThreshold ||
-          agent.frameCount >= maxNumFrames) {
+            agent.frameCount >= maxNumFrames) {
                 // TODO(cais): Save online network.
-                break;
+                return;
             }
             if (averageReward100 > averageReward100Best) {
                 averageReward100Best = averageReward100;
                 if (savePath != null) {
-                    //if (!fs.existsSync(savePath)) {
+                    // if (!fs.existsSync(savePath)) {
                     //    mkdir('-p', savePath);
-                    //}
+                    // }
                     await agent.onlineNetwork.save(savePath);
                     console.log(`Saved DQN to ${savePath}`);
                 }
@@ -138,7 +141,11 @@ export async function train(
             copyWeights(agent.targetNetwork, agent.onlineNetwork);
             console.log('Sync\'ed weights from online network to target network');
         }
+
+        window.requestAnimationFrame(async () => { await trainLoop() });
     }
+
+    window.requestAnimationFrame(async () => { await trainLoop() });
 }
 
 export function parseArguments() {
@@ -240,31 +247,30 @@ export function parseArguments() {
 
 export async function main() {
     const args = {
-        "gpu": false,
-        "height": 9,
-        "width": 9,
-        "numFruits": 1,
-        "initLen": 2,
-        "cumulativeRewardThreshold": 100,
-        "maxNumFrames": 1000000,
-        "replayBufferSize": 10000,
-        "epsilonInit": 0.5,
-        "epsilonFinal": 0.01,
-        "epsilonDecayFrames": 100000,
-        "batchSize": 64,
-        "gamma": 0.99,
-        "learningRate": 0.001,
-        "syncEveryFrames": 1000,
-        "savePath": "indexeddb://snake-model-dqn",
-        "logDir": null
-    }; //parseArguments();
+        gpu: false,
+        height: 9,
+        width: 9,
+        numFruits: 1,
+        initLen: 2,
+        cumulativeRewardThreshold: 100,
+        maxNumFrames: 1000000,
+        replayBufferSize: 10000,
+        epsilonInit: 0.5,
+        epsilonFinal: 0.01,
+        epsilonDecayFrames: 100000,
+        batchSize: 64,
+        gamma: 0.99,
+        learningRate: 0.001,
+        syncEveryFrames: 1000,
+        savePath: 'indexeddb://snake-model-dqn',
+        logDir: null,
+    }; // parseArguments();
 
     if (args.gpu) {
         // tf = require('@tensorflow/tfjs-node-gpu');
     } else {
         tf = require('@tensorflow/tfjs');
     }
-
 
     const game = new SnakeGame({
         height: args.height,
@@ -278,7 +284,7 @@ export async function main() {
         epsilonInit: args.epsilonInit,
         epsilonFinal: args.epsilonFinal,
         epsilonDecayFrames: args.epsilonDecayFrames,
-        learningRate: args.learningRate
+        learningRate: args.learningRate,
     });
 
     await train(
