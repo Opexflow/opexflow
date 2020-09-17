@@ -9,7 +9,6 @@ const fs = require('fs');
 const path = require('path');
 const params = require('express-route-params');
 const config = require('./config');
-const { FormattedHTMLMessage } = require('react-intl');
 
 const app = express();
 params(express);
