@@ -9,6 +9,7 @@ const fs = require('fs');
 const path = require('path');
 const params = require('express-route-params');
 const config = require('./config');
+const { FormattedHTMLMessage } = require('react-intl');
 
 const app = express();
 params(express);
@@ -69,7 +70,7 @@ function replaceHost(host) {
 }
 
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(session({ secret: 'secret123', key: 'sid' }));
+app.use(session({ secret: 'secret123', key: 'sid', resave: false, saveUninitialized: false }));
 app.use(passport.initialize());
 app.use(passport.session());
 
