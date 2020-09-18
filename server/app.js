@@ -69,7 +69,7 @@ function replaceHost(host) {
 }
 
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(session({ secret: 'secret123', key: 'sid' }));
+app.use(session({ secret: 'secret123', key: 'sid', resave: false, saveUninitialized: false }));
 app.use(passport.initialize());
 app.use(passport.session());
 

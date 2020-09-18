@@ -76,7 +76,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "server": "nodemon server/app",
-    "dev": "run-p server start",
+    "dev": "HTTPS=true concurrently \"npm run server\" \"npm run start\"",
     "lint": "eslint --debug src/",
     "lint:write": "eslint --debug src/ --fix",
     "precommit": "lint-staged"
@@ -92,6 +92,7 @@
   ],
   "devDependencies": {
     "babel-eslint": "^10.1.0",
+    "concurrently": "^5.3.0",
     "eslint": "^6.6.0",
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-no-loops": "^0.3.0",
