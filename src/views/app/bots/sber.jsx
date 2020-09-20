@@ -6,7 +6,10 @@ import { Colxx, Separator } from '../../../components/common/CustomBootstrap';
 import Breadcrumb from '../../../containers/navs/Breadcrumb';
 import IconCard from '../../../components/cards/IconCard';
 import Logs from '../../../containers/dashboards/Logs'
-import { main } from './sber/train'
+import { main, args } from './sber/train'
+
+import { TradeGameAgent } from './sber/trade_agent';
+import { TradeGame } from './sber/trade_game';
 
 export default class Sber extends Component {    
     constructor(props) {
@@ -147,6 +150,16 @@ export default class Sber extends Component {
                         text: name,
                     },
                 },
+                stocksData: res.map(r => {
+                    const tick = r.split(',');
+                    if (!tick[2] || !tick[3]) {
+                        return false;
+                    }
+    
+                    // SBER,5,08/07/20,12:30:00,210.6100000,210.6800000,210.4700000,210.6000000,73370
+                    // Для упрощения наблюдений увеличиваем стоимость акций, чтобы следить за целыми числами
+                    return [tick[2] + ' ' + tick[3], parseInt(tick[5] * 10, 10), tick[8]];
+                }).filter(Boolean)
             };
 
             this.setState(this.loadedData[this.state.currentTicks]);
@@ -337,6 +350,70 @@ export default class Sber extends Component {
                 </Button>)}
               </Row>
               <Row><br/></Row>
+              <Row>{!this.state.randomBotTraining ? <Button
+                    variant="secondary"
+                    onClick={() => {
+                       this.setState({
+                            randomBotTraining: true,
+                       });
+
+                        const game = new TradeGame({
+                            stocksData: this.state.stocksData,
+                            balance: 10000,
+                            commission: this.state.commission,
+                        });
+                    
+                        const agent = new TradeGameAgent(game, {
+                            replayBufferSize: args.replayBufferSize,
+                            epsilonInit: args.epsilonInit,
+                            epsilonFinal: args.epsilonFinal,
+                            epsilonDecayFrames: args.epsilonDecayFrames,
+                            learningRate: args.learningRate,
+                        });
+
+                        window.randomBotTrainingInProgress = true;
+
+                        const logs = [];
+                        for (let i = 0; i < this.state.stocksData.length; ++i) {
+                            if (!window.randomBotTrainingInProgress) {
+                                break;
+                            }
+                            const stat = agent.playStep();
+
+                            if (stat) {
+                                console.log(stat.stepNum);
+
+                                logs.push({
+                                    label: `Reward: ${stat.cumulativeReward}, Balance: ${stat.balance}, moneyEarned: ${stat.moneyEarned}, positiveTradesCount: ${stat.positiveTradesCount}`,
+                                    time: stat.stepNum
+                                });
+                            }
+
+                            this.setState({
+                                logs
+                            });
+                        }
+                    }}
+                    size="lg"
+                >
+                    Start random game
+                </Button> :
+                <Button
+                    variant="secondary"
+                    onClick={() => {
+                        this.setState({
+                            randomBotTraining: false,
+                        });
+
+                        window.randomBotTrainingInProgress = false;
+                    }}
+                    size="lg"
+                >
+                    Stop random game
+                </Button>}
+              </Row>
+              <Row><br/></Row>
+
               <Row>{!this.state.botTraining ? <Button
                     variant="secondary"
                     onClick={() => {
@@ -345,7 +422,8 @@ export default class Sber extends Component {
                        });
 
                        window.trainInProgress = true;
-                       main();
+                    //    console.log(this.state.stocksData);
+                       main(this.state.stocksData, 10000, this.state.commission);
                     }}
                     size="lg"
                 >

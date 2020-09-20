@@ -16,9 +16,9 @@
  */
 import * as argparse from 'argparse';
 
-import { SnakeGameAgent } from './agent';
+import { TradeGameAgent } from './trade_agent';
 import { copyWeights } from '../../../../helpers/tensorflow/dqn';
-import { SnakeGame } from './snake_game';
+import { TradeGame } from './trade_game';
 
 // The value of tf (TensorFlow.js-Node module) will be set dynamically
 // depending on the value of the --gpu flag below.
@@ -245,41 +245,44 @@ export function parseArguments() {
     return parser.parseArgs();
 }
 
-export async function main() {
-    const args = {
-        gpu: false,
-        height: 9,
-        width: 9,
-        numFruits: 1,
-        initLen: 2,
-        cumulativeRewardThreshold: 100,
-        maxNumFrames: 1000000,
-        replayBufferSize: 10000,
-        epsilonInit: 0.5,
-        epsilonFinal: 0.01,
-        epsilonDecayFrames: 100000,
-        batchSize: 64,
-        gamma: 0.99,
-        learningRate: 0.001,
-        syncEveryFrames: 1000,
-        savePath: 'indexeddb://snake-model-dqn',
-        logDir: null,
-    }; // parseArguments();
+export const args = {
+    gpu: false,
+    height: 9,
+    width: 9,
+    numFruits: 1,
+    initLen: 2,
+    cumulativeRewardThreshold: 100,
+    maxNumFrames: 1000000,
+    replayBufferSize: 10000,
+    epsilonInit: 0.5,
+    epsilonFinal: 0.01,
+    epsilonDecayFrames: 100000,
+    batchSize: 64,
+    gamma: 0.99,
+    learningRate: 0.001,
+    syncEveryFrames: 1000,
+    savePath: 'indexeddb://snake-model-dqn',
+    logDir: null,
+};
 
+export async function main(stocksData, balance, commission) {
     if (args.gpu) {
         // tf = require('@tensorflow/tfjs-node-gpu');
     } else {
         tf = require('@tensorflow/tfjs');
     }
 
-    const game = new SnakeGame({
-        height: args.height,
-        width: args.width,
-        numFruits: args.numFruits,
-        initLen: args.initLen,
+    const game = new TradeGame({
+        stocksData,
+        balance,
+        commission,
+        // height: args.height,
+        // width: args.width,
+        // numFruits: args.numFruits,
+        // initLen: args.initLen,
     });
 
-    const agent = new SnakeGameAgent(game, {
+    const agent = new TradeGameAgent(game, {
         replayBufferSize: args.replayBufferSize,
         epsilonInit: args.epsilonInit,
         epsilonFinal: args.epsilonFinal,
