@@ -89,10 +89,12 @@ export class TradeGame {
     }
 
     initializeTrade_() {
+        this.balance_ = 10000;
         this.tradeCount_ = 0;
         this.currentDay_ = 0;
         this.lastStockPrice_ = 0;
         this.positiveTradesCount_ = 0;
+        this.negativeTradesCount_ = 0;
         this.prevBalance_ = 0;
 
         this.currentPosition_ = POSITION_EMPTY;
@@ -130,10 +132,17 @@ export class TradeGame {
      *        the fruit(s).
      */
     getState() {
-        return {
-            // s: this.snakeSquares_.slice(),
-            // f: this.fruitSquares_.slice(),
-        };
+        return [
+            this.balance_,
+            this.tradeCount_,
+            this.currentDay_,
+            this.positiveTradesCount_,
+        ];
+
+        // return {
+        //     // s: this.snakeSquares_.slice(),
+        //     // f: this.fruitSquares_.slice(),
+        // };
     }
 
 
@@ -158,6 +167,7 @@ export class TradeGame {
      */
     step(action, num) {
 
+        this.currentDay_ = num;
         // const buyStocks = parseInt(Math.min(this.state.maxBuyStocks, this.state.balance / stockPrice), 10);
 
         // const balance = this.state.balance - buyStocks * (stockPrice - this.state.commission);
@@ -166,14 +176,16 @@ export class TradeGame {
         //      time: time
         // };
 
-        const isLast = num === this.width_ - 1;
+        let isLast = num === this.width_ - 1;
+
 
         const prevPosition = this.currentPosition_;
         let moneyEarned = 0;
 
         this.updateCurrentPosition_(action);
 
-        console.log(this.balance_, this.stocksData[num][1], this.commission);
+        // console.log(isLast, num, this.width_, this.stocksData.length, typeof this.stocksData[num]);
+        // console.log(this.balance_, this.stocksData[num][1], this.commission);
 
         if (prevPosition === POSITION_EMPTY && this.currentPosition_ === POSITION_BOUGHT) {
             this.lastStockPrice_ = this.stocksData[num][1];
@@ -191,17 +203,21 @@ export class TradeGame {
 
             if (moneyEarned > 0) {
                 ++this.positiveTradesCount_;
+            } else if (moneyEarned < 0) {
+                ++this.negativeTradesCount_;
             }
         }
 
         const state = this.getState();
 
         return {
+            state,
             stepNum: `${num} / ${this.width_}`,
             balance: this.balance_,
             done: isLast,
             reward: moneyEarned,
             positiveTradesCount: this.positiveTradesCount_,
+            negativeTradesCount: this.negativeTradesCount_, 
             moneyEarned,
         };
 
@@ -569,10 +585,13 @@ export class SnakeGame {
    *        the fruit(s).
    */
     getState() {
-        return {
-            s: this.snakeSquares_.slice(),
-            f: this.fruitSquares_.slice(),
-        };
+        return [];
+        
+        
+        // {
+        //     s: this.snakeSquares_.slice(),
+        //     f: this.fruitSquares_.slice(),
+        // };
     }
 }
 
@@ -597,26 +616,47 @@ export class SnakeGame {
  */
 
 export function getStateTensor(state, h, w) {
-    if (!Array.isArray(state)) {
+    if (!Array.isArray(state[0])) {
         state = [state];
     }
+
+    // console.log(state);
+
     const numExamples = state.length;
-    // TODO(cais): Maintain only a single buffer for efficiency.
-    const buffer = tf.buffer([numExamples, h, w, 2]);
+    // // TODO(cais): Maintain only a single buffer for efficiency.
+    const buffer = tf.buffer([numExamples, 4, 1, 1]);
 
     for (let n = 0; n < numExamples; ++n) {
         if (state[n] == null) {
             continue;
         }
-        // Mark the snake.
-        state[n].s.forEach((yx, i) => {
-            buffer.set(i === 0 ? 2 : 1, n, yx[0], yx[1], 0);
-        });
 
-        // Mark the fruit(s).
-        state[n].f.forEach(yx => {
-            buffer.set(1, n, yx[0], yx[1], 1);
-        });
+        buffer.set(state[n][0], state[n][1], state[n][2], state[n][3], 0);
     }
+
     return buffer.toTensor();
+
+
+
+    // return tf.tensor2d([state]);
+
+    // const numExamples = state.length;
+    // // TODO(cais): Maintain only a single buffer for efficiency.
+    // const buffer = tf.buffer([numExamples, h, w, 2]);
+
+    // for (let n = 0; n < numExamples; ++n) {
+    //     if (state[n] == null) {
+    //         continue;
+    //     }
+    //     // Mark the snake.
+    //     state[n].s.forEach((yx, i) => {
+    //         buffer.set(i === 0 ? 2 : 1, n, yx[0], yx[1], 0);
+    //     });
+
+    //     // Mark the fruit(s).
+    //     state[n].f.forEach(yx => {
+    //         buffer.set(1, n, yx[0], yx[1], 1);
+    //     });
+    // }
+    // return buffer.toTensor();
 }

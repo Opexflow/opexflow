@@ -83,15 +83,14 @@ export async function train(
     let frameCountPrev = agent.frameCount;
     let averageReward100Best = -Infinity;
 
+    // while(true) {
     async function trainLoop() {
-        console.log(window.trainInProgress);
-
         if (!window.trainInProgress) {
             return;
         }
 
         agent.trainOnReplayBatch(batchSize, gamma, optimizer);
-        const { cumulativeReward, done, fruitsEaten } = agent.playStep();
+        const { cumulativeReward, done, moneyEarned } = agent.playStep();
         if (done) {
             const t = new Date().getTime();
             const framesPerSecond =
@@ -100,7 +99,7 @@ export async function train(
             frameCountPrev = agent.frameCount;
 
             rewardAverager100.append(cumulativeReward);
-            eatenAverager100.append(fruitsEaten);
+            eatenAverager100.append(moneyEarned);
             const averageReward100 = rewardAverager100.average();
             const averageEaten100 = eatenAverager100.average();
 
@@ -142,10 +141,10 @@ export async function train(
             console.log('Sync\'ed weights from online network to target network');
         }
 
-        window.requestAnimationFrame(async () => { await trainLoop() });
+       window.requestAnimationFrame(async () => { await trainLoop() });
     }
 
-    window.requestAnimationFrame(async () => { await trainLoop() });
+   window.requestAnimationFrame(async () => { await trainLoop() });
 }
 
 export function parseArguments() {

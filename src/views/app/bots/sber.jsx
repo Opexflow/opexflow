@@ -384,7 +384,7 @@ export default class Sber extends Component {
                                 console.log(stat.stepNum);
 
                                 logs.push({
-                                    label: `Reward: ${stat.cumulativeReward}, Balance: ${stat.balance}, moneyEarned: ${stat.moneyEarned}, positiveTradesCount: ${stat.positiveTradesCount}`,
+                                    label: `Reward: ${stat.cumulativeReward}, Balance: ${stat.balance}, moneyEarned: ${stat.moneyEarned}, positive: ${stat.positiveTradesCount}, negative: ${stat.negativeTradesCount}`,
                                     time: stat.stepNum
                                 });
                             }

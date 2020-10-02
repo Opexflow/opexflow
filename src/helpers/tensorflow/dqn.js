@@ -32,31 +32,46 @@ export function createDeepQNetwork(h, w, numActions) {
     }
 
     const model = tf.sequential();
-    model.add(tf.layers.conv2d({
-        filters: 128,
-        kernelSize: 3,
-        strides: 1,
-        activation: 'relu',
-        inputShape: [h, w, 2],
-    }));
-    model.add(tf.layers.batchNormalization());
-    model.add(tf.layers.conv2d({
-        filters: 256,
-        kernelSize: 3,
-        strides: 1,
-        activation: 'relu',
-    }));
-    model.add(tf.layers.batchNormalization());
-    model.add(tf.layers.conv2d({
-        filters: 256,
-        kernelSize: 3,
-        strides: 1,
-        activation: 'relu',
-    }));
-    model.add(tf.layers.flatten());
-    model.add(tf.layers.dense({ units: 100, activation: 'relu' }));
-    model.add(tf.layers.dropout({ rate: 0.25 }));
-    model.add(tf.layers.dense({ units: numActions }));
+    // model.add(tf.layers.conv2d({
+    //     filters: 128,
+    //     kernelSize: 3,
+    //     strides: 1,
+    //     activation: 'relu',
+    //     // inputShape: [h, w, 2],
+    //     inputShape: [4, 4, 4],
+    // }));
+    // model.add(tf.layers.batchNormalization());
+    // model.add(tf.layers.conv2d({
+    //     filters: 256,
+    //     kernelSize: 3,
+    //     strides: 1,
+    //     activation: 'relu',
+    // }));
+    // model.add(tf.layers.batchNormalization());
+    // model.add(tf.layers.conv2d({
+    //     filters: 256,
+    //     kernelSize: 3,
+    //     strides: 1,
+    //     activation: 'relu',
+    // }));
+    // model.add(tf.layers.flatten());
+    // model.add(tf.layers.dense({ units: 100, activation: 'relu' }));
+    // model.add(tf.layers.dropout({ rate: 0.25 }));
+    // model.add(tf.layers.dense({ units: numActions }));
+
+    // model = tf.sequential();
+    [4].forEach((hiddenLayerSize, i) => {
+      model.add(tf.layers.dense({
+        units: hiddenLayerSize,
+        activation: 'elu',
+        // `inputShape` is required only for the first layer.
+        inputShape: i === 0 ? [4, 1, 1] : undefined
+      }));
+    });
+    // The last layer has only one unit. The single output number will be
+    // converted to a probability of selecting the leftward-force action.
+    model.add(tf.layers.dense({units: numActions}));
+
 
     return model;
 }
