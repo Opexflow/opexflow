@@ -6,6 +6,94 @@ import { Colxx, Separator } from '../../../components/common/CustomBootstrap';
 import Breadcrumb from '../../../containers/navs/Breadcrumb';
 import IconCard from '../../../components/cards/IconCard';
 import Logs from '../../../containers/dashboards/Logs'
+import { main, args } from './sber/train'
+import * as tf from '@tensorflow/tfjs';
+
+import { TradeGameAgent } from './sber/trade_agent';
+import { TradeGame, NUM_ACTIONS, ALL_ACTIONS, getStateTensor } from './sber/trade_game';
+
+let game;
+let qNet;
+
+let currentQValues;
+let bestAction;
+let cumulativeReward = 0;
+let cumulativeFruits = 0;
+let autoPlaying = false;
+let autoPlayIntervalJob;
+
+/** Reset the game state. */
+async function reset() {
+    // if (game == null) {
+    //     return;
+    // }
+    game.reset();
+    await calcQValuesAndBestAction();
+
+    // renderSnakeGame(gameCanvas, game,
+    //     showQValuesCheckbox.checked ? currentQValues : null);
+    // gameStatusSpan.textContent = 'Game started.';
+    // stepButton.disabled = false;
+    // autoPlayStopButton.disabled = false;
+}
+
+/** Calculate the current Q-values and the best action. */
+async function calcQValuesAndBestAction() {
+    // console.log('currentQValues', currentQValues);
+    if (currentQValues != null) {
+        return;
+    }
+
+    tf.tidy(() => {
+        const stateTensor = getStateTensor(game.getState(), game.height, game.width);
+        const predictOut = qNet.predict(stateTensor);
+        currentQValues = predictOut.dataSync();
+        bestAction = ALL_ACTIONS[predictOut.argMax(-1).dataSync()[0]];
+        console.log('bestAction', bestAction, game.getState()); //bestAction, game.getState(), stateTensor, qNet, predictOut);
+    });
+}
+
+function invalidateQValuesAndBestAction() {
+    currentQValues = null;
+    bestAction = null;
+}
+
+
+
+/**
+ * Play a game for one step.
+ *
+ * - Use the current best action to forward one step in the game.
+ * - Accumulate to the cumulative reward.
+ * - Determine if the game is over and update the UI accordingly.
+ * - If the game has not ended, calculate the current Q-values and best action.
+ * - Render the game in the canvas.
+ */
+async function step() {
+    // console.log('bestAction', bestAction, game);
+    const {reward, done, fruitEaten} = game.step(bestAction);
+    invalidateQValuesAndBestAction();
+    cumulativeReward += reward;
+    if (fruitEaten) {
+      cumulativeFruits++;
+    }
+    console.log(`Reward=${cumulativeReward.toFixed(1)}; Fruits=${cumulativeFruits}`);
+    if (done) {
+      console.log('. Game Over!');
+      cumulativeReward = 0;
+      cumulativeFruits = 0;
+    //   if (autoPlayIntervalJob) {
+    //     clearInterval(autoPlayIntervalJob);
+    //     autoPlayStopButton.click();
+    //   }
+    //   autoPlayStopButton.disabled = true;
+    //   stepButton.disabled = true;
+    }
+    await calcQValuesAndBestAction();
+    // renderSnakeGame(gameCanvas, game,
+    //     showQValuesCheckbox.checked ? currentQValues : null);
+  }
+
 
 export default class Sber extends Component {    
     constructor(props) {
@@ -47,12 +135,24 @@ export default class Sber extends Component {
         };
     }
 
+    resetState() {
+        this.setState({
+            balance: 10000,
+            stocks: 0,
+            maxBuyStocks: 40,
+            lastStockPrice: 0,
+            commission: 0.05,
+            logs: [],
+        });
+    }
+
     // lastDate = 1538884800000
     // [Timestamp, O, H, L, C]
     // lastTick = [6604.98, 6606, 6604.07, 6606]
 
     componentDidMount() {
         this.getChartData();
+        this.resetState();
     }
 
     componentDidUpdate() {
@@ -134,6 +234,16 @@ export default class Sber extends Component {
                         text: name,
                     },
                 },
+                stocksData: res.map(r => {
+                    const tick = r.split(',');
+                    if (!tick[2] || !tick[3]) {
+                        return false;
+                    }
+    
+                    // SBER,5,08/07/20,12:30:00,210.6100000,210.6800000,210.4700000,210.6000000,73370
+                    // Для упрощения наблюдений увеличиваем стоимость акций, чтобы следить за целыми числами
+                    return [tick[2] + ' ' + tick[3], parseInt(tick[5] * 10, 10), tick[8]];
+                }).filter(Boolean)
             };
 
             this.setState(this.loadedData[this.state.currentTicks]);
@@ -323,6 +433,181 @@ export default class Sber extends Component {
                     Sell
                 </Button>)}
               </Row>
+              <Row><br/></Row>
+              <Row>{!this.state.randomBotTraining ? <Button
+                    variant="secondary"
+                    onClick={() => {
+                       this.setState({
+                            randomBotTraining: true,
+                       });
+
+                        const game = new TradeGame({
+                            stocksData: this.state.stocksData,
+                            balance: 10000,
+                            commission: this.state.commission,
+                        });
+                    
+                        const agent = new TradeGameAgent(game, {
+                            replayBufferSize: args.replayBufferSize,
+                            epsilonInit: args.epsilonInit,
+                            epsilonFinal: args.epsilonFinal,
+                            epsilonDecayFrames: args.epsilonDecayFrames,
+                            learningRate: args.learningRate,
+                        });
+
+                        window.randomBotTrainingInProgress = true;
+
+                        const logs = [];
+                        for (let i = 0; i < this.state.stocksData.length; ++i) {
+                            if (!window.randomBotTrainingInProgress) {
+                                break;
+                            }
+                            const stat = agent.playStep();
+
+                            if (stat) {
+                                console.log(stat.stepNum);
+
+                                logs.push({
+                                    label: `Reward: ${stat.cumulativeReward}, Balance: ${stat.balance}, moneyEarned: ${stat.moneyEarned}, positive: ${stat.positiveTradesCount}, negative: ${stat.negativeTradesCount}`,
+                                    time: stat.stepNum
+                                });
+                            }
+
+                            this.setState({
+                                logs
+                            });
+                        }
+                    }}
+                    size="lg"
+                >
+                    Start random game
+                </Button> :
+                <Button
+                    variant="secondary"
+                    onClick={() => {
+                        this.setState({
+                            randomBotTraining: false,
+                        });
+
+                        window.randomBotTrainingInProgress = false;
+                    }}
+                    size="lg"
+                >
+                    Stop random game
+                </Button>}
+              </Row>
+              <Row><br/></Row>
+
+              <Row>{!this.state.botTraining ? <Button
+                    variant="secondary"
+                    onClick={() => {
+                       this.setState({
+                           botTraining: true,
+                       });
+
+                       window.trainInProgress = true;
+                    //    console.log(this.state.stocksData);
+                       main(this.state.stocksData, 10000, this.state.commission);
+                    }}
+                    size="lg"
+                >
+                    Train start
+                </Button> :
+                <Button
+                    variant="secondary"
+                    onClick={() => {
+                        this.setState({
+                            botTraining: false,
+                        });
+
+                        window.trainInProgress = false;
+                    }}
+                    size="lg"
+                >
+                    Train stop
+                </Button>}
+              </Row>
+              <Row><br/></Row>
+              <Row>
+                <Button
+                    variant="secondary"
+                    onClick={() => {
+                        
+                        const stocksData = this.state.stocksData;
+                        const commission = this.state.commission;
+
+                        async function initGame() {
+                            game = new TradeGame({
+                                balance: 10000,
+                                stocksData,
+                                commission,
+                            });
+                          
+                            // Warm up qNet.
+                            for (let i = 0; i < 3; ++i) {
+                              qNet.predict(getStateTensor(game.getState(), game.height, game.width));
+                            }
+                          
+                            await reset();
+                          
+                            autoPlayIntervalJob = setInterval(() => {
+                                step(game, qNet);
+                            }, 250);
+
+                            setTimeout(() => {
+                                clearInterval(autoPlayIntervalJob);
+                            }, 15000);
+
+                            // stepButton.addEventListener('click', step);
+                          
+                            // autoPlayStopButton.addEventListener('click', () => {
+                            //   if (autoPlaying) {
+                            //     autoPlayStopButton.textContent = 'Auto Play';
+                            //     if (autoPlayIntervalJob) {
+                            //       clearInterval(autoPlayIntervalJob);
+                            //     }
+                            //   } else {
+                            //     autoPlayIntervalJob = setInterval(() => {
+                            //       step(game, qNet);
+                            //     }, 100);
+                            //     autoPlayStopButton.textContent = 'Stop';
+                            //   }
+                            //   autoPlaying = !autoPlaying;
+                            //   stepButton.disabled = autoPlaying;
+                            // });
+                          
+                            // resetButton.addEventListener('click',  () => reset(game));
+                        }
+
+                        (async function() {
+                            try {
+                              qNet = await tf.loadLayersModel('indexeddb://snake-model-dqn');
+                              console.log(`Loaded model from indexeddb://snake-model-dqn`);
+                              initGame();
+                              // enableGameButtons();
+                            } catch (err) {
+                              console.log('Loading local model failed.');
+                            }
+                        })();
+                    }}
+                    size="lg"
+                >
+                    Train test
+                </Button>
+              </Row>
+              <Row><br/></Row>
+              <Row>
+                  <Button
+                    variant="secondary"
+                    onClick={() => {
+                        step();
+                    }}
+                    size="lg"
+                >
+                    Train step
+                </Button>
+              </Row>
+              <Row><br/></Row>
               <Row><br/></Row>
               <Row>
                <Logs logsData={this.state.logs} />

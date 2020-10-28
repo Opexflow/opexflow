@@ -17,7 +17,266 @@
 
 import * as tf from '@tensorflow/tfjs';
 
-import { assertPositiveInteger, getRandomInteger } from './utils';
+import { assertPositiveInteger, getRandomInteger } from '../../../../helpers/tensorflow/utils';
+
+export const DEFAULT_BALANCE = 1000;
+export const DEFAULT_COMMISSION = 0.05;
+
+export const ACTION_DO_NOTHING = 0;
+export const ACTION_BUY = 1;
+export const ACTION_SELL = 2;
+
+export const POSITION_EMPTY = 0;
+export const POSITION_BOUGHT = 1;
+export const POSITION_SOLD = 2;
+
+export const ALL_ACTIONS = [ACTION_DO_NOTHING, ACTION_BUY, ACTION_SELL];
+export const NUM_ACTIONS = ALL_ACTIONS.length;
+
+/**
+ * Generate a random action among all possible actions.
+ *
+ * @return {0 | 1 | 2} Action represented as a number.
+ */
+export function getRandomAction() {
+    return getRandomInteger(0, NUM_ACTIONS);
+}
+
+export class TradeGame {
+    /**
+     * Constructor of SnakeGame.
+     *
+     * @param {object} args Configurations for the game. Fields include:
+     *   - height {number} height of the board (positive integer).
+     *   - width {number} width of the board (positive integer).
+     *   - numFruits {number} number of fruits present on the screen
+     *     at any given step.
+     *   - initLen {number} initial length of the snake.
+     */
+    constructor(args) {
+        if (args == null) {
+            args = {};
+        }
+
+        if (args.stocksData == null) {
+            args.stocksData = [];
+        }
+
+        if (args.balance == null) {
+            args.balance = DEFAULT_BALANCE;
+        }
+
+        if (args.commission == null) {
+            args.commission = DEFAULT_COMMISSION;
+        }
+
+        this.width_ = args.stocksData.length;
+        this.stocksData = args.stocksData;
+        this.commission = args.commission;
+
+        const heightBuf = {};
+        args.stocksData.forEach(data => { heightBuf[data[1]] = true });
+        this.height_ = Object.keys(heightBuf).length;
+
+        this.balance_ = args.balance;
+
+        this.reset();
+    }
+
+    initializeTrade_() {
+        this.balance_ = 10000;
+        this.tradeCount_ = 0;
+        this.currentDay_ = 0;
+        this.lastStockPrice_ = 0;
+        this.positiveTradesCount_ = 0;
+        this.negativeTradesCount_ = 0;
+        this.prevBalance_ = 0;
+
+        this.currentPosition_ = POSITION_EMPTY;
+    }
+
+    /**
+     * Reset the state of the game.
+     *
+     * @return {object} Initial state of the game.
+     *   See the documentation of `getState()` for details.
+     */
+    reset() {
+        this.initializeTrade_();
+        return this.getState();
+    }
+
+    get height() {
+        return this.height_;
+    }
+
+    get width() {
+        return this.width_;
+    }
+
+    /**
+     * Get plain JavaScript representation of the game state.
+     *
+     * @return An object with two keys:
+     *   - s: {Array<[number, number]>} representing the squares occupied by
+     *        the snake. The array is ordered in such a way that the first
+     *        element corresponds to the head of the snake and the last
+     *        element corresponds to the tail.
+     *   - f: {Array<[number, number]>} representing the squares occupied by
+     *        the fruit(s).
+     */
+    getState() {
+        return [
+            this.balance_,
+            this.tradeCount_,
+            this.currentDay_,
+            this.positiveTradesCount_,
+        ];
+
+        // return {
+        //     // s: this.snakeSquares_.slice(),
+        //     // f: this.fruitSquares_.slice(),
+        // };
+    }
+
+    /**
+     * Perform a step of the game.
+     *
+     * @param {0 | 1 | 2 | 3} action The action to take in the current step.
+     *   The meaning of the possible values:
+     *     0 - left
+     *     1 - top
+     *     2 - right
+     *     3 - bottom
+     * @return {object} Object with the following keys:
+     *   - `reward` {number} the reward value.
+     *     - 0 if no fruit is eaten in this step
+     *     - 1 if a fruit is eaten in this step
+     *   - `state` New state of the game after the step.
+     *   - `fruitEaten` {boolean} Whether a fruit is easten in this step.
+     *   - `done` {boolean} whether the game has ended after this step.
+     *     A game ends when the head of the snake goes off the board or goes
+     *     over its own body.
+     */
+    step(action, num) {
+        // console.log('step', this);
+
+        if (typeof num === 'undefined') {
+            num = this.currentDay_ + 1;
+        }
+
+        this.currentDay_ = num;
+        // const buyStocks = parseInt(Math.min(this.state.maxBuyStocks, this.state.balance / stockPrice), 10);
+
+        // const balance = this.state.balance - buyStocks * (stockPrice - this.state.commission);
+        // const log = {
+        //      label: `Buy ${this.state.stocks} stock, price: ${stockPrice}`,
+        //      time: time
+        // };
+
+        let isLast = num === this.width_ - 1;
+
+        const prevPosition = this.currentPosition_;
+        let moneyEarned = 0;
+
+        this.updateCurrentPosition_(action);
+
+        // console.log(isLast, num, this.width_, this.stocksData.length, typeof this.stocksData[num]);
+        // console.log(this.balance_, this.stocksData[num][1], this.commission);
+
+        if (prevPosition === POSITION_EMPTY && this.currentPosition_ === POSITION_BOUGHT) {
+            this.lastStockPrice_ = this.stocksData[num][1];
+            this.prevBalance_ = this.balance_;
+
+            if (this.balance_ < this.lastStockPrice_ + this.commission) {
+                isLast = true;
+            } else {
+                this.balance_ -= this.lastStockPrice_ + this.commission;
+            }
+        } else if (prevPosition === POSITION_BOUGHT && this.currentPosition_ === POSITION_EMPTY || isLast && this.lastStockPrice_ > 0) {
+            this.lastStockPrice_ = 0;
+            this.balance_ += this.stocksData[num][1] - this.commission;
+            moneyEarned = (this.balance_ - this.prevBalance_) * 100;
+
+            if (moneyEarned > 0) {
+                ++this.positiveTradesCount_;
+            } else if (moneyEarned < 0) {
+                ++this.negativeTradesCount_;
+            }
+        }
+
+        const state = this.getState();
+
+        return {
+            state,
+            stepNum: `${num} / ${this.width_}`,
+            balance: this.balance_,
+            done: isLast,
+            reward: moneyEarned,
+            positiveTradesCount: this.positiveTradesCount_,
+            negativeTradesCount: this.negativeTradesCount_,
+            moneyEarned,
+        };
+
+        // // Check if the head goes over the snake's body, in which case the
+        // // game will end.
+        // for (let i = 1; i < this.snakeSquares_.length; ++i) {
+        //     if (this.snakeSquares_[i][0] === newHeadY &&
+        // this.snakeSquares_[i][1] === newHeadX) {
+        //         done = true;
+        //     }
+        // }
+
+        // let fruitEaten = false;
+        // if (done) {
+        //     return { reward: DEATH_REWARD, done, fruitEaten };
+        // }
+
+        // // Update the position of the snake.
+        // this.snakeSquares_.unshift([newHeadY, newHeadX]);
+
+        // // Check if a fruit is eaten.
+        // let reward = NO_FRUIT_REWARD;
+        // for (let i = 0; i < this.fruitSquares_.length; ++i) {
+        //     const fruitYX = this.fruitSquares_[i];
+        //     if (fruitYX[0] === newHeadY && fruitYX[1] === newHeadX) {
+        //         reward = FRUIT_REWARD;
+        //         fruitEaten = true;
+        //         this.fruitSquares_.splice(i, 1);
+        //         this.makeFruits_();
+        //         break;
+        //     }
+        // }
+        // if (!fruitEaten) {
+        //     // Pop the tail off if and only if the snake didn't eat a fruit in this
+        //     // step.
+        //     this.snakeSquares_.pop();
+        // }
+
+        // const state = this.getState();
+        // return {
+        //     reward, state, done, fruitEaten,
+        // };
+    }
+
+    updateCurrentPosition_(action) {
+        if (this.currentPosition_ === POSITION_EMPTY) {
+            if (action === ACTION_BUY) {
+                this.currentPosition_ = POSITION_BOUGHT;
+            } else if (action === ACTION_SELL) {
+                this.currentPosition_ = POSITION_SOLD;
+            }
+        } else if (this.currentPosition_ === POSITION_BOUGHT) {
+            if (action === ACTION_SELL) {
+                this.currentPosition_ = POSITION_EMPTY;
+            }
+        } else if (this.currentPosition_ === POSITION_SOLD) {
+            if (action === ACTION_BUY) {
+                this.currentPosition_ = POSITION_EMPTY;
+            }
+        }
+    }
+}
 
 const DEFAULT_HEIGHT = 16;
 const DEFAULT_WIDTH = 16;
@@ -33,18 +292,6 @@ export const DEATH_REWARD = -10;
 export const ACTION_GO_STRAIGHT = 0;
 export const ACTION_TURN_LEFT = 1;
 export const ACTION_TURN_RIGHT = 2;
-
-export const ALL_ACTIONS = [ACTION_GO_STRAIGHT, ACTION_TURN_LEFT, ACTION_TURN_RIGHT];
-export const NUM_ACTIONS = ALL_ACTIONS.length;
-
-/**
- * Generate a random action among all possible actions.
- *
- * @return {0 | 1 | 2} Action represented as a number.
- */
-export function getRandomAction() {
-    return getRandomInteger(0, NUM_ACTIONS);
-}
 
 export class SnakeGame {
     /**
@@ -319,10 +566,12 @@ export class SnakeGame {
    *        the fruit(s).
    */
     getState() {
-        return {
-            s: this.snakeSquares_.slice(),
-            f: this.fruitSquares_.slice(),
-        };
+        return [];
+
+        // {
+        //     s: this.snakeSquares_.slice(),
+        //     f: this.fruitSquares_.slice(),
+        // };
     }
 }
 
@@ -347,26 +596,45 @@ export class SnakeGame {
  */
 
 export function getStateTensor(state, h, w) {
-    if (!Array.isArray(state)) {
+    // console.log(state);
+
+    if (!Array.isArray(state[0])) {
         state = [state];
     }
+
     const numExamples = state.length;
-    // TODO(cais): Maintain only a single buffer for efficiency.
-    const buffer = tf.buffer([numExamples, h, w, 2]);
+    // // TODO(cais): Maintain only a single buffer for efficiency.
+    const buffer = tf.buffer([numExamples, 4, 1, 1]);
 
     for (let n = 0; n < numExamples; ++n) {
         if (state[n] == null) {
             continue;
         }
-        // Mark the snake.
-        state[n].s.forEach((yx, i) => {
-            buffer.set(i === 0 ? 2 : 1, n, yx[0], yx[1], 0);
-        });
 
-        // Mark the fruit(s).
-        state[n].f.forEach(yx => {
-            buffer.set(1, n, yx[0], yx[1], 1);
-        });
+        buffer.set(state[n][0], state[n][1], state[n][2], state[n][3], 0);
     }
+
     return buffer.toTensor();
+
+    // return tf.tensor2d([state]);
+
+    // const numExamples = state.length;
+    // // TODO(cais): Maintain only a single buffer for efficiency.
+    // const buffer = tf.buffer([numExamples, h, w, 2]);
+
+    // for (let n = 0; n < numExamples; ++n) {
+    //     if (state[n] == null) {
+    //         continue;
+    //     }
+    //     // Mark the snake.
+    //     state[n].s.forEach((yx, i) => {
+    //         buffer.set(i === 0 ? 2 : 1, n, yx[0], yx[1], 0);
+    //     });
+
+    //     // Mark the fruit(s).
+    //     state[n].f.forEach(yx => {
+    //         buffer.set(1, n, yx[0], yx[1], 1);
+    //     });
+    // }
+    // return buffer.toTensor();
 }

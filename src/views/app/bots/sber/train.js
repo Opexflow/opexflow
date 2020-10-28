@@ -14,15 +14,11 @@
  * limitations under the License.
  * =============================================================================
  */
-
-import * as fs from 'fs';
-
 import * as argparse from 'argparse';
-import { mkdir } from 'shelljs';
 
-import { SnakeGameAgent } from './agent';
-import { copyWeights } from './dqn';
-import { SnakeGame } from './snake_game';
+import { TradeGameAgent } from './trade_agent';
+import { copyWeights } from '../../../../helpers/tensorflow/dqn';
+import { TradeGame } from './trade_game';
 
 // The value of tf (TensorFlow.js-Node module) will be set dynamically
 // depending on the value of the --gpu flag below.
@@ -86,9 +82,15 @@ export async function train(
     let tPrev = new Date().getTime();
     let frameCountPrev = agent.frameCount;
     let averageReward100Best = -Infinity;
-    while (true) {
+
+    // while(true) {
+    async function trainLoop() {
+        if (!window.trainInProgress) {
+            return;
+        }
+
         agent.trainOnReplayBatch(batchSize, gamma, optimizer);
-        const { cumulativeReward, done, fruitsEaten } = agent.playStep();
+        const { cumulativeReward, done, moneyEarned } = agent.playStep();
         if (done) {
             const t = new Date().getTime();
             const framesPerSecond =
@@ -97,7 +99,7 @@ export async function train(
             frameCountPrev = agent.frameCount;
 
             rewardAverager100.append(cumulativeReward);
-            eatenAverager100.append(fruitsEaten);
+            eatenAverager100.append(moneyEarned);
             const averageReward100 = rewardAverager100.average();
             const averageEaten100 = eatenAverager100.average();
 
@@ -119,17 +121,17 @@ export async function train(
                 );
             }
             if (averageReward100 >= cumulativeRewardThreshold ||
-          agent.frameCount >= maxNumFrames) {
+            agent.frameCount >= maxNumFrames) {
                 // TODO(cais): Save online network.
-                break;
+                return;
             }
             if (averageReward100 > averageReward100Best) {
                 averageReward100Best = averageReward100;
                 if (savePath != null) {
-                    if (!fs.existsSync(savePath)) {
-                        mkdir('-p', savePath);
-                    }
-                    await agent.onlineNetwork.save(`file://${savePath}`);
+                    // if (!fs.existsSync(savePath)) {
+                    //    mkdir('-p', savePath);
+                    // }
+                    await agent.onlineNetwork.save(savePath);
                     console.log(`Saved DQN to ${savePath}`);
                 }
             }
@@ -138,7 +140,11 @@ export async function train(
             copyWeights(agent.targetNetwork, agent.onlineNetwork);
             console.log('Sync\'ed weights from online network to target network');
         }
+
+        window.requestAnimationFrame(async () => { await trainLoop() });
     }
+
+    window.requestAnimationFrame(async () => { await trainLoop() });
 }
 
 export function parseArguments() {
@@ -238,26 +244,49 @@ export function parseArguments() {
     return parser.parseArgs();
 }
 
-async function main() {
-    const args = parseArguments();
-    if (args.gpu) {
-        tf = require('@tensorflow/tfjs-node-gpu');
-    } else {
-        tf = require('@tensorflow/tfjs-node');
-    }
-    console.log(`args: ${JSON.stringify(args, null, 2)}`);
+export const args = {
+    gpu: false,
+    height: 9,
+    width: 9,
+    numFruits: 1,
+    initLen: 2,
+    cumulativeRewardThreshold: 100,
+    maxNumFrames: 1000000,
+    replayBufferSize: 10000,
+    epsilonInit: 0.5,
+    epsilonFinal: 0.01,
+    epsilonDecayFrames: 100000,
+    batchSize: 64,
+    gamma: 0.99,
+    learningRate: 0.001,
+    syncEveryFrames: 1000,
+    savePath: 'indexeddb://snake-model-dqn',
+    logDir: null,
+};
 
-    const game = new SnakeGame({
-        height: args.height,
-        width: args.width,
-        numFruits: args.numFruits,
-        initLen: args.initLen,
+export async function main(stocksData, balance, commission) {
+    if (args.gpu) {
+        // tf = require('@tensorflow/tfjs-node-gpu');
+    } else {
+        tf = require('@tensorflow/tfjs');
+    }
+
+    const game = new TradeGame({
+        stocksData,
+        balance,
+        commission,
+        // height: args.height,
+        // width: args.width,
+        // numFruits: args.numFruits,
+        // initLen: args.initLen,
     });
-    const agent = new SnakeGameAgent(game, {
+
+    const agent = new TradeGameAgent(game, {
         replayBufferSize: args.replayBufferSize,
         epsilonInit: args.epsilonInit,
         epsilonFinal: args.epsilonFinal,
         epsilonDecayFrames: args.epsilonDecayFrames,
+        learningRate: args.learningRate,
     });
 
     await train(

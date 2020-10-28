@@ -17,18 +17,18 @@
 
 import * as tf from '@tensorflow/tfjs';
 
-import { createDeepQNetwork } from './dqn';
+import { createDeepQNetwork } from '../../../../helpers/tensorflow/dqn';
 import {
-    getRandomAction, SnakeGame, NUM_ACTIONS, ALL_ACTIONS, getStateTensor,
-} from './snake_game';
-import { ReplayMemory } from './replay_memory';
-import { assertPositiveInteger } from './utils';
+    getRandomAction, NUM_ACTIONS, ALL_ACTIONS, getStateTensor,
+} from './trade_game';
+import { ReplayMemory } from '../../../../helpers/tensorflow/replay_memory';
+import { assertPositiveInteger } from '../../../../helpers/tensorflow/utils';
 
-export class SnakeGameAgent {
+export class TradeGameAgent {
     /**
-   * Constructor of SnakeGameAgent.
+   * Constructor of TradeGameAgent.
    *
-   * @param {SnakeGame} game A game object.
+   * @param {TradeGame} game A game object.
    * @param {object} config The configuration object with the following keys:
    *   - `replayBufferSize` {number} Size of the replay memory. Must be a
    *     positive integer.
@@ -69,7 +69,8 @@ export class SnakeGameAgent {
 
     reset() {
         this.cumulativeReward_ = 0;
-        this.fruitsEaten_ = 0;
+        this.moneyEarned_ = 0;
+        this.step_ = 0;
         this.game.reset();
     }
 
@@ -83,7 +84,8 @@ export class SnakeGameAgent {
         this.epsilon = this.frameCount >= this.epsilonDecayFrames ?
             this.epsilonFinal :
             this.epsilonInit + this.epsilonIncrement_ * this.frameCount;
-        this.frameCount++;
+
+        // let action = getRandomAction();
 
         // The epsilon-greedy algorithm.
         let action;
@@ -94,29 +96,54 @@ export class SnakeGameAgent {
         } else {
             // Greedily pick an action based on online DQN output.
             tf.tidy(() => {
-                const stateTensor =
-            getStateTensor(state, this.game.height, this.game.width);
-                action = ALL_ACTIONS[
-                    this.onlineNetwork.predict(stateTensor).argMax(-1).dataSync()[0]];
+                const stateTensor = getStateTensor(state, this.game.height, this.game.width);
+                action = ALL_ACTIONS[this.onlineNetwork.predict(stateTensor).argMax(-1).dataSync()[0]];
+                
+                console.log('bestAction', action, state);
+                
+                // console.log(action); 
+                // this.onlineNetwork.predict(stateTensor).print();
             });
+
         }
 
         const {
-            state: nextState, reward, done, fruitEaten,
-        } = this.game.step(action);
+            state: nextState, 
+            reward,
+            done,
+            moneyEarned,
+            stepNum,
+            balance,
+            positiveTradesCount,
+            negativeTradesCount,
+        } = this.game.step(action, this.step_);
 
         this.replayMemory.append([state, action, reward, done, nextState]);
 
         this.cumulativeReward_ += reward;
-        if (fruitEaten) {
-            this.fruitsEaten_++;
+
+        if (moneyEarned) {
+            this.moneyEarned_ += moneyEarned;
         }
+
         const output = {
             action,
             cumulativeReward: this.cumulativeReward_,
             done,
-            fruitsEaten: this.fruitsEaten_,
+            moneyEarned: this.moneyEarned_,
+            stepNum,
+            balance,
+            positiveTradesCount,
+            negativeTradesCount,
         };
+
+        if (done && this.cumulativeReward_ > 0) {
+            console.log(output);
+        }
+
+        this.frameCount++;
+        this.step_++;
+
         if (done) {
             this.reset();
         }
@@ -133,7 +160,11 @@ export class SnakeGameAgent {
    */
     trainOnReplayBatch(batchSize, gamma, optimizer) {
     // Get a batch of examples from the replay buffer.
+    // this.replayMemory.append([state, action, reward, done, nextState]);
+
         const batch = this.replayMemory.sample(batchSize);
+        // console.log(batch);
+
         const lossFunction = () => tf.tidy(() => {
             const stateTensor = getStateTensor(
                 batch.map(example => example[0]), this.game.height, this.game.width,
