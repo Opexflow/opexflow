@@ -141,10 +141,10 @@ export async function train(
             console.log('Sync\'ed weights from online network to target network');
         }
 
-       window.requestAnimationFrame(async () => { await trainLoop() });
+        window.requestAnimationFrame(async () => { await trainLoop() });
     }
 
-   window.requestAnimationFrame(async () => { await trainLoop() });
+    window.requestAnimationFrame(async () => { await trainLoop() });
 }
 
 export function parseArguments() {

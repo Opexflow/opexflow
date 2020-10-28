@@ -96,11 +96,15 @@ export class TradeGameAgent {
         } else {
             // Greedily pick an action based on online DQN output.
             tf.tidy(() => {
-                const stateTensor =
-            getStateTensor(state, this.game.height, this.game.width);
-                action = ALL_ACTIONS[
-                    this.onlineNetwork.predict(stateTensor).argMax(-1).dataSync()[0]];
+                const stateTensor = getStateTensor(state, this.game.height, this.game.width);
+                action = ALL_ACTIONS[this.onlineNetwork.predict(stateTensor).argMax(-1).dataSync()[0]];
+                
+                console.log('bestAction', action, state);
+                
+                // console.log(action); 
+                // this.onlineNetwork.predict(stateTensor).print();
             });
+
         }
 
         const {
@@ -132,6 +136,10 @@ export class TradeGameAgent {
             positiveTradesCount,
             negativeTradesCount,
         };
+
+        if (done && this.cumulativeReward_ > 0) {
+            console.log(output);
+        }
 
         this.frameCount++;
         this.step_++;

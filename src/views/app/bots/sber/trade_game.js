@@ -20,7 +20,7 @@ import * as tf from '@tensorflow/tfjs';
 import { assertPositiveInteger, getRandomInteger } from '../../../../helpers/tensorflow/utils';
 
 export const DEFAULT_BALANCE = 1000;
-export const DEFAULT_COMMISSION = 0.05; 
+export const DEFAULT_COMMISSION = 0.05;
 
 export const ACTION_DO_NOTHING = 0;
 export const ACTION_BUY = 1;
@@ -29,8 +29,6 @@ export const ACTION_SELL = 2;
 export const POSITION_EMPTY = 0;
 export const POSITION_BOUGHT = 1;
 export const POSITION_SOLD = 2;
-
-
 
 export const ALL_ACTIONS = [ACTION_DO_NOTHING, ACTION_BUY, ACTION_SELL];
 export const NUM_ACTIONS = ALL_ACTIONS.length;
@@ -44,10 +42,7 @@ export function getRandomAction() {
     return getRandomInteger(0, NUM_ACTIONS);
 }
 
-
-
 export class TradeGame {
-
     /**
      * Constructor of SnakeGame.
      *
@@ -74,13 +69,13 @@ export class TradeGame {
         if (args.commission == null) {
             args.commission = DEFAULT_COMMISSION;
         }
-        
+
         this.width_ = args.stocksData.length;
         this.stocksData = args.stocksData;
         this.commission = args.commission;
 
         const heightBuf = {};
-        args.stocksData.forEach((data) => { heightBuf[data[1]] = true; });
+        args.stocksData.forEach(data => { heightBuf[data[1]] = true });
         this.height_ = Object.keys(heightBuf).length;
 
         this.balance_ = args.balance;
@@ -110,7 +105,6 @@ export class TradeGame {
         this.initializeTrade_();
         return this.getState();
     }
-
 
     get height() {
         return this.height_;
@@ -145,7 +139,6 @@ export class TradeGame {
         // };
     }
 
-
     /**
      * Perform a step of the game.
      *
@@ -166,6 +159,11 @@ export class TradeGame {
      *     over its own body.
      */
     step(action, num) {
+        // console.log('step', this);
+
+        if (typeof num === 'undefined') {
+            num = this.currentDay_ + 1;
+        }
 
         this.currentDay_ = num;
         // const buyStocks = parseInt(Math.min(this.state.maxBuyStocks, this.state.balance / stockPrice), 10);
@@ -177,7 +175,6 @@ export class TradeGame {
         // };
 
         let isLast = num === this.width_ - 1;
-
 
         const prevPosition = this.currentPosition_;
         let moneyEarned = 0;
@@ -195,11 +192,11 @@ export class TradeGame {
                 isLast = true;
             } else {
                 this.balance_ -= this.lastStockPrice_ + this.commission;
-            }            
+            }
         } else if (prevPosition === POSITION_BOUGHT && this.currentPosition_ === POSITION_EMPTY || isLast && this.lastStockPrice_ > 0) {
             this.lastStockPrice_ = 0;
             this.balance_ += this.stocksData[num][1] - this.commission;
-            moneyEarned = this.balance_ - this.prevBalance_;
+            moneyEarned = (this.balance_ - this.prevBalance_) * 100;
 
             if (moneyEarned > 0) {
                 ++this.positiveTradesCount_;
@@ -217,10 +214,9 @@ export class TradeGame {
             done: isLast,
             reward: moneyEarned,
             positiveTradesCount: this.positiveTradesCount_,
-            negativeTradesCount: this.negativeTradesCount_, 
+            negativeTradesCount: this.negativeTradesCount_,
             moneyEarned,
         };
-
 
         // // Check if the head goes over the snake's body, in which case the
         // // game will end.
@@ -282,19 +278,6 @@ export class TradeGame {
     }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 const DEFAULT_HEIGHT = 16;
 const DEFAULT_WIDTH = 16;
 const DEFAULT_NUM_FRUITS = 1;
@@ -309,8 +292,6 @@ export const DEATH_REWARD = -10;
 export const ACTION_GO_STRAIGHT = 0;
 export const ACTION_TURN_LEFT = 1;
 export const ACTION_TURN_RIGHT = 2;
-
-
 
 export class SnakeGame {
     /**
@@ -586,8 +567,7 @@ export class SnakeGame {
    */
     getState() {
         return [];
-        
-        
+
         // {
         //     s: this.snakeSquares_.slice(),
         //     f: this.fruitSquares_.slice(),
@@ -616,11 +596,11 @@ export class SnakeGame {
  */
 
 export function getStateTensor(state, h, w) {
+    // console.log(state);
+
     if (!Array.isArray(state[0])) {
         state = [state];
     }
-
-    // console.log(state);
 
     const numExamples = state.length;
     // // TODO(cais): Maintain only a single buffer for efficiency.
@@ -635,8 +615,6 @@ export function getStateTensor(state, h, w) {
     }
 
     return buffer.toTensor();
-
-
 
     // return tf.tensor2d([state]);
 
