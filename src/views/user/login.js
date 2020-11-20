@@ -84,12 +84,14 @@ class Login extends Component {
                           <p className="lead text-white">
           <IntlMessages id="dashboards.magic-is-in-the-details" /> </p>
                           <p className="white mb-0">
-                          Please use your credentials to login.
+                          Пожалуйста, используйте ваши учетные данные для входа.
+
                               <br />
-                          If you are not a member, please
+                          Если вы не зарегистрированы, пожалуйста
+
                 {' '}
                               <NavLink to="/register" className="white">
-                              register
+                              зарегистрируйтесь
                               </NavLink>
                           .
                           </p>

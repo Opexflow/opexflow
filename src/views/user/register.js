@@ -34,13 +34,14 @@ class Register extends Component {
                             <p className="lead text-white">
           <IntlMessages id="dashboards.magic-is-in-the-details" /> </p>
                             <p className="white mb-0">
-                            Please use this form to register.
+                            Пожалуйста, используйте эту форму для регистрации.
+
                 {' '}
                             <br />
-                            If you are a member, please
+                            Если вы зарегистрированы, пожалуйста
                 {' '}
                                 <NavLink to="/user/login" className="white">
-                                login
+                                войдите
                                 </NavLink>
                             .
                             </p>
