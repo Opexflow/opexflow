@@ -9,6 +9,9 @@ import {
 import { IntlProvider } from 'react-intl';
 // import './helpers/Firebase';
 import AppLocale from './lang';
+import ruLang from './lang/entries/ru-RU';
+import enLang from './lang/entries/en-US';
+
 // import ColorSwitcher from './components/common/ColorSwitcher';
 import NotificationContainer from './components/common/react-notifications/NotificationContainer';
 import { getDirection } from './helpers/Utils';
@@ -39,7 +42,7 @@ class App extends Component {
     constructor(props) {
         super(props);
         const direction = getDirection();
-        if (direction.isRtl) {
+     if (direction.isRtl) {
             document.body.classList.add('rtl');
             document.body.classList.remove('ltr');
         } else {
@@ -48,16 +51,29 @@ class App extends Component {
         }
     }
 
-    render() {
+render() {
         const { locale, loginUser } = this.props;
-        const currentAppLocale = AppLocale[locale];
+        var currentAppLocale = AppLocale[locale];
 
+  
+        var lang = navigator.browserLanguage || navigator.language || navigator.userLanguage;    
+     if (/^ru/.test(lang))
+        {
+         currentAppLocale.locale='ru-RU';
+         currentAppLocale.messages=ruLang.messages;
+        } 
+       else 
+        { 
+        currentAppLocale.locale='en-US';
+        currentAppLocale.messages=enLang.messages   
+        };
+    
         return (
             <div className="h-100">
-                <IntlProvider
-                    locale={currentAppLocale.locale}
-                    messages={currentAppLocale.messages}
-              >
+             <IntlProvider
+                  locale={currentAppLocale.locale}
+                   messages={currentAppLocale.messages}
+>
                     <>
                     <NotificationContainer />
                     { /* isMultiColorActive && <ColorSwitcher /> */ }
