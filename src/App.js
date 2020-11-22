@@ -15,6 +15,7 @@ import { getDirection } from './helpers/Utils';
 
 const ViewMain = React.lazy(() => import(/* webpackChunkName: "views" */ './views'));
 const ViewApp = React.lazy(() => import(/* webpackChunkName: "views-app" */ './views/app'));
+const ViewChat = React.lazy(() => import(/* webpackChunkName: "views-app" */ './views/chat'));
 const ViewUser = React.lazy(() => import(/* webpackChunkName: "views-user" */ './views/user'));
 const ViewError = React.lazy(() => import(/* webpackChunkName: "views-error" */ './views/error'));
 const BotsSber = React.lazy(() => import(/* webpackChunkName: "bots-sber" */ './views/app/bots/sber'));
@@ -68,6 +69,10 @@ class App extends Component {
                                       path="/app"
                                       authUser={loginUser}
                                       component={ViewApp}
+                                    />
+                                  <Route
+                                      path="/chat"
+                                      render={props => <ViewChat {...props} />}
                                     />
                                   <Route
                                       path="/user"
