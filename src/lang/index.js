@@ -1,14 +1,15 @@
 import { addLocaleData } from 'react-intl';
+import ruLang from './entries/ru-RU';
 import enLang from './entries/en-US';
 import esLang from './entries/es-ES';
 import enRtlLang from './entries/en-US-rtl';
-import ruLang from './entries/ru-RU';
+
 
 const AppLocale = {
+    ru: ruLang,
     en: enLang,
     es: esLang,
-    enrtl: enRtlLang,
-	ru: ruLang,
+    enrtl: enRtlLang
 };
 addLocaleData(AppLocale.en.data);
 addLocaleData(AppLocale.es.data);

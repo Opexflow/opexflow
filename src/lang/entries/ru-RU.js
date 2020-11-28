@@ -1,11 +1,11 @@
 import appLocaleData from 'react-intl/locale-data/ru';
-import enMessages from '../locales/ru_RU';
+import messages from '../locales/ru_RU';
 
-const RuLang = {
+const ruLang = {
     messages: {
-        ...enMessages,
+        ...messages,
     },
     locale: 'ru-RU',
     data: appLocaleData,
 };
-export default RuLang;
+export default ruLang;
