@@ -9,8 +9,6 @@ import {
 import { IntlProvider } from 'react-intl';
 // import './helpers/Firebase';
 import AppLocale from './lang';
-import ruLang from './lang/entries/ru-RU';
-
 // import ColorSwitcher from './components/common/ColorSwitcher';
 import NotificationContainer from './components/common/react-notifications/NotificationContainer';
 import { getDirection } from './helpers/Utils';
@@ -52,21 +50,14 @@ class App extends Component {
 
     render() {
         const { locale, loginUser } = this.props;
-        var currentAppLocale = AppLocale[locale];
+        const currentAppLocale = AppLocale[locale];
 
-  
-        var lang = navigator.browserLanguage || navigator.language || navigator.userLanguage;    
-        if (lang.substring(0, 2) == 'ru')  {
-                currentAppLocale.locale='ru-RU';
-                currentAppLocale.messages=ruLang.messages;
-          }
-    
         return (
             <div className="h-100">
-             <IntlProvider
-locale={currentAppLocale.locale}
-messages={currentAppLocale.messages}
->
+                <IntlProvider
+                    locale={currentAppLocale.locale}
+                    messages={currentAppLocale.messages}
+              >
                     <>
                     <NotificationContainer />
                     { /* isMultiColorActive && <ColorSwitcher /> */ }
