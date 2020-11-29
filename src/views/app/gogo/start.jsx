@@ -1,237 +1,74 @@
 import React, { PureComponent } from 'react';
 import { Row, Button } from 'reactstrap';
-import Chart from 'react-apexcharts';
-import ApexCharts from 'apexcharts';
-import IntlMessages from '../../../helpers/IntlMessages';
 import { Colxx, Separator } from '../../../components/common/CustomBootstrap';
-import Breadcrumb from '../../../containers/navs/Breadcrumb';
+import Chart from 'kaktana-react-lightweight-charts'
+import io from "socket.io-client"
 
-export default class Start extends PureComponent {    
+
+
+export default class Start extends PureComponent {
     constructor(props) {
         super(props);
 
         this.state = {
-            series: [{
-                data: [],
-            }],
             options: {
-                chart: {
-                    id: 'ticks_chart',
-                    type: 'candlestick',
-                    height: 350,
-                },
-                title: {
-                    text: 'CandleStick Chart',
-                    align: 'left',
-                },
-                xaxis: {
-                    // type: 'datetime',
-                    type: 'numeric'
-                },
-                yaxis: {
-                    tooltip: {
-                        enabled: true,
-                    },
-                },
+                alignLabels: true,
+                timeScale: {
+                    rightOffset: 12,
+                    barSpacing: 3,
+                    fixLeftEdge: true,
+                    lockVisibleTimeRangeOnResize: true,
+                    rightBarStaysOnScroll: true,
+                    borderVisible: true,
+                    borderColor: "#fff000",
+                    visible: true,
+                    timeVisible: true,
+                    secondsVisible: false
+                }
             },
-            // Берём данные из LS, чтобы при возврате рисовался интересующий график.
-            currentTicks: window.localStorage.getItem('ticks') || '5min',
-        };
-    }
-
-    // lastDate = 1538884800000
-    // [Timestamp, O, H, L, C]
-    // lastTick = [6604.98, 6606, 6604.07, 6606]
-
-    componentDidMount() {
-        this.getChartData();
-    }
-
-    componentDidUpdate() {
-        if(!this.state.interactive) {
-            this.getChartData();
-            this.interval && window.clearInterval(this.interval);
-        } else {
-            if (!this.interval) {
-                this.interval = window.setInterval(() => {
-                    const dataBuff = this.state.dataBuff.slice(0);
-                    const data = this.state.series[0].data.slice(0);
-                    let nextData;
-
-                    if (this.state.dataBuff.length) {
-                        nextData = dataBuff.shift();
-                        data.push(nextData);
-
-                        this.setState({
-                            dataBuff,
-                            series: [{
-                                data
-                            }] 
-                        });
-                    } else {
-                        window.clearInterval(this.interval);
-                    }
-                }, 250);
-            }
-        }
-
-        if (this.state.series[0].data && this.state.series[0].data.length) {
-            ApexCharts.exec('ticks_chart', 'render', [{
-               data: this.state.series[0].data
-            }])
+            candlestickSeries: [{
+                data: [
+                    { time: '2018-10-19', open: 180.34, high: 180.99, low: 178.57, close: 179.85 },
+                    { time: '2018-10-22', open: 180.82, high: 181.40, low: 177.56, close: 178.75 },
+                    { time: '2018-10-23', open: 175.77, high: 179.49, low: 175.44, close: 178.53 },
+                    { time: '2018-10-24', open: 178.58, high: 182.37, low: 176.31, close: 176.97 },
+                    { time: '2018-10-25', open: 177.52, high: 180.50, low: 176.83, close: 179.07 },
+                    { time: '2018-10-26', open: 176.88, high: 177.34, low: 170.91, close: 172.23 },
+                    { time: '2018-10-29', open: 173.74, high: 175.99, low: 170.95, close: 173.20 },
+                    { time: '2018-10-30', open: 173.16, high: 176.43, low: 172.64, close: 176.24 },
+                    { time: '2018-10-31', open: 177.98, high: 178.85, low: 175.59, close: 175.88 },
+                    { time: '2020-11-01', open: 176.84, high: 180.86, low: 175.90, close: 180.46 },
+                    { time: '2020-11-02', open: 182.47, high: 183.01, low: 177.39, close: 179.93 },
+                    { time: '2018-10-19', open: 180.34, high: 180.99, low: 178.57, close: 179.85 },
+                    { time: '2018-10-22', open: 180.82, high: 181.40, low: 177.56, close: 178.75 },
+                    { time: '2018-10-23', open: 175.77, high: 179.49, low: 175.44, close: 178.53 },
+                    { time: '2018-10-24', open: 178.58, high: 182.37, low: 176.31, close: 176.97 },
+                    { time: '2018-10-25', open: 177.52, high: 180.50, low: 176.83, close: 179.07 },
+                    { time: '2018-10-26', open: 176.88, high: 177.34, low: 170.91, close: 172.23 },
+                    { time: '2018-10-29', open: 173.74, high: 175.99, low: 170.95, close: 173.20 },
+                    { time: '2018-10-30', open: 173.16, high: 176.43, low: 172.64, close: 176.24 },
+                    { time: '2018-10-31', open: 177.98, high: 178.85, low: 175.59, close: 175.88 },
+                    { time: '2020-11-01', open: 176.84, high: 180.86, low: 175.90, close: 180.46 },
+                    { time: '2020-11-02', open: 182.47, high: 183.01, low: 177.39, close: 179.93 },
+                    { time: '2020-11-05', open: 181.02, high: 182.41, low: 179.30, close: 182.19 }
+                ]
+            }]
         }
     }
-
-    getHost(postfix) {
-        // Костыль для локальной разработки, чтобы порты сервера и клиента разнести.
-        // TODO: сделать в едином месте
-        let host = `https://${window.location.host}/api/stocks/${postfix}`;
-        if (host.indexOf('3000') !== -1) {
-            // TODO: сделать в едином месте
-            host = host.replace('3000', '3001').replace('https', 'http');
-        }
-
-        return host;
-    }
-
-    getChartData() {
-        this.loadedData || (this.loadedData = {});
-        const current = this.loadedData[this.state.currentTicks];
-        if (this.loadedData[this.state.currentTicks] === true) {
-            return;
-        } else if (current) {
-            ApexCharts.exec('ticks_chart', 'updateSeries', [{
-                data: this.loadedData[this.state.currentTicks].series[0].data,
-            }]);
-            this.setState(this.loadedData[this.state.currentTicks]);
-            return;
-        } else {
-            this.loadedData[this.state.currentTicks] = true;
-        }
-
-        /*
-        {
-            x: new Date(1538874000000),
-            y: [6600.55, 6605, 6589.14, 6593.01],
-        },
-        */
-        const x = new XMLHttpRequest();
-        x.open('GET', this.getHost(`ticks/${this.state.currentTicks}`), true);
-        x.onload = () => {
-            const res = x.responseText && JSON.parse(x.responseText);
-
-            const series = this.state.series.slice(0);
-            let name;
-
-            series[0].data = !res || !Object.keys(res).length ? [] : res.map((t, i) => {
-                // ticker, per, date, time, open, hight, low, close, vol (объём торгов)
-                // SBER,5,08/07/20,12:30:00,210.6100000,210.6800000,210.4700000,210.6000000,73370
-                const tick = t.split(',');
-
-                if (!name) {
-                    name = tick[0];
-                }
-
-                if (!tick[2] || !tick[3]) {
-                    return;
-                }
-
-                // console.log(`${tick[2]} ${tick[3]}`, [parseFloat(tick[4]), parseFloat(tick[5]), parseFloat(tick[6]), parseFloat(tick[7])]);
-                // [Timestamp, O, H, L, C]
-                return {
-                    x: `${tick[2]} ${tick[3]}`,
-                    y: [parseFloat(tick[4]), parseFloat(tick[5]), parseFloat(tick[6]), parseFloat(tick[7])],
-                    
-                };
-            })
-            .filter(Boolean);
-
-            this.loadedData[this.state.currentTicks] = {
-                series,
-                options: {
-                    ...this.state.options,
-                    title: {
-                        ...this.state.options.title,
-                        text: name,
-                    },
-                },
-            };
-
-            this.setState(this.loadedData[this.state.currentTicks]);
-
-            ApexCharts.exec('ticks_chart', 'updateSeries', [{
-                data: series[0].data,
-            }]);
-        };
-        x.withCredentials = true;
-        x.send();
+    componentDidMount(){
+        let socket = io.connect("https://localhost:3000");
+        console.log(socket)
+        socket.on("getting_data", function(data) {
+            console.log(data);
+        })
     }
 
     render() {
         return (
             <>
                 <Row>
-                    <Colxx xxs="12">
-                        {this.props.match && <Breadcrumb heading="menu.start" match={this.props.match} />}
-                        <Separator className="mb-5" />
-                  </Colxx>
-              </Row>
-                <Row>
-                    <Colxx xxs="12" className="mb-4">
-                        <p><IntlMessages id="menu.start" /></p>
-                        {[
-                          //  '1min',
-                            '5min',
-                            '10min',
-                        ].map((t, i) => 
-                            <Button
-                                variant="secondary"
-                                key={i}
-                                onClick={() => {
-                                    window.localStorage.setItem('ticks', t);
-                                    this.interval && window.clearInterval(this.interval);
-                                    this.setState({
-                                        currentTicks: t,
-                                        interactive: false,
-                                        dataBuff: undefined,
-                                    });
-                                }}
-                                size="lg"
-                            >
-                                {t}
-                            </Button>
-                        )}
-                        <Button
-                            variant="secondary"
-                            onClick={() => {
-                                if (!this.state.series[0].data.length || this.state.interactive) {
-                                    return;
-                                }
-
-                                this.setState({
-                                    interactive: true,
-                                    dataBuff: this.state.series[0].data.slice(parseInt(this.state.series[0].data.length / 4, 10) + 1),
-                                    series: [{
-                                        data: this.state.series[0].data.slice(0, parseInt(this.state.series[0].data.length / 4, 10))
-                                    }] 
-                                });
-                            }}
-                            size="lg"
-                        >
-                            Interactive
-                        </Button>
-                  </Colxx>
-              </Row>
-                <Row>
                     <Colxx xxs="12" className="mb-34">
-                        {Boolean(this.state.series[0].data.length) && (
-                      <Chart
-                                options={this.state.options}
-                                series={this.state.series}
-                                type="candlestick"
-                                height={350}
-                            />
-                        )}
+                        <Chart options={this.state.options} candlestickSeries={this.state.candlestickSeries} autoWidth height={320} />
                   </Colxx>
               </Row>
 
@@ -261,6 +98,8 @@ export default class Start extends PureComponent {
                         x.open('GET', this.getHost(`trades/sell/${price}`), true);
                         x.withCredentials = true;
                         x.send();
+
+                        console.log('sell', price);
                     }}
                     size="lg"
                 >
