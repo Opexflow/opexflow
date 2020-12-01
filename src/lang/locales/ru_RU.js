@@ -183,6 +183,13 @@ module.exports = {
     'dashboards.keyword': 'Ключевое слово',
     'dashboards.search': 'Поиск',
     'dashboards.top-rated-items': 'Лучшие товары',
+    'dashboards.login-credentials': 'Пожалуйста, используйте свои учетные данные для входа',
+    'dashboards.noregistered-please': 'если вы не зарегистрированы, пожалуйста',
+    'dashboards.register': 'зарегистрируйтесь',
+    'dashboards.registered-please2': 'Пожалуйста, используйте эту форму для регистрации',
+    'dashboards.registerok': 'Если вы зарегистрированы, пожалуйста',
+    'dashboards.reglogin': 'войдите',
+    'dashboards.continue': 'Я согласен с правилами сайта и готов продолжить',
 
     /* 05.Pages */
     'pages.add-new': 'ДОБАВИТЬ НОВОЕ',

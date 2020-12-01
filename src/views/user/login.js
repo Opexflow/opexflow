@@ -4,6 +4,7 @@ import {
 } from 'reactstrap';
 import { NavLink } from 'react-router-dom';
 import { connect } from 'react-redux';
+import IntlMessages from '../../helpers/IntlMessages';
 // import Facebook from './Facebook';
 
 import { NotificationManager } from '../../components/common/react-notifications';
@@ -84,14 +85,14 @@ class Login extends Component {
                           <p className="lead text-white">
           <IntlMessages id="dashboards.magic-is-in-the-details" /> </p>
                           <p className="white mb-0">
-                          Пожалуйста, используйте ваши учетные данные для входа.
-
+                          <IntlMessages id="dashboards.login-credentials" /> 
+                          
                               <br />
-                          Если вы не зарегистрированы, пожалуйста
+                              <IntlMessages id="dashboards.noregistered-please" /> 
 
                 {' '}
                               <NavLink to="/register" className="white">
-                              зарегистрируйтесь
+                              <IntlMessages id="dashboards.register" />
                               </NavLink>
                           .
                           </p>
@@ -109,7 +110,9 @@ class Login extends Component {
                                           checked={this.state.rulesAccepted}
                                           onChange={this.toggleChange}
                                     />
-                      Согласен с правилами сайта и готов продолжить.
+                      
+                      <IntlMessages id="dashboards.continue" /> 
+                      
                                 </Label>
                             </FormGroup>
                         </CardTitle>

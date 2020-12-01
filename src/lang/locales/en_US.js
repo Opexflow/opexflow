@@ -183,7 +183,13 @@ module.exports = {
     'dashboards.keyword': 'Keyword',
     'dashboards.search': 'Search',
     'dashboards.top-rated-items': 'Top Rated Items',
-
+    'dashboards.login-credentials': 'Please use your login credentials',
+    'dashboards.noregistered-please': 'if you are not registered, please',
+    'dashboards.register': 'register',
+    'dashboards.registered-please2': 'Please use this form to register',
+    'dashboards.registerok': 'If you are registered, please',
+    'dashboards.reglogin': 'sign in',
+    'dashboards.continue': 'I agree with the site rules and am ready to continue',
     /* 05.Pages */
     'pages.add-new': 'ADD NEW',
     'pages.add-new-modal-title': 'Add New Item',
