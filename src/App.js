@@ -42,7 +42,7 @@ class App extends Component {
     constructor(props) {
         super(props);
         const direction = getDirection();
-        if (direction.isRtl) {
+     if (direction.isRtl) {
             document.body.classList.add('rtl');
             document.body.classList.remove('ltr');
         } else {
@@ -57,13 +57,16 @@ render() {
 
   
         var lang = navigator.browserLanguage || navigator.language || navigator.userLanguage;    
-         if (lang.substring(0, 2) == 'ru')  {
-                currentAppLocale.locale='ru-RU';
-                currentAppLocale.messages=ruLang.messages;
-         } 
-                  else { currentAppLocale.locale='en-US';
-                  currentAppLocale.messages=enLang.messages   };
-          
+     if (/^ru/.test(lang))
+        {
+         currentAppLocale.locale='ru-RU';
+         currentAppLocale.messages=ruLang.messages;
+        } 
+       else 
+        { 
+        currentAppLocale.locale='en-US';
+        currentAppLocale.messages=enLang.messages   
+        };
     
         return (
             <div className="h-100">
