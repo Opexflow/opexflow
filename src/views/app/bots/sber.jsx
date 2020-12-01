@@ -11,6 +11,7 @@ import * as tf from '@tensorflow/tfjs';
 
 import { TradeGameAgent } from './sber/trade_agent';
 import { TradeGame, NUM_ACTIONS, ALL_ACTIONS, getStateTensor } from './sber/trade_game';
+import io from "socket.io-client";
 
 let game;
 let qNet;
@@ -151,6 +152,17 @@ export default class Sber extends Component {
     // lastTick = [6604.98, 6606, 6604.07, 6606]
 
     componentDidMount() {
+        // Переменные для подключение к серверу
+        let socket = io.connect("http://localhost:3002");
+        console.log(socket)
+        // Подключение к серверу socket
+        socket.on('connection', function(data){
+            console.log('connected', data)
+        })
+        // Вывод массива даты
+        socket.on('showrows', function(rows) {
+            console.log(rows);
+        })
         this.getChartData();
         this.resetState();
     }

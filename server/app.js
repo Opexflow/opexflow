@@ -12,8 +12,7 @@ const params = require('express-route-params');
 const createStore = require('redux')
 const Provider = require('react-redux')
 const compression = require('compression');
-const morgan = require('morgan')
-const io = require('socket.io')();
+
 
 
 
@@ -379,16 +378,24 @@ app.on('error', error => {
 */
 
 //socket.io
-io.sockets.on('connection', function (socket) {
-    io.sockets.emit('getting_data', 'Loading Data for chart');
-    setInterval(5000,function(data){
-        let q = "SELECT * FROM stock";
-        connection.query(q, function(err, rows) {
-            if (err) throw err;
-            res.end(JSON.stringify(rows))
+let server = app.listen(3001);
+const io = require('socket.io')(server);
+
+// Подключение клиента
+io.on('connection', function (socket) {
+    const { id } = socket.client;
+    console.log(`User connected: ${id}`);
+        setInterval(5000, function (data) {
+            // Подключение к Mysql, с выбором всех данных из таблицы stock
+            let q ="SELECT * FROM stock";
+            connection.query(q, function (err, rows) {
+                if (err) throw err;
+                console.log(rows)
+                // отправление данных на клиент
+                io.emit('showrows', rows);
+            });
         });
     });
-});
 
 
-app.listen(3001);
+
