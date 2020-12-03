@@ -379,22 +379,27 @@ app.on('error', error => {
 
 //socket.io
 let server = app.listen(3001);
-const io = require('socket.io')(server);
+const io = require('socket.io')(server, {
+    path: '/test',
+    cors: {
+        origin: '*',
+    }
+});
 
 // Подключение клиента
 io.on('connection', function (socket) {
     const { id } = socket.client;
     console.log(`User connected: ${id}`);
-        setInterval(5000, function (data) {
+/*        setInterval( function (data) {*/
             // Подключение к Mysql, с выбором всех данных из таблицы stock
             let q ="SELECT * FROM stock";
-            connection.query(q, function (err, rows) {
+            pool.query(q, function (err, rows) {
                 if (err) throw err;
                 console.log(rows)
                 // отправление данных на клиент
                 io.emit('showrows', rows);
             });
-        });
+/*        },5000);*/
     });
 
 

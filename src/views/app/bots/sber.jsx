@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
 import { Row, Button } from 'reactstrap';
-import Chart from 'react-apexcharts';
-import ApexCharts from 'apexcharts';
 import { Colxx, Separator } from '../../../components/common/CustomBootstrap';
 import Breadcrumb from '../../../containers/navs/Breadcrumb';
 import IconCard from '../../../components/cards/IconCard';
@@ -11,7 +9,9 @@ import * as tf from '@tensorflow/tfjs';
 
 import { TradeGameAgent } from './sber/trade_agent';
 import { TradeGame, NUM_ACTIONS, ALL_ACTIONS, getStateTensor } from './sber/trade_game';
+import Chart from 'kaktana-react-lightweight-charts'
 import io from "socket.io-client";
+import {replace} from "formik";
 
 let game;
 let qNet;
@@ -101,171 +101,99 @@ export default class Sber extends Component {
         super(props);
 
         this.state = {
-            balance: 10000,
-            stocks: 0,
-            maxBuyStocks: 40,
-            lastStockPrice: 0,
-            commission: 0.05,
-            logs: [],
+                balance: 10000,
+                stocks: 0,
+                maxBuyStocks: 40,
+                lastStockPrice: 0,
+                commission: 0.05,
+                logs: [],
 
-            series: [{
-                data: [],
-            }],
-            options: {
-                chart: {
-                    id: 'ticks_chart',
-                    type: 'candlestick',
-                    height: 350,
-                },
-                title: {
-                    text: 'CandleStick Chart',
-                    align: 'left',
-                },
-                xaxis: {
-                    // type: 'datetime',
-                    type: 'numeric'
-                },
-                yaxis: {
-                    tooltip: {
-                        enabled: true,
+                series: [{
+                    data: [],
+                }],
+/*                options: {
+                    chart: {
+                        id: 'ticks_chart',
+                        type: 'candlestick',
+                        height: 350,
                     },
-                },
+                    title: {
+                        text: 'CandleStick Chart',
+                        align: 'left',
+                    },
+                    xaxis: {
+                        // type: 'datetime',
+                        type: 'numeric'
+                    },
+                    yaxis: {
+                        tooltip: {
+                            enabled: true,
+                        },
+                    },
+                },*/
+                // Берём данные из LS, чтобы при возврате рисовался интересующий график.
+                currentTicks: window.localStorage.getItem('ticks') || '5min',
+            //Начало настроек для нового графика
+            options: {
+                alignLabels: true,
+                timeScale: {
+                    rightOffset: 12,
+                    barSpacing: 3,
+                    fixLeftEdge: true,
+                    lockVisibleTimeRangeOnResize: true,
+                    rightBarStaysOnScroll: true,
+                    borderVisible: true,
+                    borderColor: "#fff000",
+                    visible: true,
+                    timeVisible: true,
+                    secondsVisible: false
+                }
             },
-            // Берём данные из LS, чтобы при возврате рисовался интересующий график.
-            currentTicks: window.localStorage.getItem('ticks') || '5min',
-        };
+            // Дата для нового графика из mysql
+            candlestickSeries: [{
+                data: [
+/*                    { time: '', open: '', high: '', low: '', close: '' }*/
+                ]
+            }]
+        }
     }
-
-    resetState() {
-        this.setState({
-            balance: 10000,
-            stocks: 0,
-            maxBuyStocks: 40,
-            lastStockPrice: 0,
-            commission: 0.05,
-            logs: [],
-        });
-    }
-
-    // lastDate = 1538884800000
-    // [Timestamp, O, H, L, C]
-    // lastTick = [6604.98, 6606, 6604.07, 6606]
 
     componentDidMount() {
-        // Переменные для подключение к серверу
-        let socket = io.connect("http://localhost:3002");
-        console.log(socket)
-        // Подключение к серверу socket
-        socket.on('connection', function(data){
-            console.log('connected', data)
-        })
-        // Вывод массива даты
-        socket.on('showrows', function(rows) {
-            console.log(rows);
-        })
-        this.getChartData();
-        this.resetState();
-    }
-
-    componentDidUpdate() {
-        if(!this.state.interactive) {
-            // this.getChartData();
-        }
-    }
-
-    getHost(postfix) {
-        // Костыль для локальной разработки, чтобы порты сервера и клиента разнести.
-        // TODO: сделать в едином месте
-        let host = `https://${window.location.host}/api/stocks/${postfix}`;
-        if (host.indexOf('3000') !== -1) {
-            // TODO: сделать в едином месте
-            host = host.replace('3000', '3001').replace('https', 'http');
-        }
-
-        return host;
-    }
-
-    getChartData() {
-        this.loadedData || (this.loadedData = {});
-        const current = this.loadedData[this.state.currentTicks];
-        if (this.loadedData[this.state.currentTicks] === true) {
-            return;
-        } else if (current) {
-            ApexCharts.exec('ticks_chart', 'updateSeries', [{
-                data: this.loadedData[this.state.currentTicks].series[0].data,
-            }]);
-            this.setState(this.loadedData[this.state.currentTicks]);
-            return;
-        } else {
-            this.loadedData[this.state.currentTicks] = true;
-        }
-
-        /*
-        {
-            x: new Date(1538874000000),
-            y: [6600.55, 6605, 6589.14, 6593.01],
-        },
-        */
-        const x = new XMLHttpRequest();
-        x.open('GET', this.getHost(`ticks/${this.state.currentTicks}`), true);
-        x.onload = () => {
-            const res = x.responseText && JSON.parse(x.responseText);
-
-            const series = this.state.series.slice(0);
-            let name;
-
-            series[0].data = !res || !Object.keys(res).length ? [] : res.map((t, i) => {
-                // ticker, per, date, time, open, hight, low, close, vol (объём торгов)
-                // SBER,5,08/07/20,12:30:00,210.6100000,210.6800000,210.4700000,210.6000000,73370
-                const tick = t.split(',');
-
-                if (!name) {
-                    name = tick[0];
-                }
-
-                if (!tick[2] || !tick[3]) {
-                    return false;
-                }
-
-                // console.log(`${tick[2]} ${tick[3]}`, [parseFloat(tick[4]), parseFloat(tick[5]), parseFloat(tick[6]), parseFloat(tick[7])]);
-                // [Timestamp, O, H, L, C]
-                return {
-                    x: `${tick[2]} ${tick[3]}`,
-                    y: [parseFloat(tick[4]), parseFloat(tick[5]), parseFloat(tick[6]), parseFloat(tick[7])],
-                    
-                };
+            // Переменные для подключение к серверу
+            let socket = io.connect("http://localhost:3001", {
+                path: '/test'
+            });
+            console.log(socket)
+            // Подключение к серверу socket
+            socket.on('connection', function(data){
+                console.log('connected', data)
             })
-            .filter(Boolean);
+            // Вывод массива даты и перебор из mysql
+            socket.on('showrows', function(rows) {
+                let arrRows = JSON.stringify(rows)
+                console.log(arrRows)
+                arrRows.split("},").forEach(function (line) {
+                    const arr = line.toString().split(',')
+                    console.log(arr)
+                    const vol = arr.map(elem => elem.trim());
+/*                    console.log(vol[3], vol[5], vol[6], vol[7], vol[8]);*/
+                    let dataChart = vol[3]+' '+vol[5]+' '+vol[6]+' '+vol[7]+' '+vol[8]
+                    //чистил и преобразовал массив
+                    let arrTick = dataChart.replace('"date":"', '').replace('Z"', 'Z').replace('"open":', '').replace('"high":', '').replace('"low":', '').replace('"close":', '').split(' ');
+                    console.log(arrTick)
+                    let d = {time:arrTick[0],open:arrTick[1],high:arrTick[2],low:arrTick[3],close:arrTick[4]}
+                    console.log(d)
+                    this.setState.candlestickSeries({data:d})
+                    /*this.setState.candlestickSeries.data({time:arrTick[0],open:arrTick[1],high:arrTick[2],low:arrTick[3],close:arrTick[4]})*/
+                })
 
-            this.loadedData[this.state.currentTicks] = {
-                series,
-                options: {
-                    ...this.state.options,
-                    title: {
-                        ...this.state.options.title,
-                        text: name,
-                    },
-                },
-                stocksData: res.map(r => {
-                    const tick = r.split(',');
-                    if (!tick[2] || !tick[3]) {
-                        return false;
-                    }
-    
-                    // SBER,5,08/07/20,12:30:00,210.6100000,210.6800000,210.4700000,210.6000000,73370
-                    // Для упрощения наблюдений увеличиваем стоимость акций, чтобы следить за целыми числами
-                    return [tick[2] + ' ' + tick[3], parseInt(tick[5] * 10, 10), tick[8]];
-                }).filter(Boolean)
-            };
-
-            this.setState(this.loadedData[this.state.currentTicks]);
-
-            // ApexCharts.exec('ticks_chart', 'updateSeries', [{
-            //     data: series[0].data,
-            // }]);
-        };
-        x.withCredentials = true;
-        x.send();
+/*                rows.forEach(function (line) {
+                    const arr = line.toString().split(',')
+                    console.log(arr)
+                    const vol = arr.map(elem => elem.trim());
+                    console.log(vol[8])
+            })*/
+        })
     }
 
     render() {
@@ -278,8 +206,8 @@ export default class Sber extends Component {
                     <Colxx xxs="12">
                         {this.props.match && <Breadcrumb heading="menu.start" match={this.props.match} />}
                         <Separator className="mb-5" />
-                  </Colxx>
-              </Row>
+                    </Colxx>
+                </Row>
                 <Row>
                     {/* <Colxx xxs="12" className="mb-4">
                         <p><IntlMessages id="menu.start" /></p>
@@ -304,19 +232,12 @@ export default class Sber extends Component {
                         )}
                   </Colxx> */}
               </Row>
+{/* Рендер чарта*/}
                 <Row>
                     <Colxx xxs="12" className="mb-34">
-                        {Boolean(this.state.series[0].data.length) && (
-                      <Chart
-                                options={this.state.options}
-                                series={this.state.series}
-                                type="candlestick"
-                                height={350}
-                            />
-                        )}
-                  </Colxx>
-              </Row>
-
+                        <Chart options={this.state.options} candlestickSeries={this.state.candlestickSeries} autoWidth height={320} />
+                    </Colxx>
+                </Row>
               <Row>
               <IconCard
                     title="Balance"
@@ -628,3 +549,5 @@ export default class Sber extends Component {
         );
     }
 }
+
+
