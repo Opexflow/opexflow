@@ -83,17 +83,18 @@ class Login extends Component {
                   <Card className="auth-card">
                       <div className="position-relative image-side ">
                           <p className="lead text-white">
-          <IntlMessages id="dashboards.magic-is-in-the-details" /> </p>
+                          <IntlMessages id="dashboards.magic-is-in-the-details" />
+                        </p>
                           <p className="white mb-0">
-                          <IntlMessages id="dashboards.login-credentials" /> 
-                          
-                              <br />
-                              <IntlMessages id="dashboards.noregistered-please" /> 
+                          <IntlMessages id="dashboards.login-credentials" />
 
-                {' '}
+                              <br />
+                              <IntlMessages id="dashboards.noregistered-please" />
+
+                          {' '}
                               <NavLink to="/register" className="white">
                               <IntlMessages id="dashboards.register" />
-                              </NavLink>
+                            </NavLink>
                           .
                           </p>
                     </div>
@@ -110,9 +111,9 @@ class Login extends Component {
                                           checked={this.state.rulesAccepted}
                                           onChange={this.toggleChange}
                                     />
-                      
-                      <IntlMessages id="dashboards.continue" /> 
-                      
+
+                                  <IntlMessages id="dashboards.continue" />
+
                                 </Label>
                             </FormGroup>
                         </CardTitle>

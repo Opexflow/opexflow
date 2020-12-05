@@ -304,8 +304,8 @@ class TopNav extends Component {
                           <span className="name mr-1">
                                 {user.name}
                                   <br />
-                                    <IntlMessages id="Balance" /> 
-{finance.balance}
+                                <IntlMessages id="Balance" />
+                                  {finance.balance}
                                 {' '}
                                 ₽
 </span>

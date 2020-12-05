@@ -32,19 +32,19 @@ class Register extends Component {
                     <Card className="auth-card">
                         <div className="position-relative image-side ">
                             <p className="lead text-white">
-          <IntlMessages id="dashboards.magic-is-in-the-details" /> </p>
+                            <IntlMessages id="dashboards.magic-is-in-the-details" />
+                          </p>
                             <p className="white mb-0">
                             <IntlMessages id="dashboards.registered-please2" />
-                            
 
-                {' '}
+                            {' '}
                             <br />
                             <IntlMessages id="dashboards.registerok" />
-                            
-                {' '}
+
+                            {' '}
                                 <NavLink to="/user/login" className="white">
                                 <IntlMessages id="dashboards.reglogin" />
-                                </NavLink>
+                              </NavLink>
                             .
                             </p>
                       </div>

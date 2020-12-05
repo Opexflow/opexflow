@@ -25,16 +25,15 @@ class Error extends Component {
                           <Colxx xxs="12" md="10" className="mx-auto my-auto">
                               <Card className="auth-card">
                                   <div className="position-relative image-side ">
-								  
+
                                       <p className="lead text-white">
-          <IntlMessages id="dashboards.magic-is-in-the-details" /> </p>
-									  
-									  
+                                          <IntlMessages id="dashboards.magic-is-in-the-details" />
+                                        </p>
+
                                       <p className="white mb-0">
-          <IntlMessages id="dashboards.yes-it-is-indeed" /> </p>
-									  
-									  
-									  
+                                          <IntlMessages id="dashboards.yes-it-is-indeed" />
+                                        </p>
+
                                     </div>
                                   <div className="form-side">
                                       <NavLink to="/" className="white">

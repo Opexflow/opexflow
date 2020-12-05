@@ -42,7 +42,7 @@ class App extends Component {
     constructor(props) {
         super(props);
         const direction = getDirection();
-     if (direction.isRtl) {
+        if (direction.isRtl) {
             document.body.classList.add('rtl');
             document.body.classList.remove('ltr');
         } else {
@@ -51,33 +51,29 @@ class App extends Component {
         }
     }
 
-render() {
+    render() {
         const { locale, loginUser } = this.props;
-        var currentAppLocale = AppLocale[locale];
+        const currentAppLocale = AppLocale[locale];
 
-  
-        var lang = navigator.browserLanguage || navigator.language || navigator.userLanguage;    
-     if (/^ru/.test(lang))
-        {
-         currentAppLocale.locale='ru-RU';
-         currentAppLocale.messages=ruLang.messages;
-        } 
-       else 
-        { 
-        currentAppLocale.locale='en-US';
-        currentAppLocale.messages=enLang.messages   
-        };
-    
+        const lang = navigator.browserLanguage || navigator.language || navigator.userLanguage;
+        if (/^ru/.test(lang)) {
+            currentAppLocale.locale = 'ru-RU';
+            currentAppLocale.messages = ruLang.messages;
+        } else {
+            currentAppLocale.locale = 'en-US';
+            currentAppLocale.messages = enLang.messages;
+        }
+
         return (
             <div className="h-100">
-             <IntlProvider
+            <IntlProvider
                   locale={currentAppLocale.locale}
-                   messages={currentAppLocale.messages}
->
+                  messages={currentAppLocale.messages}
+                >
                     <>
-                    <NotificationContainer />
-                    { /* isMultiColorActive && <ColorSwitcher /> */ }
-                    <Suspense fallback={<div className="loading" />}>
+                <NotificationContainer />
+                { /* isMultiColorActive && <ColorSwitcher /> */ }
+                <Suspense fallback={<div className="loading" />}>
                           <Router>
                               <Switch>
                                   <AuthRoute
@@ -107,8 +103,8 @@ render() {
                                 </Switch>
                             </Router>
                         </Suspense>
-                  </>
-              </IntlProvider>
+              </>
+                </IntlProvider>
           </div>
         );
     }

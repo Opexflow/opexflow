@@ -587,12 +587,11 @@ module.exports = {
     'table.react-scrollable': 'Scrollable',
     'table.react-advanced': 'Filter, Length and Jump',
 
-
-/* 08.Indicators */
-    'Balance': 'Balance',
+    /* 08.Indicators */
+    Balance: 'Balance',
     'Balance with stocks': 'Balance with stocks',
     'Stocks delta': 'Stocks delta',
     'Current price': 'Current price',
     'Stocks count': 'Stocks count',
-    'Commission': 'Commission',
+    Commission: 'Commission',
 };

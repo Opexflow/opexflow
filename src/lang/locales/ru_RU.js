@@ -419,7 +419,7 @@ module.exports = {
     /* 07.10.Forms */
     'forms.basic': 'Основной',
     'forms.email': 'E-mail',
-    'forms.email-muted': "Мы никогда не будем делиться вашей электронной почтой с кем-либо еще.",
+    'forms.email-muted': 'Мы никогда не будем делиться вашей электронной почтой с кем-либо еще.',
     'forms.password': 'Пароль',
     'forms.submit': 'представить',
     'forms.horizontal': 'По горизонтали',
@@ -588,12 +588,11 @@ module.exports = {
     'table.react-scrollable': 'Прокручиваемый',
     'table.react-advanced': 'Фильтр, длина и прыжок',
 
-
-/* 08.Indicators */
-    'Balance': 'Баланс',
+    /* 08.Indicators */
+    Balance: 'Баланс',
     'Balance with stocks': 'Остаток с акциями',
     'Stocks delta': 'Акции дельта',
     'Current price': 'Текущая цена',
     'Stocks count': 'Количество акций',
-    'Commission': 'Комиссия',
+    Commission: 'Комиссия',
 };
