@@ -4,6 +4,7 @@ import {
 } from 'reactstrap';
 import { NavLink } from 'react-router-dom';
 import { connect } from 'react-redux';
+import IntlMessages from '../../helpers/IntlMessages';
 // import Facebook from './Facebook';
 
 import { NotificationManager } from '../../components/common/react-notifications';
@@ -81,15 +82,19 @@ class Login extends Component {
               <Colxx xxs="12" md="10" className="mx-auto my-auto">
                   <Card className="auth-card">
                       <div className="position-relative image-side ">
-                          <p className="text-white h2">MAGIC IS IN THE DETAILS</p>
+                          <p className="lead text-white">
+                          <IntlMessages id="dashboards.magic-is-in-the-details" />
+                        </p>
                           <p className="white mb-0">
-                          Please use your credentials to login.
+                          <IntlMessages id="dashboards.login-credentials" />
+
                               <br />
-                          If you are not a member, please
-                {' '}
+                              <IntlMessages id="dashboards.noregistered-please" />
+
+                          {' '}
                               <NavLink to="/register" className="white">
-                              register
-                              </NavLink>
+                              <IntlMessages id="dashboards.register" />
+                            </NavLink>
                           .
                           </p>
                     </div>
@@ -106,7 +111,9 @@ class Login extends Component {
                                           checked={this.state.rulesAccepted}
                                           onChange={this.toggleChange}
                                     />
-                      Согласен с правилами сайта и готов продолжить.
+
+                                  <IntlMessages id="dashboards.continue" />
+
                                 </Label>
                             </FormGroup>
                         </CardTitle>

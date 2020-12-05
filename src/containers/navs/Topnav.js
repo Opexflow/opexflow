@@ -27,6 +27,7 @@ import TopnavEasyAccess from './Topnav.EasyAccess';
 import TopnavNotifications from './Topnav.Notifications';
 
 import { getDirection, setDirection } from '../../helpers/Utils';
+import IntlMessages from '../../helpers/IntlMessages';
 
 class TopNav extends Component {
     constructor(props) {
@@ -303,8 +304,8 @@ class TopNav extends Component {
                           <span className="name mr-1">
                                 {user.name}
                                   <br />
-                                Баланс:
-{finance.balance}
+                                <IntlMessages id="Balance" />
+                                  {finance.balance}
                                 {' '}
                                 ₽
 </span>
