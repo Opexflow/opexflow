@@ -80,6 +80,8 @@
     "sequelize": "^6.2.4",
     "sequelize-cli": "^6.1.0",
     "shelljs": "^0.8.4",
+    "socket.io": "^3.0.3",
+    "socket.io-client": "^3.0.3",
     "sortablejs": "^1.10.2",
     "tmp": "^0.2.1",
     "video.js": "^7.8.4",
@@ -87,12 +89,12 @@
     "yup": "^0.29.1"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "set HTTPS=true&&react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "server": "nodemon server/app",
-    "dev": "HTTPS=true concurrently \"npm run server\" \"npm run start\"",
+    "dev": "concurrently \"npm run server\" \"npm run start\"",
     "lint": "eslint --debug src/",
     "lint:write": "eslint --debug src/ --fix",
     "precommit": "lint-staged"
