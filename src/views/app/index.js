@@ -27,7 +27,7 @@ class App extends Component {
                     <Route path={`${match.url}/pages`} component={pages} />
                     <Route path={`${match.url}/ui`} component={ui} />
                     <Route path={`${match.url}/menu`} component={menu} />
-                    <Route path={`${match.url}/blank-page`} component={blankPage} />
+                    <Route path={`${match.url}/order-book`} component={blankPage} />
                     <Redirect to="/error" />
               </Switch>
           </AppLayout>

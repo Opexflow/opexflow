@@ -8831,3 +8831,27 @@ footer.page-footer {
     }
   }
 }
+
+.OrderBook table {
+  border-collapse: collapse;
+  table-layout: fixed;
+  width: 100%;
+}
+
+.OrderBook table tbody td.fill-bid {
+  background-repeat: no-repeat;
+  background-image: linear-gradient(to left, #99ffcc 100%, white 0%);
+  background-size: 0%;
+}
+
+.OrderBook table tbody td.fill-ask {
+  background-repeat: no-repeat;
+  background-position: 100% 100%;
+  background-image: linear-gradient(to left, #ffcccc 100%, white 0%);
+  background-size: 0%;
+}
+
+.OrderBook tr.ask:last-of-type,
+.OrderBook tr.bid:first-of-type {
+  font-weight: bold;
+}

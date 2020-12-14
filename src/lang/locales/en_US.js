@@ -124,7 +124,7 @@ module.exports = {
     'menu.videos': 'Videos',
     'menu.mailing': 'Mailing',
     'menu.invoice': 'Invoice',
-    'menu.blank-page': 'Blank Page',
+    'menu.order-book': 'Order Book',
     'menu.types': 'Menu Types',
     'menu.levels': 'Menu Levels',
     'menu.third-level-1': 'Third Level 1',

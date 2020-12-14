@@ -5,6 +5,7 @@ const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const mysql = require('mysql');
+const MySQLEvents = require('@rodrigogs/mysql-events');
 const fs = require('fs');
 const path = require('path');
 const params = require('express-route-params');
@@ -36,6 +37,57 @@ config.facebook_api_secret = '8f891ee90229fd861d4c71bdf648ad14';
 config.facebook_api_key = '2640133479605924';
 
 // let HOSTNAME = 'https://opexflow.com';
+
+// Websocket between client and server
+var http = require('http').Server(app);
+var io = require('socket.io')(http, {
+    cors: {
+        origin: HOSTNAME,
+        methods: ["GET", "POST"],
+        credentials: true
+    }
+});
+io.on('connection', () =>{
+    console.log("A user is connected")
+})
+
+// Program to Monitor MySql for any chagne
+const program = async () => {
+    const connection = mysql.createConnection({
+      host: config.host,
+      user: config.username,
+      password: config.password
+    });
+  
+    const instance = new MySQLEvents(connection, {
+      startAtEnd: true // to record only the new binary logs, if set to false or you didn'y provide it all the events will be console.logged after you start the app
+    });
+  
+    await instance.start();
+  
+    instance.addTrigger({
+      name: 'monitoring all statments',
+      expression: 'opexbetadb.*', // listen to opexbetadb database !!!
+      statement: MySQLEvents.STATEMENTS.ALL, // all type of operations, for insert alone MySQLEvents.STATEMENTS.INSERT, 
+      onEvent: () => {
+        let result = undefined;
+        pool.query(`SELECT glass from history_siz0 ORDER BY id DESC LIMIT 1`, (err, rows) => {
+            if (err) {
+                return res.end('{}');
+            }
+            result = JSON.stringify(rows);
+            io.emit('message', result);
+        });
+      }
+    });
+  
+    instance.on(MySQLEvents.EVENTS.CONNECTION_ERROR, console.error);
+    instance.on(MySQLEvents.EVENTS.ZONGJI_ERROR, console.error);
+  };
+
+// program()
+// .then(console.log('Connection Established, Monitoring DB for any change.'))
+// .catch(console.error);
 
 passport.use(new FacebookStrategy({
     clientID: config.facebook_api_key,
@@ -202,10 +254,38 @@ app.get('/api/stocks/trades/sell/:price', ensureAuthenticated, (req, res) => {
     return res.end(JSON.stringify({}));
 });
 
+app.get('/api/order-book', ensureAuthenticated, (req, res) => {
+    // TODO: сделать общее решение для локальной разработки.
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Access-Control-Allow-Origin', replaceHost(HOSTNAME));
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Set-Cookie, *');
+
+    if (!req.isAuthenticated() || !req.user || !req.user.id) {
+        return res.end('{}');
+    }
+    program()
+    .then(
+        console.log('Connection Established, Monitoring DB for any change.'),
+        // res.end('{}')
+    )
+    .catch(console.error);
+    pool.query(`SELECT glass from history_siz0 ORDER BY id DESC LIMIT 1`, (err, rows) => {
+        if (err) {
+            return res.end('{}');
+        }
+        res.end(JSON.stringify(rows));
+    });
+});
+
 function ensureAuthenticated(req, res, next) {
     if (req.isAuthenticated()) { return next() }
     // res.redirect('/user/login')
     return next();
 }
 
-app.listen(3001);
+// app.listen(3001);
+var server = http.listen(3001, () => {
+    console.log('server is running on port', server.address().port);
+  });
