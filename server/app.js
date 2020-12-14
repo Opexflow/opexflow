@@ -42,7 +42,7 @@ config.facebook_api_key = '2640133479605924';
 var http = require('http').Server(app);
 var io = require('socket.io')(http, {
     cors: {
-        origin: HOSTNAME,
+        origin: '*',
         methods: ["GET", "POST"],
         credentials: true
     }
