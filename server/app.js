@@ -5,11 +5,12 @@ const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const mysql = require('mysql');
-const MySQLEvents = require('@rodrigogs/mysql-events');
 const fs = require('fs');
 const path = require('path');
 const params = require('express-route-params');
 const config = require('./config');
+const orderBook =require('./api/orderBook');
+const {replaceHost} = require('./helpers/utils');
 
 const app = express();
 params(express);
@@ -51,39 +52,8 @@ io.on('connection', () =>{
     console.log("A user is connected")
 })
 
-// Program to Monitor MySql for any chagne
-const program = async () => {
-    const connection = mysql.createConnection({
-      host: config.host,
-      user: config.username,
-      password: config.password
-    });
-  
-    const instance = new MySQLEvents(connection, {
-      startAtEnd: true // to record only the new binary logs, if set to false or you didn'y provide it all the events will be console.logged after you start the app
-    });
-  
-    await instance.start();
-  
-    instance.addTrigger({
-      name: 'monitoring all statments',
-      expression: `${config.database}.*`, // listen to opexbetadb database !!!
-      statement: MySQLEvents.STATEMENTS.ALL, // all type of operations, for insert alone MySQLEvents.STATEMENTS.INSERT, 
-      onEvent: () => {
-        let result = undefined;
-        pool.query(`SELECT glass from history_siz0 ORDER BY id DESC LIMIT 1`, (err, rows) => {
-            if (err) {
-                return res.end('{}');
-            }
-            result = JSON.stringify(rows);
-            io.emit('order-book:glass', result);
-        });
-      }
-    });
-  
-    instance.on(MySQLEvents.EVENTS.CONNECTION_ERROR, console.error);
-    instance.on(MySQLEvents.EVENTS.ZONGJI_ERROR, console.error);
-  };
+app.set('pool', pool);
+app.set('io', io);
 
 passport.use(new FacebookStrategy({
     clientID: config.facebook_api_key,
@@ -111,10 +81,6 @@ passport.use(new FacebookStrategy({
 
 // app.set('views', __dirname + '/views');
 // app.set('view engine', 'ejs');
-
-function replaceHost(host) {
-    return host.replace('http:', 'https:').replace('3001', '3000');
-}
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(session({ secret: 'secret123', key: 'sid' })); //, resave: false, saveUninitialized: false }));
@@ -250,29 +216,7 @@ app.get('/api/stocks/trades/sell/:price', ensureAuthenticated, (req, res) => {
     return res.end(JSON.stringify({}));
 });
 
-app.get('/api/order-book', ensureAuthenticated, (req, res) => {
-    // TODO: сделать общее решение для локальной разработки.
-    res.setHeader('Content-Type', 'application/json');
-    res.setHeader('Access-Control-Allow-Origin', replaceHost(HOSTNAME));
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Set-Cookie, *');
-
-    if (!req.isAuthenticated() || !req.user || !req.user.id) {
-        return res.end('{}');
-    }
-    program()
-    .then(
-        console.log('Connection Established, Monitoring DB for any change.')
-    )
-    .catch(console.error);
-    pool.query(`SELECT glass from history_siz0 ORDER BY id DESC LIMIT 1`, (err, rows) => {
-        if (err) {
-            return res.end('{}');
-        }
-        res.end(JSON.stringify(rows));
-    });
-});
+app.use('/api/order-book', ensureAuthenticated, orderBook);
 
 function ensureAuthenticated(req, res, next) {
     if (req.isAuthenticated()) { return next() }
