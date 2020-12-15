@@ -1,5 +1,52 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`<OrderBookContainer /> should render component same as snapshot 1`] = `
+Array [
+  <React.Fragment>
+    <Row
+      tag="div"
+      widths={
+        Array [
+          "xs",
+          "sm",
+          "md",
+          "lg",
+          "xl",
+        ]
+      }
+    >
+      <Colxx
+        xxs="12"
+      >
+        <BreadcrumbContainer
+          heading="menu.order-book"
+        />
+        <Separator
+          className="mb-5"
+        />
+      </Colxx>
+    </Row>
+    <Row
+      tag="div"
+      widths={
+        Array [
+          "xs",
+          "sm",
+          "md",
+          "lg",
+          "xl",
+        ]
+      }
+    >
+      <OrderBook
+        askOrders={Array []}
+        bidOrders={Array []}
+      />
+    </Row>
+  </React.Fragment>,
+]
+`;
+
 exports[`Start Should render chart 1`] = `
 Array [
   <div
