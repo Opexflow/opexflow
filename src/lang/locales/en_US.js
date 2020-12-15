@@ -594,4 +594,9 @@ module.exports = {
     'Current price': 'Current price',
     'Stocks count': 'Stocks count',
     Commission: 'Commission',
+    'Bid Cumulative': 'Bid Cumulative',
+    'Bid Quantity': 'Bid Quantity',
+    'Price(USD)': 'Price(USD)',
+    'Ask Quantity': 'Ask Quantity',
+    'Ask Cumulative': 'Ask Cumulative',
 };

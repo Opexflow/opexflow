@@ -42,7 +42,7 @@ config.facebook_api_key = '2640133479605924';
 var http = require('http').Server(app);
 var io = require('socket.io')(http, {
     cors: {
-        origin: HOSTNAME,
+        origin: '*',
         methods: ["GET", "POST"],
         credentials: true
     }
@@ -67,7 +67,7 @@ const program = async () => {
   
     instance.addTrigger({
       name: 'monitoring all statments',
-      expression: 'opexbetadb.*', // listen to opexbetadb database !!!
+      expression: `${config.database}.*`, // listen to opexbetadb database !!!
       statement: MySQLEvents.STATEMENTS.ALL, // all type of operations, for insert alone MySQLEvents.STATEMENTS.INSERT, 
       onEvent: () => {
         let result = undefined;
@@ -76,7 +76,7 @@ const program = async () => {
                 return res.end('{}');
             }
             result = JSON.stringify(rows);
-            io.emit('message', result);
+            io.emit('order-book:glass', result);
         });
       }
     });
@@ -84,10 +84,6 @@ const program = async () => {
     instance.on(MySQLEvents.EVENTS.CONNECTION_ERROR, console.error);
     instance.on(MySQLEvents.EVENTS.ZONGJI_ERROR, console.error);
   };
-
-// program()
-// .then(console.log('Connection Established, Monitoring DB for any change.'))
-// .catch(console.error);
 
 passport.use(new FacebookStrategy({
     clientID: config.facebook_api_key,
@@ -267,8 +263,7 @@ app.get('/api/order-book', ensureAuthenticated, (req, res) => {
     }
     program()
     .then(
-        console.log('Connection Established, Monitoring DB for any change.'),
-        // res.end('{}')
+        console.log('Connection Established, Monitoring DB for any change.')
     )
     .catch(console.error);
     pool.query(`SELECT glass from history_siz0 ORDER BY id DESC LIMIT 1`, (err, rows) => {
