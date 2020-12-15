@@ -14,6 +14,7 @@ export default class OrderBookContainer extends Component {
             askOrders: [],
             bidOrders: [],
         };
+        this.socket = openSocket(getHost(""));
         this.handleData = this.handleData.bind(this);
     }
 
@@ -90,9 +91,12 @@ export default class OrderBookContainer extends Component {
 
     componentDidMount() {
         this.getOrderBookData();
-        const  socket = openSocket(getHost(""));
-        socket.on('order-book:glass', this.handleData.bind(this));
+        this.socket.on('order-book:glass', this.handleData.bind(this));
     }
+
+    componentWillUnmount() {
+        this.socket.close();
+      }
 
     render() {
         return (
