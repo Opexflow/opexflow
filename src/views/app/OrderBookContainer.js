@@ -1,10 +1,10 @@
-import React, { Component} from 'react';
+import React, { Component } from 'react';
 import { Row } from 'reactstrap';
+import openSocket from 'socket.io-client';
 import { Colxx, Separator } from '../../components/common/CustomBootstrap';
 import Breadcrumb from '../../containers/navs/Breadcrumb';
 import OrderBook from '../../components/orderBook/OrderBook';
 import { getHost } from '../../helpers/Utils';
-import openSocket from 'socket.io-client';
 
 export default class OrderBookContainer extends Component {
     constructor(props) {
@@ -14,7 +14,7 @@ export default class OrderBookContainer extends Component {
             askOrders: [],
             bidOrders: [],
         };
-        this.socket = openSocket(getHost(""));
+        this.socket = openSocket(getHost(''));
         this.handleData = this.handleData.bind(this);
     }
 
@@ -26,21 +26,23 @@ export default class OrderBookContainer extends Component {
         Object.entries(glass.asks).forEach(
             ([key, value]) => {
                 askOrders.push({
-                price: key,
-                quantity: value,
-            }) 
-        });
+                    price: key,
+                    quantity: value,
+                });
+            },
+        );
         Object.entries(glass.bids).forEach(
             ([key, value]) => {
                 bidOrders.push({
-                price: key,
-                quantity: value,
-            }) 
-        });
-    
+                    price: key,
+                    quantity: value,
+                });
+            },
+        );
+
         this.setState({
-            askOrders: askOrders,
-            bidOrders: bidOrders
+            askOrders,
+            bidOrders,
         });
     }
 
@@ -50,32 +52,34 @@ export default class OrderBookContainer extends Component {
 
         // const glass = JSON.parse(rawData[0].glass);
         const obj = JSON.parse(rawData);
-        const glass = obj[0].glass;
+        const { glass } = obj[0];
         const glassObj = JSON.parse(glass);
         Object.entries(glassObj.asks).forEach(
             ([key, value]) => {
                 askOrders.push({
-                price: key,
-                quantity: value,
-            }) 
-        });
+                    price: key,
+                    quantity: value,
+                });
+            },
+        );
         Object.entries(glassObj.bids).forEach(
             ([key, value]) => {
                 bidOrders.push({
-                price: key,
-                quantity: value,
-            }) 
-        });
-    
+                    price: key,
+                    quantity: value,
+                });
+            },
+        );
+
         this.setState({
-            askOrders: askOrders,
-            bidOrders: bidOrders
+            askOrders,
+            bidOrders,
         });
     }
 
-    getOrderBookData(){
+    getOrderBookData() {
         try {
-            var classInstance = this;
+            const classInstance = this;
             const x = new XMLHttpRequest();
             x.open('GET', getHost('api/order-book'), true);
             x.onload = function() {
@@ -96,7 +100,7 @@ export default class OrderBookContainer extends Component {
 
     componentWillUnmount() {
         this.socket.close();
-      }
+    }
 
     render() {
         return (
@@ -110,7 +114,7 @@ export default class OrderBookContainer extends Component {
                 <Row>
                     <OrderBook askOrders={this.state.askOrders} bidOrders={this.state.bidOrders} />
               </Row>
-            </>
+          </>
         );
     }
 }
