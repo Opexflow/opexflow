@@ -124,7 +124,7 @@ module.exports = {
     'menu.videos': 'Видео',
     'menu.mailing': 'Отправка по почте',
     'menu.invoice': 'Выставленный счет',
-    'menu.blank-page': 'Пустая страница',
+    'menu.order-book': 'Пустая страница',
     'menu.types': 'Типы меню',
     'menu.levels': 'Уровни меню',
     'menu.third-level-1': 'Третий уровень 1',
@@ -595,4 +595,9 @@ module.exports = {
     'Current price': 'Текущая цена',
     'Stocks count': 'Количество акций',
     Commission: 'Комиссия',
+    'Bid Cumulative': 'Bid Cumulative',
+    'Bid Quantity': 'Bid Quantity',
+    'Price(USD)': 'Price(USD)',
+    'Ask Quantity': 'Ask Quantity',
+    'Ask Cumulative': 'Ask Cumulative',
 };

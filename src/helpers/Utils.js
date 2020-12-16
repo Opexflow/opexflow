@@ -53,3 +53,16 @@ export const setDirection = localValue => {
     }
     localStorage.setItem('direction', direction);
 };
+
+export const getHost = (postfix) => {
+    let host = `https://${window.location.host}/${postfix}`;
+    if (host.indexOf('3000') !== -1) {
+        // TODO: сделать в едином месте
+        host = host.replace('3000', '3001').replace('https', 'http');
+    }
+    return host;
+};
+
+export const sumQuantities = (orders) => {
+    return orders.reduce((total, order) => total + order.quantity, 0);
+}

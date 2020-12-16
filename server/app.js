@@ -9,6 +9,8 @@ const fs = require('fs');
 const path = require('path');
 const params = require('express-route-params');
 const config = require('./config');
+const orderBook =require('./api/orderBook');
+const {replaceHost} = require('./helpers/utils');
 
 const app = express();
 params(express);
@@ -37,6 +39,22 @@ config.facebook_api_key = '2640133479605924';
 
 // let HOSTNAME = 'https://opexflow.com';
 
+// Websocket between client and server
+var http = require('http').Server(app);
+var io = require('socket.io')(http, {
+    cors: {
+        origin: '*',
+        methods: ["GET", "POST"],
+        credentials: true
+    }
+});
+io.on('connection', () =>{
+    console.log("A user is connected")
+})
+
+app.set('pool', pool);
+app.set('io', io);
+
 passport.use(new FacebookStrategy({
     clientID: config.facebook_api_key,
     clientSecret: config.facebook_api_secret,
@@ -63,10 +81,6 @@ passport.use(new FacebookStrategy({
 
 // app.set('views', __dirname + '/views');
 // app.set('view engine', 'ejs');
-
-function replaceHost(host) {
-    return host.replace('http:', 'https:').replace('3001', '3000');
-}
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(session({ secret: 'secret123', key: 'sid' })); //, resave: false, saveUninitialized: false }));
@@ -202,10 +216,15 @@ app.get('/api/stocks/trades/sell/:price', ensureAuthenticated, (req, res) => {
     return res.end(JSON.stringify({}));
 });
 
+app.use('/api/order-book', ensureAuthenticated, orderBook);
+
 function ensureAuthenticated(req, res, next) {
     if (req.isAuthenticated()) { return next() }
     // res.redirect('/user/login')
     return next();
 }
 
-app.listen(3001);
+// app.listen(3001);
+var server = http.listen(3001, () => {
+    console.log('server is running on port', server.address().port);
+  });
