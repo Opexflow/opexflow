@@ -3,10 +3,9 @@ import { shallow, configure } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import OrderBookContainer from './OrderBookContainer';
 
-configure({adapter: new Adapter});
+configure({ adapter: new Adapter() });
 
-describe('<OrderBookContainer />', () =>{
-    
+describe('<OrderBookContainer />', () => {
     it('should render component with correct props', () => {
         const wrapper = shallow(<OrderBookContainer />);
 

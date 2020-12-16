@@ -28,6 +28,12 @@ const data = [
     {
         id: 'blankpage',
         icon: 'iconsminds-bucket',
+        label: 'menu.blank-page',
+        to: '/app/blank-page',
+    },
+    {
+        id: 'orderbook',
+        icon: 'iconsminds-bucket',
         label: 'menu.order-book',
         to: '/app/order-book',
     },
