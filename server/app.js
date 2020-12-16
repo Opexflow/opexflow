@@ -42,6 +42,7 @@ config.facebook_api_key = '2640133479605924';
 // Websocket between client and server
 const http = require('http').Server(app);
 const io = require('socket.io')(http, {
+    path: '/api/socket/data',
     cors: {
         origin: '*',
         methods: ['GET', 'POST'],

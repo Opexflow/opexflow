@@ -57,7 +57,6 @@ export const setDirection = localValue => {
 export const getHost = postfix => {
     let host = `https://${window.location.host}/${postfix}`;
     if (host.indexOf('3000') !== -1) {
-        // TODO: сделать в едином месте
         host = host.replace('3000', '3001').replace('https', 'http');
     }
     return host;

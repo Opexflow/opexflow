@@ -14,7 +14,9 @@ export default class OrderBookContainer extends Component {
             askOrders: [],
             bidOrders: [],
         };
-        this.socket = openSocket(getHost(''));
+        this.socket = openSocket(getHost(''), {
+            path: '/api/socket/data',
+        });
         this.handleData = this.handleData.bind(this);
     }
 
