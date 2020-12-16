@@ -4,6 +4,7 @@ import { Table } from 'reactstrap';
 import AskOrder from './AskOrder';
 import BidOrder from './BidOrder';
 import { sumQuantities } from '../../helpers/Utils';
+import IntlMessages from '../../helpers/IntlMessages';
 
 function renderOrders(ComponentClass, orders, maxCumulative) {
     let cumulative = 0;
@@ -31,11 +32,11 @@ class OrderBook extends React.Component {
               <Table hover responsive borderless size="sm">
                   <thead>
                       <tr>
-                          <th>Bid Cumulative</th>
-                          <th>Bid Quantity</th>
-                          <th>Price(USD)</th>
-                          <th>Ask Quantity</th>
-                          <th>Ask Cumulative</th>
+                          <th><IntlMessages id="Bid Cumulative" /></th>
+                          <th><IntlMessages id="Bid Quantity" /></th>
+                          <th><IntlMessages id="Price" /></th>
+                          <th><IntlMessages id="Ask Quantity" /></th>
+                          <th><IntlMessages id="Ask Cumulative" /></th>
                         </tr>
                     </thead>
                   <tbody>

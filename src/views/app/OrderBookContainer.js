@@ -18,62 +18,38 @@ export default class OrderBookContainer extends Component {
         this.handleData = this.handleData.bind(this);
     }
 
-    handleOnLoadData(rawData) {
-        const askOrders = [];
-        const bidOrders = [];
+    getBidAskOrders(data) {
+        const order = [];
 
+        Object.entries(data).forEach(
+            ([key, value]) => {
+                order.push({
+                    price: Number(key),
+                    quantity: Number(value),
+                });
+            },
+        );
+
+        return order;
+    }
+
+    handleOnLoadData(rawData) {
         const glass = JSON.parse(rawData[0].glass);
-        Object.entries(glass.asks).forEach(
-            ([key, value]) => {
-                askOrders.push({
-                    price: key,
-                    quantity: value,
-                });
-            },
-        );
-        Object.entries(glass.bids).forEach(
-            ([key, value]) => {
-                bidOrders.push({
-                    price: key,
-                    quantity: value,
-                });
-            },
-        );
 
         this.setState({
-            askOrders,
-            bidOrders,
+            askOrders: this.getBidAskOrders(glass.asks),
+            bidOrders: this.getBidAskOrders(glass.bids),
         });
     }
 
     handleData(rawData) {
-        const askOrders = [];
-        const bidOrders = [];
-
-        // const glass = JSON.parse(rawData[0].glass);
         const obj = JSON.parse(rawData);
         const { glass } = obj[0];
         const glassObj = JSON.parse(glass);
-        Object.entries(glassObj.asks).forEach(
-            ([key, value]) => {
-                askOrders.push({
-                    price: key,
-                    quantity: value,
-                });
-            },
-        );
-        Object.entries(glassObj.bids).forEach(
-            ([key, value]) => {
-                bidOrders.push({
-                    price: key,
-                    quantity: value,
-                });
-            },
-        );
 
         this.setState({
-            askOrders,
-            bidOrders,
+            askOrders: this.getBidAskOrders(glassObj.asks),
+            bidOrders: this.getBidAskOrders(glassObj.bids),
         });
     }
 
