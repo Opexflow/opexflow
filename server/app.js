@@ -9,8 +9,8 @@ const fs = require('fs');
 const path = require('path');
 const params = require('express-route-params');
 const config = require('./config');
-const orderBook =require('./api/orderBook');
-const {replaceHost} = require('./helpers/utils');
+const orderBook = require('./api/orderBook');
+const { replaceHost } = require('./helpers/utils');
 
 const app = express();
 params(express);
@@ -40,17 +40,19 @@ config.facebook_api_key = '2640133479605924';
 // let HOSTNAME = 'https://opexflow.com';
 
 // Websocket between client and server
-var http = require('http').Server(app);
-var io = require('socket.io')(http, {
+const http = require('http').Server(app);
+const io = require('socket.io')(http, {
+    path: '/api/socket/data',
     cors: {
         origin: '*',
-        methods: ["GET", "POST"],
-        credentials: true
-    }
+        methods: ['GET', 'POST'],
+        credentials: true,
+    },
 });
-io.on('connection', () =>{
-    console.log("A user is connected")
-})
+
+io.on('connection', () => {
+    console.log('A user is connected');
+});
 
 app.set('pool', pool);
 app.set('io', io);
@@ -83,7 +85,7 @@ passport.use(new FacebookStrategy({
 // app.set('view engine', 'ejs');
 
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(session({ secret: 'secret123', key: 'sid' })); //, resave: false, saveUninitialized: false }));
+app.use(session({ secret: 'secret123', key: 'sid' })); // , resave: false, saveUninitialized: false }));
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -227,4 +229,4 @@ function ensureAuthenticated(req, res, next) {
 // app.listen(3001);
 var server = http.listen(3001, () => {
     console.log('server is running on port', server.address().port);
-  });
+});

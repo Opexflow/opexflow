@@ -124,6 +124,7 @@ module.exports = {
     'menu.videos': 'Videos',
     'menu.mailing': 'Mailing',
     'menu.invoice': 'Invoice',
+    'menu.blank-page': 'Blank Page',
     'menu.order-book': 'Order Book',
     'menu.types': 'Menu Types',
     'menu.levels': 'Menu Levels',
@@ -596,7 +597,7 @@ module.exports = {
     Commission: 'Commission',
     'Bid Cumulative': 'Bid Cumulative',
     'Bid Quantity': 'Bid Quantity',
-    'Price(USD)': 'Price(USD)',
+    Price: 'Price',
     'Ask Quantity': 'Ask Quantity',
     'Ask Cumulative': 'Ask Cumulative',
 };
