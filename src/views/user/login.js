@@ -72,7 +72,7 @@ class Login extends Component {
   }
 
   render() {
-      let host = `https://${window.location.host}`;
+      let host = typeof window == 'undefined' ? `https://${this.props.serverRequest.headers.host}` : `https://${window.location.host}`;
       if (host.indexOf(3000) !== -1) {
           host = host.replace('3000', '3001').replace('https', 'http');
       }

@@ -15,7 +15,7 @@ import {
 } from '../actions';
 
 const INIT_STATE = {
-    user: localStorage.getItem('user_id'),
+    user: typeof localStorage == 'undefined' ? '' : localStorage.getItem('user_id'),
     forgotUserMail: '',
     newPassword: '',
     resetPasswordCode: '',
