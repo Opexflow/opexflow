@@ -4,6 +4,10 @@
   "description": "Gogo - React Bootstrap 4 Admin Dashboard Template",
   "private": true,
   "dependencies": {
+    "@babel/cli": "^7.12.10",
+    "@babel/preset-react": "^7.12.10",
+    "@babel/register": "^7.12.10",
+    "@babel/runtime": "^7.12.5",
     "@glidejs/glide": "^3.4.1",
     "@rodrigogs/mysql-events": "^0.6.0",
     "@tensorflow/tfjs": "^2.3.0",
@@ -91,7 +95,8 @@
     "tmp": "^0.2.1",
     "video.js": "^7.8.4",
     "yalc": "^1.0.0-pre.42",
-    "yup": "^0.29.1"
+    "yup": "^0.29.1",
+    "ignore-styles": "^5.0.1"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -100,6 +105,7 @@
     "eject": "react-scripts eject",
     "server": "nodemon server/app",
     "dev": "HTTPS=true concurrently \"npm run server\" \"npm run start\"",
+    "start-server": "yarn build && cross-env NODE_ENV=development nodemon server/parser",
     "lint": "eslint --debug src/",
     "lint:write": "eslint --debug src/ --fix",
     "precommit": "lint-staged"
