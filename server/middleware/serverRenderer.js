@@ -49,7 +49,7 @@ module.exports = function serverRenderer(req, res, next) {
           res.redirect(301, context.url)
         } else {
           // we're good, send the response
-          const RenderedApp = htmlData.replace('<div id="root"></div>', `<div id="root">${markup}</div>`)
+          const RenderedApp = htmlData.replace('<div class="loading">', `${markup}`)
           res.send(RenderedApp)
         }
       })
