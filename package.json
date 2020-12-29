@@ -105,7 +105,7 @@
     "eject": "react-scripts eject",
     "server": "nodemon server/app",
     "dev": "HTTPS=true concurrently \"npm run server\" \"npm run start\"",
-    "start-server": "npm build && cross-env NODE_ENV=development nodemon server/parser",
+    "start-server": "npm run build && cross-env NODE_ENV=development nodemon server/parser",
     "ssr-dev": "HTTPS=true concurrently \"npm run server\" \"npm run start-server\"",
     "lint": "eslint --debug src/",
     "lint:write": "eslint --debug src/ --fix",
