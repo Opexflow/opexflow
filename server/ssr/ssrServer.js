@@ -10,13 +10,13 @@ const ssrApp = express();
 
 ssrApp.get('/*', serverRenderer);
 
-ssrApp.use(express.static(path.resolve(__dirname, '..', 'build')));
+ssrApp.use(express.static(path.resolve(__dirname, '..', '..', 'build')));
 
 ssrApp.use(serverRenderer);
 
 const httpsServer = https.createServer({
-    key: fs.readFileSync(__dirname + '/server.key'),
-    cert: fs.readFileSync(__dirname + '/server.cert')
+    key: fs.readFileSync(__dirname + '/security/server.key'),
+    cert: fs.readFileSync(__dirname + '/security/server.cert')
 }, ssrApp);
 
 httpsServer.listen(PORT, () => console.log(`Client listening on port ${PORT}!`));

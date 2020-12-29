@@ -26,7 +26,7 @@ const monitorOrderBookDB = async (pool, io) => {
         statement: MySQLEvents.STATEMENTS.ALL, // all type of operations, for insert alone MySQLEvents.STATEMENTS.INSERT,
         onEvent: () => {
             let result;
-            pool.query('SELECT glass from history_siz0 ORDER BY id DESC LIMIT 1', (err, rows) => {
+            pool.query('SELECT glass from history_si ORDER BY id DESC LIMIT 1', (err, rows) => {
                 if (err) {
                     return res.end('{}');
                 }
@@ -60,7 +60,7 @@ router.get('/', (req, res) => {
             console.log('Connection Established, Monitoring DB for any change.'),
         )
         .catch(console.error);
-    pool.query('SELECT glass from history_siz0 ORDER BY id DESC LIMIT 1', (err, rows) => {
+    pool.query('SELECT glass from history_si ORDER BY id DESC LIMIT 1', (err, rows) => {
         if (err) {
             console.log('err is', err);
             return res.end('{}');
