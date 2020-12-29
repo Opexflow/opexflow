@@ -10,17 +10,17 @@ import { createMemoryHistory } from 'history';
 
 const history = createMemoryHistory();
 
-const { configureStore } = require('../../src/redux/store')
-const Login = require('../../src/views/user/login').default
-import enLang from '../../src/lang/entries/en-US';
+const { configureStore } = require('../../../src/redux/store')
+const Login = require('../../../src/views/user/login').default
+import enLang from '../../../src/lang/entries/en-US';
 
 
 module.exports = function serverRenderer(req, res, next) {
   if(req._possible404){
-    res.sendFile(path.join(__dirname, '..', '..','build', 'index.html'));
+    res.sendFile(path.join(__dirname, '..', '..', '..', 'build', 'index.html'));
   } else {
     if(req.path == "/user/login") {
-      const filePath = path.resolve(__dirname, '..', '..', 'build', 'index.html');
+      const filePath = path.resolve(__dirname, '..', '..', '..', 'build', 'index.html');
 
       fs.readFile(filePath, 'utf8', (err, htmlData)=>{
         if (err) {
@@ -55,7 +55,7 @@ module.exports = function serverRenderer(req, res, next) {
       })
     } else {
       req._possible404 = true;
-      //res.sendFile(path.join(__dirname, '..', '..','build', 'index.html'));
+      //res.sendFile(path.join(__dirname, '..', '..', '..','build', 'index.html'));
       return next();
     }
   }
