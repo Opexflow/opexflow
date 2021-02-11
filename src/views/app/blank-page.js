@@ -1,6 +1,6 @@
-import React, { Component} from 'react';
+import React, { Component } from 'react';
 import { Row } from 'reactstrap';
-import IntlMessages from '../../helpers/IntlMessages';
+import { Comments, FacebookProvider } from 'react-facebook';
 import { Colxx, Separator } from '../../components/common/CustomBootstrap';
 import Breadcrumb from '../../containers/navs/Breadcrumb';
 
@@ -16,7 +16,9 @@ export default class BlankPage extends Component {
                 </Row>
               <Row>
                   <Colxx xxs="12" className="mb-4">
-                      <p><IntlMessages id="menu.blank-page" /></p>
+                      <FacebookProvider appId="2969806906408505">
+                          <Comments href="https://opexflow.com" />
+                        </FacebookProvider>
                     </Colxx>
                 </Row>
             </>
