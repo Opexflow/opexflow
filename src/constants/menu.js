@@ -38,6 +38,12 @@ const data = [
         to: '/app/order-book',
     },
     {
+        id: 'commands',
+        icon: 'iconsminds-library',
+        label: 'menu.commands',
+        to: '/app/commands',
+    },
+    {
         id: 'docs',
         icon: 'iconsminds-library',
         label: 'menu.docs',

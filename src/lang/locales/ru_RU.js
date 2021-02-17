@@ -126,6 +126,7 @@ module.exports = {
     'menu.invoice': 'Выставленный счет',
     'menu.blank-page': 'Пустая страница',
     'menu.order-book': 'Торговый стакан',
+    'menu.commands': 'Commands',
     'menu.types': 'Типы меню',
     'menu.levels': 'Уровни меню',
     'menu.third-level-1': 'Третий уровень 1',
