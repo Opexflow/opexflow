@@ -2,7 +2,10 @@ import React, { Component } from 'react';
 import { Row, Col, Form, FormGroup, Label, Input, Button } from 'reactstrap';
 import { Colxx, Separator } from '../../../components/common/CustomBootstrap';
 import Breadcrumb from '../../../containers/navs/Breadcrumb';
+import IntlMessages from '../../../helpers/IntlMessages';
 import { getHost } from '../../../helpers/Utils';
+import FormFields from '../../../containers/commands/FormFields';
+import commands from '../../../constants/commands';
 
 export default class Commands extends Component {
 
@@ -11,56 +14,73 @@ export default class Commands extends Component {
 
     this.state = {
       hftChecked: false,
-      commandType: this.commands[0].command,
+      commandType: commands[0].command,
+      period: 0,
+      count: 0,
+      orderPrice: 0,
+      quantity: 0,
+      stoplosspercent: 0,
+      takeprofitpercent: 0,
+      cond_value: 0,
+      buysell: 'buy',
+      cond_type: 'LastUp',
+      ismarket: false,
+      condorder: false,
+      orderId: '',
       showResult: false,
       commandResult: null,
+      isSubmitDisable: false,
+      invalidFields: {},
     };
     this.handleSubmit = this.handleSubmit.bind(this);
 }
 
-  commands = [
-    {
-      command: 'server_status',
-    },
-    {
-      command: 'get_securities',
-    },
-    {
-      command: 'get_portfolio',
-    },
-    {
-      command: 'get_forts_positions',
-    },
-    {
-      command: 'gethistorydata',
-    },
-    {
-      command: 'neworder',
-    },
-    {
-      command: 'newstoporder',
-    },
-    {
-      command: 'newcondorder',
-    },
-    {
-      command: 'cancelorder',
-    },
-  ];
-
-  toggleHFTChange = () => {
+  resetFields = () => {
     this.setState({
-        hftChecked: !this.state.hftChecked,
+      period: 0,
+      count: 0,
+      orderPrice: 0,
+      quantity: 0,
+      stoplosspercent: 0,
+      takeprofitpercent: 0,
+      cond_value: 0,
+      buysell: 'buy',
+      cond_type: 'LastUp',
+      ismarket: false,
+      condorder: false,
+      orderId: '',
+      showResult: false,
+      commandResult: null,
+      isSubmitDisable: false,
+      invalidFields: {},
     });
   }
-  
-  handleCommandChange = (event) => {
-    this.setState({commandType: event.target.value});
+
+  validatePercentFields = (name, value) => {
+    if(!(/\b(?<!\.)(?!0+(?:\.0+)?%)(?:\d|[1-9]\d|100)(?:(?<!100)\.\d+)$/.test(value))){
+      this.setState({ [name] : value, invalidFields: {...this.state.invalidFields, [name]: true}, isSubmitDisable: true});
+    } else {
+      const isSubmitDisable = Object.keys(this.state.invalidFields).find((field) => field !== name && this.state.invalidFields[field] === true) === undefined ? false : true;
+      this.setState({ [name] : value, invalidFields: {...this.state.invalidFields, [name]: false}, isSubmitDisable });
+    }
+  }
+
+  handleInputChange = (event) => {
+    const target = event.target;
+    const value = target.type === 'checkbox' ? target.checked : target.value;
+    const name = target.name;
+    if(name === 'stoplosspercent' || name === 'takeprofitpercent'){
+      this.validatePercentFields(name, value);
+    } else {
+      this.setState({ [name] : value});
+      if(name === "commandType"){
+        this.resetFields();
+      }
+    }
   }
 
   handleOnLoadData(commandResponse) {
     //const result = JSON.parse(rawData);
-    console.log("result is ...", commandResponse);
 
     //if(commandResponse.success){
       this.setState({
@@ -75,15 +95,22 @@ export default class Commands extends Component {
     this.setState({
       showResult: false,
     })
-    console.log(`hftChecked: ${ this.state.hftChecked }`);
-    console.log(`commandType: ${ this.state.commandType }`);
+    
     try {
       const classInstance = this;
       const x = new XMLHttpRequest();
       let URL = getHost('api/commands');
       const HftOrNot = this.state.hftChecked ? 'Hft' : 'NoHft'
       const queryParams = `?command=${this.state.commandType}&HftOrNot=${HftOrNot}`;
-      URL = URL + queryParams;
+
+      var extraQueryParams = '';
+      const commandObject = commands.find((commandObj) => commandObj.command === this.state.commandType);
+      if(commandObject.fields) {
+        Object.keys(commandObject.fields).map((field) => {
+          extraQueryParams += '&' + field + '=' + this.state[field];
+        });
+      }
+      URL = URL + queryParams + extraQueryParams;
       x.open('GET', URL, true);
       x.onload = function() {
           //const res = x.responseText && JSON.parse(x.responseText);
@@ -114,15 +141,15 @@ export default class Commands extends Component {
               <Row form>
                 <Col md={9}>
                   <FormGroup inline>
-                    <Label for="selectCommand">Command</Label>
+                    <Label for="selectCommand"><IntlMessages id={'forms.command'} /></Label>
                     <Input 
                       type="select" 
-                      name="select" 
+                      name="commandType" 
                       id="selectCommand" 
-                      value={this.state.commandType} 
-                      onChange={this.handleCommandChange}>
+                      value={this.state.commandType}
+                      onChange={this.handleInputChange}>
                       {
-                        this.commands.map((command, index) => {
+                        commands.map((command, index) => {
                           return <option key={`${index}`} value={command.command}>{command.command}</option>
                       })}
                     </Input>
@@ -134,18 +161,22 @@ export default class Commands extends Component {
                       <h2>
                         <Input 
                           type="checkbox"
+                          name="hftChecked"
                           checked={this.state.hftChecked}
-                          onChange={this.toggleHFTChange}
-                        />Hft
+                          onChange={this.handleInputChange}
+                        /><IntlMessages id={'forms.hft'} />
                         </h2>
                       </Label>
                   </FormGroup>
                 </Col>
               </Row>
+              <Row>
+                <FormFields {...this.state} handleInputChange={this.handleInputChange} />
+              </Row>
               <br />
               <FormGroup check row>
                 <Col md={{ size: 4, offset: 4 }} xs={{ size: 8, offset: 2 }}>
-                  <Button type="submit" color="primary" size="lg" block>Submit</Button>
+                  <Button disabled={this.state.isSubmitDisable} type="submit" color="primary" size="lg" block><IntlMessages id={'pages.submit'} /></Button>
                 </Col>
               </FormGroup>
             </Form>
