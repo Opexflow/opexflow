@@ -8,4 +8,5 @@ module.exports = {
     password: 'P6y5H0e9',
     database: 'opexbetadb',
     HOSTNAME: 'http://localhost:3000',
+    SERVERHOSTNAME: 'http://localhost:12345',
 };

@@ -5,6 +5,15 @@ const MySQLEvents = require('@rodrigogs/mysql-events');
 const router = express.Router();
 const config = require('../config');
 const { replaceHost } = require('../helpers/utils');
+const ioClient = require('socket.io-client');
+
+const socket = ioClient(config.SERVERHOSTNAME);
+
+const createSocketCoonection = async (io) => {
+    socket.on('order-book:glass', async (result) => {
+        io.emit('order-book:glass', JSON.stringify([{"glass": result}]));
+    });
+}
 
 // Program to Monitor MySql for any chagne
 const monitorOrderBookDB = async (pool, io) => {
@@ -26,7 +35,7 @@ const monitorOrderBookDB = async (pool, io) => {
         statement: MySQLEvents.STATEMENTS.ALL, // all type of operations, for insert alone MySQLEvents.STATEMENTS.INSERT,
         onEvent: () => {
             let result;
-            pool.query('SELECT glass from history_siz0 ORDER BY id DESC LIMIT 1', (err, rows) => {
+            pool.query('SELECT glass from history_si ORDER BY id DESC LIMIT 1', (err, rows) => {
                 if (err) {
                     return res.end('{}');
                 }
@@ -55,18 +64,21 @@ router.get('/', (req, res) => {
     const pool = req.app.get('pool');
     const io = req.app.get('io');
 
-    monitorOrderBookDB(pool, io)
+    /*monitorOrderBookDB(pool, io)
         .then(
             console.log('Connection Established, Monitoring DB for any change.'),
         )
         .catch(console.error);
-    pool.query('SELECT glass from history_siz0 ORDER BY id DESC LIMIT 1', (err, rows) => {
+    pool.query('SELECT glass from history_si ORDER BY id DESC LIMIT 1', (err, rows) => {
         if (err) {
             console.log('err is', err);
             return res.end('{}');
         }
+        console.log("result is..", JSON.stringify(rows));
         res.end(JSON.stringify(rows));
-    });
+    });*/
+    createSocketCoonection(io);
+    return ;
 });
 
 module.exports = router;

@@ -10,6 +10,7 @@ const path = require('path');
 const params = require('express-route-params');
 const config = require('./config');
 const orderBook = require('./api/orderBook');
+const commands = require('./api/commands');
 const { replaceHost } = require('./helpers/utils');
 
 const app = express();
@@ -219,6 +220,8 @@ app.get('/api/stocks/trades/sell/:price', ensureAuthenticated, (req, res) => {
 });
 
 app.use('/api/order-book', ensureAuthenticated, orderBook);
+
+app.use('/api/commands', ensureAuthenticated, commands);
 
 function ensureAuthenticated(req, res, next) {
     if (req.isAuthenticated()) { return next() }
