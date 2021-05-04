@@ -20,7 +20,12 @@ Please make sure you have all required modules installed. To do this, enter the 
       npm install          installs all required modules from package.json
       npm run dev          runs project (backend & frontend)
 ```
-
+If it doesn't work try this
+```
+      npm install                           installs all required modules from package.json
+      node server/app                       run server
+      set HTTPS=true&&npm run start         run project (frontend)
+```
 ## How to test
 
 We use snapshot tests. To run test enter
