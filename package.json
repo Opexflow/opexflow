@@ -41,6 +41,7 @@
     "formik": "^2.1.4",
     "http": "0.0.1-security",
     "moment": "2.27.0",
+    "mongodb": "^3.6.6",
     "mousetrap": "^1.6.5",
     "mysql": "^2.18.1",
     "mysql-to-rest": "^1.0.8",
