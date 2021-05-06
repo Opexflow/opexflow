@@ -12,6 +12,7 @@ const config = require('./config');
 const orderBook = require('./api/orderBook');
 const commands = require('./api/commands');
 const { replaceHost } = require('./helpers/utils');
+const mongo = require('./helpers/mongoClient');
 
 const app = express();
 params(express);
@@ -58,6 +59,12 @@ io.on('connection', () => {
 app.set('pool', pool);
 app.set('io', io);
 
+
+async function start() {
+  await mongo.init();
+}
+start();
+
 passport.use(new FacebookStrategy({
     clientID: config.facebook_api_key,
     clientSecret: config.facebook_api_secret,
@@ -65,16 +72,28 @@ passport.use(new FacebookStrategy({
     profileFields: ['id', 'displayName', 'name', 'gender', 'profileUrl', 'emails', 'photos'],
 },
 ((accessToken, refreshToken, profile, done) => {
-    process.nextTick(() => {
+    process.nextTick(async () => {
         console.log(profile);
         if (profile && profile.id) {
             const photo = profile.photos && profile.photos[0] && profile.photos[0].value || '';
             const email = profile.emails && profile.emails[0] && profile.emails[0].value || '';
 
+            var query = { _id: profile.id.toString() };
+            const newUser = { 
+              $set: {login: profile.displayName, email: email, photo: photo, updatedAt: new Date() },
+              $setOnInsert: {
+                _id: profile.id.toString(),
+                createdAt: new Date(),
+                balance: 10000
+              }
+            }
+            await mongo.getUserObject().updateOrInsertUser(query, newUser, {upsert: true});
+            /*
             pool.query(`INSERT INTO Users SET
                     id = '${profile.id}', login = '${profile.displayName}', email = '${email}', photo='${photo}', createdAt = NOW(), balance = 10000
                     ON DUPLICATE KEY UPDATE login = '${profile.displayName}', email = '${email}', photo='${photo}'
                 `);
+            */
 
             profile.accessToken = accessToken;
         }
@@ -111,7 +130,7 @@ app.get('/', (req, res) => {
     }
 });
 
-app.get('/api/account', (req, res) => {
+app.get('/api/account', async (req, res) => {
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('Access-Control-Allow-Origin', replaceHost(HOSTNAME));
     res.setHeader('Access-Control-Allow-Credentials', 'true');
@@ -122,19 +141,27 @@ app.get('/api/account', (req, res) => {
     if (!req.isAuthenticated() || !req.user || !req.user.id) {
         return res.end('{}');
     }
-
+    
+    /*
     pool.query(`SELECT * from Users where id=${req.user.id}`, (err, rows) => {
         res.end(JSON.stringify({ user: req.user, finance: { balance: rows && rows[0] && rows[0].balance } }));
     });
+    */
+    const user = await mongo.getUserObject().getUser(req.user.id);
+    res.end(JSON.stringify({ user: req.user, finance: { balance: user.balance } }));
 });
 
-app.get('/api/account/:id', (req, res) => {
+app.get('/api/account/:id', async (req, res) => {
+  /*    
     pool.query(`SELECT * from Users where id=${req.params.id}`, (err, rows) => {
         if (err) {
             return res.end('{}');
         }
         res.end(JSON.stringify(rows));
     });
+  */
+    const user = await mongo.getUserObject().getUser(req.user.id);
+    res.end(JSON.stringify(user));  
 });
 
 app.get('/api/auth/facebook', passport.authenticate('facebook', { scope: 'email' }));
@@ -187,7 +214,7 @@ app.get('/api/stocks/ticks/:tick', ensureAuthenticated, (req, res) => {
 app.param('price', /^\d+\.?\d*$/i);
 
 // ========= Работа с тиками ==========
-app.get('/api/stocks/trades/buy/:price', ensureAuthenticated, (req, res) => {
+app.get('/api/stocks/trades/buy/:price', ensureAuthenticated, async (req, res) => {
     // TODO: сделать общее решение для локальной разработки.
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('Access-Control-Allow-Origin', replaceHost(HOSTNAME));
@@ -199,11 +226,14 @@ app.get('/api/stocks/trades/buy/:price', ensureAuthenticated, (req, res) => {
         return res.end('{}');
     }
 
-    pool.query(`UPDATE Users SET balance = balance - '${req.params.price}' WHERE id = '${req.user.id}'`);
+    //pool.query(`UPDATE Users SET balance = balance - '${req.params.price}' WHERE id = '${req.user.id}'`);
+    var query = { _id: req.user.id.toString() };
+    const newUser = { "$inc": { "balance": -req.params.price } };
+    await mongo.getUserObject().updateOrInsertUser(query, newUser, {upsert: false});
     return res.end(JSON.stringify({}));
 });
 
-app.get('/api/stocks/trades/sell/:price', ensureAuthenticated, (req, res) => {
+app.get('/api/stocks/trades/sell/:price', ensureAuthenticated, async (req, res) => {
     // TODO: сделать общее решение для локальной разработки.
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('Access-Control-Allow-Origin', replaceHost(HOSTNAME));
@@ -215,7 +245,10 @@ app.get('/api/stocks/trades/sell/:price', ensureAuthenticated, (req, res) => {
         return res.end('{}');
     }
 
-    pool.query(`UPDATE Users SET balance = balance + '${req.params.price}' WHERE id = '${req.user.id}'`);
+    //pool.query(`UPDATE Users SET balance = balance + '${req.params.price}' WHERE id = '${req.user.id}'`);
+    var query = { _id: req.user.id.toString() };
+    const newUser = { "$inc": { "balance": +req.params.price } };
+    await mongo.getUserObject().updateOrInsertUser(query, newUser, {upsert: false});
     return res.end(JSON.stringify({}));
 });
 
