@@ -2,6 +2,7 @@ import React, { Suspense } from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import FB from 'fb';
+import GitHub from 'github-api';
 import * as serviceWorker from './serviceWorker';
 import { configureStore } from './redux/store';
 
@@ -26,6 +27,8 @@ if (window.location.pathname && window.location.pathname !== '/user/login') {
         console.log(x.responseText);
         console.log(user, res);
         if (user && user.accessToken) {
+
+          if(user.provider === 'facebook') {
             FB.setAccessToken(user.accessToken);
             FB.api('/me', { fields: 'id,name,picture' }, response => {
                 if (user.id !== response.id) {
@@ -33,7 +36,7 @@ if (window.location.pathname && window.location.pathname !== '/user/login') {
                 } else {
                     // console.log(user.id, response);
                     ReactDOM.render(
-                      <Provider store={configureStore({ authUser: { user: { ...response }, finance, FB } })}>
+                      <Provider store={configureStore({ authUser: { user: { ...response}, finance, FB } })}>
                           <Suspense fallback={<div className="loading" />}>
                               <App />
                             </Suspense>
@@ -42,6 +45,33 @@ if (window.location.pathname && window.location.pathname !== '/user/login') {
                     );
                 }
             });
+
+          } else if(user.provider === 'github') {
+            
+            const gh = new GitHub({
+              token: user.accessToken
+            });
+            var me = gh.getUser();
+            
+            me.getProfile((err, response) => {
+
+              if (user.id != response.id) {
+                window.location.href = '/user/login';
+              } else {
+                // console.log(user.id, response);
+                ReactDOM.render(
+                  <Provider store={configureStore({ authUser: { user: { ...response, picture: { data: {url: response.avatar_url } } }, finance } })}>
+                      <Suspense fallback={<div className="loading" />}>
+                          <App />
+                        </Suspense>
+                    </Provider>,
+                    document.getElementById('root'),
+                );
+              }
+            });
+          } else {
+            window.location.href = '/user/login';
+          }
         } else {
             window.location.href = '/user/login';
         }

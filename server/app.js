@@ -1,6 +1,7 @@
 const express = require('express');
 const passport = require('passport');
 const FacebookStrategy = require('passport-facebook').Strategy;
+const GitHubStrategy = require('passport-github').Strategy;
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
@@ -13,6 +14,7 @@ const orderBook = require('./api/orderBook');
 const commands = require('./api/commands');
 const { replaceHost } = require('./helpers/utils');
 const mongo = require('./helpers/mongoClient');
+const { saveOrUpdateUser } = require('./services/users');
 
 const app = express();
 params(express);
@@ -75,19 +77,8 @@ passport.use(new FacebookStrategy({
     process.nextTick(async () => {
         console.log(profile);
         if (profile && profile.id) {
-            const photo = profile.photos && profile.photos[0] && profile.photos[0].value || '';
-            const email = profile.emails && profile.emails[0] && profile.emails[0].value || '';
 
-            var query = { _id: profile.id.toString() };
-            const newUser = { 
-              $set: {login: profile.displayName, email: email, photo: photo, updatedAt: new Date() },
-              $setOnInsert: {
-                _id: profile.id.toString(),
-                createdAt: new Date(),
-                balance: 10000
-              }
-            }
-            await mongo.getUserObject().updateOrInsertUser(query, newUser, {upsert: true});
+            await saveOrUpdateUser(profile, mongo);
             /*
             pool.query(`INSERT INTO Users SET
                     id = '${profile.id}', login = '${profile.displayName}', email = '${email}', photo='${photo}', createdAt = NOW(), balance = 10000
@@ -99,6 +90,31 @@ passport.use(new FacebookStrategy({
         }
         return done(null, profile);
     });
+})));
+
+
+passport.use(new GitHubStrategy({
+  clientID: config.github_api_key,
+  clientSecret: config.github_api_secret,
+  callbackURL: config.github_callback_url,
+  profileFields: ['id', 'displayName', 'name', 'gender', 'profileUrl', 'emails', 'photos'],
+},
+((accessToken, refreshToken, profile, done) => {
+  process.nextTick(async () => {
+      console.log('github profile', profile);
+      if (profile && profile.id) {
+          await saveOrUpdateUser(profile, mongo);
+          /*
+          pool.query(`INSERT INTO Users SET
+                  id = '${profile.id}', login = '${profile.displayName}', email = '${email}', photo='${photo}', createdAt = NOW(), balance = 10000
+                  ON DUPLICATE KEY UPDATE login = '${profile.displayName}', email = '${email}', photo='${photo}'
+              `);
+          */
+
+          profile.accessToken = accessToken;
+      }
+      return done(null, profile);
+  });
 })));
 
 // app.set('views', __dirname + '/views');
@@ -171,6 +187,16 @@ app.get('/api/auth/facebook/callback',
     (req, res) => {
         // console.log('/callback', req, res);
         res.redirect('/');
+    });
+
+
+app.get('/api/auth/github', passport.authenticate('github'));
+
+app.get('/api/auth/github/callback', 
+    passport.authenticate('github', { successRedirect: '/', failureRedirect: '/user/login' }),
+    (req, res) => {
+      // console.log('/callback', req, res);
+      res.redirect('/');
     });
 
 app.get('/api/logout', (req, res) => {
