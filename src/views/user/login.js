@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {
-    Row, Card, CardTitle, Label, FormGroup, Input,
+  Container, Row, Col, Card, CardTitle, Label, FormGroup, Input,
 } from 'reactstrap';
 import { NavLink } from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -119,8 +119,10 @@ class Login extends Component {
                         </CardTitle>
 
                           {this.state.rulesAccepted && (
-                              <div className="Facebook">
-                            <a
+                            <Container>
+                              <Row >
+                                <div className="Facebook">
+                                  <a
                                     href={`${host}/api/auth/facebook`}
                                     alt="Continue with Facebook"
                                   >
@@ -130,7 +132,23 @@ class Login extends Component {
                                         width="300"
                                       />
                                   </a>
-                          </div>
+                                </div>
+                              </Row>
+                              <Row style={{marginTop: '5%'}}>
+                                <div className="Facebook">
+                                  <a
+                                      href={`${host}/api/auth/github`}
+                                      alt="Continue with Github"
+                                  >
+                                    <img
+                                        src="/assets/img/rsz_1github.png"
+                                        alt="Continue with Github"
+                                        width="300"
+                                      />
+                                  </a>
+                                </div>
+                              </Row>
+                            </Container>
                           )}
                     </div>
                 </Card>
