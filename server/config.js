@@ -20,7 +20,8 @@ module.exports = {
       host: 'cluster0.o4e8w.mongodb.net',
       database: 'opexbetadb',
       collections: {
-        users: "Users"
+        users: "Users",
+        marketplace: "Marketplace",
       }
     }
 };

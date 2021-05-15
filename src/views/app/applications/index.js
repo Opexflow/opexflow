@@ -5,6 +5,7 @@ import todoApp from './todo';
 import surveyApp from './survey';
 import surveyDetailApp from './survey-detail';
 import chatApp from './chat';
+import marketPlace from './marketPlace';
 
 const Applications = ({ match }) => (
     <div className="dashboard-wrapper">
@@ -18,6 +19,7 @@ const Applications = ({ match }) => (
           />
             <Route path={`${match.url}/survey`} component={surveyApp} isExact />
             <Route path={`${match.url}/chat`} component={chatApp} />
+            <Route path={`${match.url}/marketplace`} component={marketPlace} />
             <Redirect to="/error" />
       </Switch>
   </div>

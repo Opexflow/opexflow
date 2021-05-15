@@ -1,7 +1,7 @@
 const { MongoClient } = require('mongodb');
 const config = require('../config');
 const Users = require('../DataModals/Users');
-
+const Marketplace = require('../DataModals/Marketplace');
 
 class MongoClientHelper {
   constructor() {
@@ -13,6 +13,7 @@ class MongoClientHelper {
       await this.client.connect(err => {
         this.db = this.client.db(`${config.mongodb.database}`);
         this.Users = new Users(this.db);
+        this.Marketplace = new Marketplace(this.db);
       });
     } catch(e) {
       console.log('Erro while connecting to mongo DB');
@@ -24,6 +25,10 @@ class MongoClientHelper {
 
   getUserObject() {
     return this.Users;
+  }
+
+  getMarketPlaceObject() {
+    return this.Marketplace;
   }
 }
 

@@ -71,6 +71,14 @@ export const SURVEY_GET_DETAILS_ERROR = 'SURVEY_GET_DETAILS_ERROR';
 export const SURVEY_DELETE_QUESTION = 'SURVEY_DELETE_QUESTION';
 export const SURVEY_SAVE = 'SURVEY_SAVE';
 
+/* MARKETPLACE APP */
+export const MARKETPLACE_GET_LIST = 'MARKETPLACE_GET_LIST';
+export const MARKETPLACE_GET_LIST_SUCCESS='MARKETPLACE_GET_LIST_SUCCESS';
+export const MARKETPLACE_GET_LIST_ERROR='MARKETPLACE_GET_LIST_ERROR';
+export const MARKETPLACE_ADD_ITEM='MARKETPLACE_ADD_ITEM';
+export const MARKETPLACE_ADD_ITEM_SUCCESS='MARKETPLACE_ADD_ITEM_SUCCESS';
+export const MARKETPLACE_ADD_ITEM_ERROR='MARKETPLACE_ADD_ITEM_ERROR';
+
 export * from './menu/actions';
 export * from './settings/actions';
 export * from './auth/actions';
@@ -78,3 +86,4 @@ export * from './todo/actions';
 export * from './chat/actions';
 export * from './surveyList/actions';
 export * from './surveyDetail/actions';
+export * from './marketPlace/actions';
