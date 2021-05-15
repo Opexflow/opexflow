@@ -12,6 +12,7 @@ const params = require('express-route-params');
 const config = require('./config');
 const orderBook = require('./api/orderBook');
 const commands = require('./api/commands');
+const marketplace = require('./api/marketplace')
 const { replaceHost } = require('./helpers/utils');
 const mongo = require('./helpers/mongoClient');
 const { saveOrUpdateUser } = require('./services/users');
@@ -124,6 +125,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(session({ secret: 'secret123', key: 'sid' })); // , resave: false, saveUninitialized: false }));
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(bodyParser.json());
 
 app.get('/api', (req, res) => {
     // res.render('index', { user: req.user });
@@ -281,6 +283,8 @@ app.get('/api/stocks/trades/sell/:price', ensureAuthenticated, async (req, res) 
 app.use('/api/order-book', ensureAuthenticated, orderBook);
 
 app.use('/api/commands', ensureAuthenticated, commands);
+
+app.use('/api/marketplace', ensureAuthenticated, marketplace);
 
 function ensureAuthenticated(req, res, next) {
     if (req.isAuthenticated()) { return next() }

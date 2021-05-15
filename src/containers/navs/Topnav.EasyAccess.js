@@ -25,11 +25,11 @@ const TopnavEasyAccess = () => (
                     {' '}
                   <IntlMessages id="menu.ui" />
                 </NavLink>
-              <NavLink to="/app/ui/charts" className="icon-menu-item">
+              {/* <NavLink to="/app/ui/charts" className="icon-menu-item">
                   <i className="iconsminds-bar-chart-4 d-block" />
                     {' '}
                   <IntlMessages id="menu.charts" />
-                </NavLink>
+                </NavLink> */}
               <NavLink to="/app/applications/chat" className="icon-menu-item">
                   <i className="iconsminds-speach-bubble d-block" />
                     {' '}
@@ -44,6 +44,11 @@ const TopnavEasyAccess = () => (
                   <i className="iconsminds-check d-block" />
                     {' '}
                   <IntlMessages id="menu.todo" />
+                </NavLink>
+              <NavLink to="/app/applications/marketplace" className="icon-menu-item">
+                  <i className="iconsminds-factory d-block" />
+                    {' '}
+                  <IntlMessages id="menu.marketplace" />
                 </NavLink>
             </DropdownMenu>
         </UncontrolledDropdown>
