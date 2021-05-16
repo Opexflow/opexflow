@@ -132,6 +132,7 @@ module.exports = {
     'menu.third-level-1': 'Third Level 1',
     'menu.third-level-2': 'Third Level 2',
     'menu.third-level-3': 'Third Level 3',
+    'menu.marketplace': 'MarketPlace',
 
     /* 04.Dashboards */
     'dashboards.pending-orders': 'Pending Orders',
@@ -271,6 +272,32 @@ module.exports = {
     'todo.completed-tasks': 'Completed Tasks',
     'todo.categories': 'Categories',
     'todo.labels': 'Labels',
+
+    /* 06.04.Marketplace */
+    'marketPlace.add-new': 'ADD NEW',
+    'marketPlace.add-new-title': 'Add New Job',
+    'marketPlace.title': 'Title',
+    'marketPlace.title-placeholder': 'Please enter the name of your job post',
+    'marketPlace.detail': 'Description',
+    'marketPlace.detail-placeholder': 'Please specify : \nWhat the deliverable should be, \nType of freelancer you\'re looking for, \nAnything unique about the project, team, or your company',
+    'marketPlace.project-type': 'Project Type',
+    'marketPlace.category': 'Job Category',
+    'marketPlace.category-other': 'Please specify Job Category',
+    'marketPlace.label': 'Label',
+    'marketPlace.status': 'Status',
+    'marketPlace.cancel': 'Cancel',
+    'marketPlace.submit': 'Submit',
+    'marketPlace.action': 'Action',
+    'marketPlace.another-action': 'Another action',
+    'marketPlace.display-options': 'Display Options',
+    'marketPlace.orderby': 'Order By : ',
+    'marketPlace.all-tasks': 'All Tasks',
+    'marketPlace.pending-tasks': 'Pending Tasks',
+    'marketPlace.completed-tasks': 'Completed Tasks',
+    'marketPlace.categories': 'Categories',
+    'marketPlace.labels': 'Labels',
+    'marketPlace.budget': 'Budget',
+    'marketPlace.budget-placeholder': 'Please specify the Budget',
 
     /* 07.UI */
 

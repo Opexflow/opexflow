@@ -5,6 +5,7 @@ import {
     DropdownItem,
     DropdownToggle,
     DropdownMenu,
+    Button,
 } from 'reactstrap';
 
 import { NavLink } from 'react-router-dom';
@@ -175,6 +176,10 @@ class TopNav extends Component {
       this.props.logoutUser(this.props.history);
   };
 
+  handleLogin = () => {
+      this.props.history.push('/user/login');
+  }
+
   menuButtonClick = (e, menuClickCount, containerClassnames) => {
       e.preventDefault();
 
@@ -299,6 +304,8 @@ class TopNav extends Component {
                       }
                 </div>
                   <div className="user d-inline-block">
+                  {
+                  user && user.name ? (
                       <UncontrolledDropdown className="dropdown-menu-right">
                           <DropdownToggle className="p-0" color="empty">
                           <span className="name mr-1">
@@ -322,8 +329,15 @@ class TopNav extends Component {
                               <DropdownItem onClick={() => this.handleLogout()}>
                               Sign out
                               </DropdownItem>
-                        </DropdownMenu>
+                        </DropdownMenu> 
                     </UncontrolledDropdown>
+                    ) : (
+                      <Button 
+                        onClick={() => this.handleLogin()}>
+                          Sign In
+                      </Button>
+                    )
+                  }
                 </div>
             </div>
         </nav>

@@ -73,7 +73,15 @@ if (window.location.pathname && window.location.pathname !== '/user/login') {
             window.location.href = '/user/login';
           }
         } else {
-            window.location.href = '/user/login';
+            //window.location.href = '/user/login';
+            ReactDOM.render(
+              <Provider store={configureStore()}>
+                  <Suspense fallback={<div className="loading" />}>
+                      <App />
+                </Suspense>
+            </Provider>,
+              document.getElementById('root'),
+          );
         }
     };
     x.withCredentials = true;

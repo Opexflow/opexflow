@@ -76,10 +76,11 @@ class App extends Component {
                 <Suspense fallback={<div className="loading" />}>
                           <Router>
                               <Switch>
-                                  <AuthRoute
+                                  <Route
                                       path="/app"
-                                      authUser={loginUser}
-                                      component={ViewApp}
+                                      //authUser={loginUser}
+                                      //component={ViewApp}
+                                      render={props => <ViewApp {...props} />}
                                     />
                                   <Route
                                       path="/user"
