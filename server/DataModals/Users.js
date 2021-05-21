@@ -14,6 +14,11 @@ class User {
     return user;
   }
 
+  async getAllUsers() {
+    const users = await this.collection.find().toArray();
+    return users;
+  }
+
   async updateOrInsertUser(query, newUser, upsert){
     const user = await this.collection.update(query, newUser, upsert);
     return user;

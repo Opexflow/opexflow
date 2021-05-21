@@ -12,7 +12,8 @@ const saveOrUpdateUser = async (profile, mongo) => {
       balance: 10000
     }
   }
-  await mongo.getUserObject().updateOrInsertUser(query, newUser, {upsert: true});
+  const user = await mongo.getUserObject().updateOrInsertUser(query, newUser, {upsert: true});
+  return user;
 }
 
 module.exports = { saveOrUpdateUser };
