@@ -34,6 +34,7 @@ class AddNewMarketPlaceModal extends Component {
             label: {},
             labelColor: '',
             category: {},
+            hasBudget: false,
             budget: 0,
             status: 'PENDING',
         };
@@ -170,6 +171,20 @@ class AddNewMarketPlaceModal extends Component {
                     </FormGroup>
 
                     <FormGroup>
+                      <CustomInput
+                        type="checkbox"
+                        id="checkbox_has_budget"
+                        name="has-budget"
+                        label="has budget?"
+                        defaultChecked={this.state.hasBudget}
+                        onChange={event => {
+                          this.setState({ hasBudget: event.target.checked });
+                        }}
+                      />
+                    </FormGroup>
+
+                    {this.state.hasBudget ? (
+                    <FormGroup>
                       <Label className="mt-4">
                             <IntlMessages id="marketPlace.budget" />
                       </Label>
@@ -184,7 +199,8 @@ class AddNewMarketPlaceModal extends Component {
                             }}
                       />
                       </InputGroup>
-                    </FormGroup>
+                    </FormGroup>) : null
+                    }
 
               </ModalBody>
                 <ModalFooter>

@@ -46,6 +46,7 @@
     "mousetrap": "^1.6.5",
     "mysql": "^2.18.1",
     "mysql-to-rest": "^1.0.8",
+    "node-mocks-http": "^1.10.1",
     "parcel-bundler": "^1.12.4",
     "passport": "^0.4.1",
     "passport-facebook": "^3.0.0",
@@ -105,7 +106,8 @@
     "dev": "HTTPS=true concurrently \"npm run server\" \"npm run start\"",
     "lint": "eslint --debug src/",
     "lint:write": "eslint --debug src/ --fix",
-    "precommit": "lint-staged"
+    "precommit": "lint-staged",
+    "test-server": "jest --rootDir=server"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -117,6 +119,7 @@
     "not op_mini all"
   ],
   "devDependencies": {
+    "@shelf/jest-mongodb": "^1.2.4",
     "babel-eslint": "^10.1.0",
     "concurrently": "^5.3.0",
     "eslint": "^6.6.0",
