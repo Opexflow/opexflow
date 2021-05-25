@@ -18,6 +18,7 @@ import IntlMessages from '../../../helpers/IntlMessages';
 import { getMarketPlaceList } from '../../../redux/actions';
 
 import AddNewMarketPlaceModal from '../../../containers/applications/AddNewMarketPlaceModal';
+import MarketPlaceItem from '../../../components/applications/MarketPlaceItem';
 
 class MarketPlace extends Component {
 
@@ -40,6 +41,8 @@ class MarketPlace extends Component {
   };
 
   render() {
+
+    const { marketPlaceItems, loading, selectedItems } = this.props.marketPlaceApp;
 
     const { user } = this.props.authUser;
     const { modalOpen } = this.state;
@@ -65,6 +68,23 @@ class MarketPlace extends Component {
             </div>
             <Breadcrumb match={this.props.match} />
           </div>
+          <Separator className="mb-5" />
+            <Row>
+              {loading ? (
+                marketPlaceItems.map((item, index) => (
+                  <MarketPlaceItem
+                    key={`market_place_item_${index}`}
+                    item={item}
+                    handleCheckChange={this.handleCheckChange}
+                    isSelected={
+                      loading ? selectedItems.includes(item.id) : false
+                    }
+                  />
+                ))
+              ) : (
+                <div className="loading" />
+              )}
+              </Row>
         </Colxx>
         </Row>
         <AddNewMarketPlaceModal
