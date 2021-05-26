@@ -55,7 +55,8 @@ class AddNewMarketPlaceModal extends Component {
           projectType: this.state.projectType.value,
           categoryOther: this.state.categoryOther,
           category: this.state.category.value === 'Other' ? this.state.categoryOther : this.state.category.value,
-          budget: this.state.budget,
+          hasBudget: this.state.hasBudget,
+          budget: this.state.hasBudget ? this.state.budget : 0,
           createdByName: this.props.user.name,
           createdById: this.props.user.id,
       };
