@@ -22,6 +22,7 @@ module.exports = {
       collections: {
         users: "Users",
         marketplace: "Marketplace",
+        proposals: "Proposals",
       }
     }
 };

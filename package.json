@@ -80,6 +80,7 @@
     "react-sortablejs": "^2.0.11",
     "react-table": "7.2.1",
     "react-tagsinput": "^3.19.0",
+    "react-toastify": "^7.0.4",
     "react-transition-group": "^4.4.1",
     "react-websocket": "^2.1.0",
     "react-yandex-maps": "^4.4.0",
