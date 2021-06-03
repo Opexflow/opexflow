@@ -79,6 +79,14 @@ export const MARKETPLACE_ADD_ITEM='MARKETPLACE_ADD_ITEM';
 export const MARKETPLACE_ADD_ITEM_SUCCESS='MARKETPLACE_ADD_ITEM_SUCCESS';
 export const MARKETPLACE_ADD_ITEM_ERROR='MARKETPLACE_ADD_ITEM_ERROR';
 
+
+export const PROPOSALS_GET_LIST = 'PROPOSALS_GET_LIST';
+export const PROPOSALS_GET_LIST_SUCCESS='PROPOSALS_GET_LIST_SUCCESS';
+export const PROPOSALS_GET_LIST_ERROR='PROPOSALS_GET_LIST_ERROR';
+export const APPLY_JOB='APPLY_JOB';
+export const APPLY_JOB_SUCCESS='APPLY_JOB_SUCCESS';
+export const APPLY_JOB_ERROR='APPLY_JOB_ERROR';
+
 export * from './menu/actions';
 export * from './settings/actions';
 export * from './auth/actions';
@@ -87,3 +95,4 @@ export * from './chat/actions';
 export * from './surveyList/actions';
 export * from './surveyDetail/actions';
 export * from './marketPlace/actions';
+export * from './proposals/actions';
