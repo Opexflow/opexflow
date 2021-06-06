@@ -12,7 +12,7 @@ import applyJob from './apply-job';
 const Applications = ({ match }) => (
     <div className="dashboard-wrapper">
         <Switch>
-            <Redirect exact from={`${match.url}/`} to={`${match.url}/todo`} />
+            <Redirect exact from={`${match.url}/`} to={`${match.url}/marketplace`} />
             <Route path={`${match.url}/todo`} component={todoApp} />
             <Route
                 path={`${match.url}/survey/:surveyid`}

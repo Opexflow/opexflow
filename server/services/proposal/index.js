@@ -6,7 +6,12 @@ const submitProposal = async (req, res) => {
     if(!(req.body && Object.keys(req.body).length > 0))
       throw new Error('Invalid request object');
 
+      console.log('requ body is ...', req.body);
+
     const requestBody = JSON.parse(Object.keys(req.body)[0]);
+
+    const userData = await mongo.getUserObject().getUser(requestBody.freelancerId);
+    requestBody['user'] = userData;
 
     const submittedProposal = await mongo.getProposalObject().submitProposal(requestBody);
 
@@ -30,6 +35,12 @@ const getAllProposalsForJob = async (req, res) => {
   try {
     const jobId = req.query.jobId;
     const allProposals = await mongo.getProposalObject().getAllProposalsForJob(jobId);
+    
+    // await Promise.all(allProposals.map( async (proposal) => {
+    //   const userData = await mongo.getUserObject().getUser(proposal.freelancerId); 
+    //   proposal['user'] = userData;
+    // }));
+    
     return res.end(`{"success": true, "data": ${JSON.stringify(allProposals)}}`);
   } catch (error) {
     console.log('Error while creating a job : ', error);

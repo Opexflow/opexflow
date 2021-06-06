@@ -11,7 +11,7 @@ import {
 } from 'reactstrap';
 import classnames from 'classnames';
 import { mapOrder } from '../../../helpers/Utils';
-
+import Proposals from '../../../components/applications/Proposals'; 
 import IntlMessages from '../../../helpers/IntlMessages';
 import { Colxx } from '../../../components/common/CustomBootstrap';
 import Breadcrumb from '../../../containers/navs/Breadcrumb';
@@ -137,6 +137,7 @@ class MarketPlaceApp extends Component {
               </Row>
             </Colxx>
           </Row>
+          <Proposals loading={loading} proposalsList={proposalsList} />
         </>
       );
     }

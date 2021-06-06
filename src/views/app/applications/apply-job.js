@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import {
   Row, Card, CardTitle, CardBody, FormGroup, Label, Button, FormText, Badge, InputGroup, InputGroupAddon
 } from 'reactstrap';
+import ReactQuill from 'react-quill';
 import { Formik, Form, Field } from 'formik';
 import { injectIntl } from 'react-intl';
 import { withRouter } from 'react-router-dom';
@@ -12,12 +13,43 @@ import { Colxx, Separator } from '../../../components/common/CustomBootstrap';
 import Breadcrumb from '../../../containers/navs/Breadcrumb';
 
 import { applyJob } from '../../../redux/actions';
+
 import "react-toastify/dist/ReactToastify.css";
+import 'react-quill/dist/quill.snow.css';
+import 'react-quill/dist/quill.bubble.css';
+
+const quillModules = {
+    toolbar: [
+        ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+        [
+            { list: 'ordered' },
+            { list: 'bullet' },
+            { indent: '-1' },
+            { indent: '+1' },
+        ],
+        ['link'],
+        ['clean'],
+    ],
+};
+
+const quillFormats = [
+    'header',
+    'bold',
+    'italic',
+    'underline',
+    'strike',
+    'blockquote',
+    'list',
+    'bullet',
+    'indent',
+    'link',
+];
 
 
 class ApplyJob extends Component {
     constructor(props) {
         super(props);
+        this.validateTitle = this.validateTitle.bind(this);
         this.validateCoverLetter = this.validateCoverLetter.bind(this);
         this.validateBid = this.validateBid.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -38,6 +70,7 @@ class ApplyJob extends Component {
     const proposal = {
       jobId: this.state.jobid,
       freelancerId: this.props.authUser.user.id,
+      freelancerTitle: values.freelancerTitle,
       coverLetter: values.coverLetter,
       bid: values.bid,
       currentPropsalStatus: 0,
@@ -60,6 +93,16 @@ class ApplyJob extends Component {
       this.props.history.push(`/app/applications/marketplace/${this.state.jobid}`);
     }, 2000);
     
+  }
+
+  validateTitle(value) {
+    let error;
+    if (!value) {
+        error = 'Title is required';
+    } else if (value.length < 5) {
+        error = 'Your title description must be longer than 5 characters';
+    }
+    return error;
   }
 
   validateCoverLetter(value) {
@@ -105,10 +148,10 @@ class ApplyJob extends Component {
 
   render() {
     const { marketPlaceItems } = this.props.marketPlaceApp;
-    const { loading, proposalStatus, error } = this.props.proposals;
+    const { applyJobLoading, proposalStatus, error } = this.props.proposals;
     const job = marketPlaceItems.find(item => item._id === this.state.jobid);
 
-    if(loading) this.afterReducerUpdate();
+    if(applyJobLoading) this.afterReducerUpdate();
     
     const { messages } = this.props.intl;
     
@@ -168,6 +211,7 @@ class ApplyJob extends Component {
 
         <Formik
           initialValues={{
+            freelancerTitle: '',
             coverLetter: '',
             bid: 0,
           }}
@@ -184,7 +228,52 @@ class ApplyJob extends Component {
                   </CardTitle>
                   
                   <Form>
+
                     <FormGroup>
+                      <Label><IntlMessages id="marketplace.freelancer-title" /></Label>
+                      <Field
+                        className="form-control"
+                        name="freelancerTitle"
+                        validate={this.validateTitle}
+                        placeholder={messages['marketplace.freelancer-title-placeholder']}
+                      />
+                      <FormText color="muted">
+                        <IntlMessages id="marketplace.freelancer-title-help" />
+                      </FormText>
+                      {errors.freelancerTitle && touched.freelancerTitle && (
+                          <div className="invalid-feedback d-block">
+                        {errors.freelancerTitle}
+                      </div>
+                      )}
+                    </FormGroup>
+
+                    <FormGroup>
+                      <Label><IntlMessages id="marketplace.cover-letter" /></Label>
+                      <Field 
+                        className="form-control"
+                        name="coverLetter"
+                        validate={this.validateCoverLetter}
+                        placeholder={messages['marketplace.cover-letter-placeholder']}
+                      >
+                        {({ field }) => <ReactQuill
+                          theme="snow"
+                          value={field.value}
+                          onChange={field.onChange(field.name)}
+                          modules={quillModules}
+                          formats={quillFormats}
+                        />}
+                      </Field>
+                      <FormText color="muted">
+                        <IntlMessages id="marketplace.cover-letter-help" />
+                      </FormText>
+                      {errors.coverLetter && touched.coverLetter && (
+                          <div className="invalid-feedback d-block">
+                        {errors.coverLetter}
+                      </div>
+                      )}
+                    </FormGroup>
+
+                    {/* <FormGroup>
                       <Label><IntlMessages id="marketplace.cover-letter" /></Label>
                       <Field
                         rows="6"
@@ -202,7 +291,7 @@ class ApplyJob extends Component {
                         {errors.coverLetter}
                       </div>
                       )}
-                    </FormGroup>
+                    </FormGroup> */}
                     <FormGroup>
                       <Label><IntlMessages id="marketplace.bid-amount" /></Label>
                       <InputGroup>
