@@ -5,6 +5,7 @@ import {
   APPLY_JOB,
   APPLY_JOB_SUCCESS,
   APPLY_JOB_ERROR,
+  RESET_APPLY_LOADING,
 } from '../actions';
 
 export const getProposalsList = jobId => ({
@@ -36,3 +37,7 @@ export const applyJobError = error => ({
   type: APPLY_JOB_ERROR,
   payload: error,
 });
+
+export const resetApplyLoading = () => ({
+  type: RESET_APPLY_LOADING,
+})
