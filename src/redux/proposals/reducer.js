@@ -5,6 +5,7 @@ import {
   APPLY_JOB,
   APPLY_JOB_SUCCESS,
   APPLY_JOB_ERROR,
+  RESET_APPLY_LOADING,
 } from '../actions';
 
 const INIT_STATE = {
@@ -37,6 +38,9 @@ export default (state = INIT_STATE, action) => {
 
       case APPLY_JOB_ERROR:
           return { ...state, applyJobLoading: true, error: action.payload };
+      
+      case RESET_APPLY_LOADING: 
+          return {...state, applyJobLoading: false };
 
       default: return { ...state };
   }

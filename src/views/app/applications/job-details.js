@@ -16,7 +16,7 @@ import IntlMessages from '../../../helpers/IntlMessages';
 import { Colxx } from '../../../components/common/CustomBootstrap';
 import Breadcrumb from '../../../containers/navs/Breadcrumb';
 
-import { getProposalsList } from '../../../redux/actions';
+import { getProposalsList, resetApplyLoading } from '../../../redux/actions';
 
 class MarketPlaceApp extends Component {
     constructor(props) {
@@ -29,6 +29,7 @@ class MarketPlaceApp extends Component {
 
     componentDidMount() {
       this.props.getProposalsList(this.state.jobid);
+      this.props.resetApplyLoading();
     }
 
     isProposalAlreadySubmitted(user, proposalsList) {
@@ -152,5 +153,6 @@ export default connect(
     mapStateToProps,
     {
         getProposalsList,
+        resetApplyLoading,
     },
 )(MarketPlaceApp);

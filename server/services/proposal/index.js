@@ -6,8 +6,6 @@ const submitProposal = async (req, res) => {
     if(!(req.body && Object.keys(req.body).length > 0))
       throw new Error('Invalid request object');
 
-      console.log('requ body is ...', req.body);
-
     const requestBody = JSON.parse(Object.keys(req.body)[0]);
 
     const userData = await mongo.getUserObject().getUser(requestBody.freelancerId);

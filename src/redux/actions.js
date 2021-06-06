@@ -86,6 +86,7 @@ export const PROPOSALS_GET_LIST_ERROR='PROPOSALS_GET_LIST_ERROR';
 export const APPLY_JOB='APPLY_JOB';
 export const APPLY_JOB_SUCCESS='APPLY_JOB_SUCCESS';
 export const APPLY_JOB_ERROR='APPLY_JOB_ERROR';
+export const RESET_APPLY_LOADING='RESET_APPLY_LOADING';
 
 export * from './menu/actions';
 export * from './settings/actions';
