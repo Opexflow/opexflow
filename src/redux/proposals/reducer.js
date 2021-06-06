@@ -9,6 +9,7 @@ import {
 
 const INIT_STATE = {
   loading: false,
+  applyJobLoading: false,
   proposalsList: null,
   proposalStatus: null,
 };
@@ -27,15 +28,15 @@ export default (state = INIT_STATE, action) => {
           return { ...state, loading: true, error: action.payload };
 
       case APPLY_JOB:
-          return { ...state, loading: false };
+          return { ...state, applyJobLoading: false };
 
       case APPLY_JOB_SUCCESS:
           return {
-              ...state, loading: true, proposalStatus: action.payload,
+              ...state, applyJobLoading: true, proposalStatus: action.payload,
           };
 
       case APPLY_JOB_ERROR:
-          return { ...state, loading: true, error: action.payload };
+          return { ...state, applyJobLoading: true, error: action.payload };
 
       default: return { ...state };
   }
