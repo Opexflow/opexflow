@@ -7,6 +7,7 @@ import chatApp from './chat/reducer';
 import surveyListApp from './surveyList/reducer';
 import surveyDetailApp from './surveyDetail/reducer';
 import marketPlaceApp from './marketPlace/reducer';
+import proposals from './proposals/reducer';
 
 const reducers = combineReducers({
     menu,
@@ -17,6 +18,7 @@ const reducers = combineReducers({
     surveyListApp,
     surveyDetailApp,
     marketPlaceApp,
+    proposals,
 });
 
 export default reducers;

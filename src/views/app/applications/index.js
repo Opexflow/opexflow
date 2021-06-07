@@ -7,11 +7,12 @@ import surveyDetailApp from './survey-detail';
 import chatApp from './chat';
 import marketPlace from './marketPlace';
 import jobDetails from './job-details';
+import applyJob from './apply-job';
 
 const Applications = ({ match }) => (
     <div className="dashboard-wrapper">
         <Switch>
-            <Redirect exact from={`${match.url}/`} to={`${match.url}/todo`} />
+            <Redirect exact from={`${match.url}/`} to={`${match.url}/marketplace`} />
             <Route path={`${match.url}/todo`} component={todoApp} />
             <Route
                 path={`${match.url}/survey/:surveyid`}
@@ -20,6 +21,11 @@ const Applications = ({ match }) => (
           />
             <Route path={`${match.url}/survey`} component={surveyApp} isExact />
             <Route path={`${match.url}/chat`} component={chatApp} />
+            <Route
+                path={`${match.url}/marketplace/apply/:jobid`}
+                component={applyJob}
+                isExact
+          />
             <Route
                 path={`${match.url}/marketplace/:jobid`}
                 component={jobDetails}
