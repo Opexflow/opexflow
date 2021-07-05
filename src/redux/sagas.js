@@ -6,6 +6,7 @@ import surveyListSagas from './surveyList/saga';
 import surveyDetailSagas from './surveyDetail/saga';
 import marketPlaceSagas from './marketPlace/saga';
 import proposalsSagas from './proposals/saga';
+import marketPlaceChatSagas from './marketPlaceChat/saga';
 
 export default function* rootSaga(getState) {
     yield all([
@@ -16,5 +17,6 @@ export default function* rootSaga(getState) {
         surveyDetailSagas(),
         marketPlaceSagas(),
         proposalsSagas(),
+        marketPlaceChatSagas(),
     ]);
 }

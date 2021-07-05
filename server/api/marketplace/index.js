@@ -5,10 +5,16 @@ const router = express.Router();
 
 const jobs = require('./jobs');
 const proposal = require('./proposal');
+const chat = require('./chat');
+const message = require('./message');
 
 router.use('/', jobs);
 
 router.use('/proposal', proposal);
+
+router.use('/chat', chat);
+
+router.use('/message', message);
 
 // router.get('/', setHeadersWithoutAuth, getAllJobs);
 

@@ -30,7 +30,7 @@ const TopnavEasyAccess = () => (
                     {' '}
                   <IntlMessages id="menu.charts" />
                 </NavLink> */}
-              <NavLink to="/app/applications/chat" className="icon-menu-item">
+              <NavLink to="/app/applications/marketplace/chat" className="icon-menu-item">
                   <i className="iconsminds-speach-bubble d-block" />
                     {' '}
                   <IntlMessages id="menu.chat" />

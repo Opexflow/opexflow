@@ -8,15 +8,15 @@ const setResponseHeaders = (req, res) => {
     res.setHeader('Access-Control-Allow-Credentials', 'true');
     res.setHeader('Access-Control-Allow-Methods', '*');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Set-Cookie, *');
-
-    if (!req.isAuthenticated() || !req.user || !req.user.id) {
-      return res.end('{}');
-    }
 };
 
 const setHeaders = async (req, res, next) => {
     await setResponseHeaders(req, res);
-    next();
+    if (!req.isAuthenticated() || !req.user || !req.user.id) {
+      console.log('not authenticated');
+      return res.end('{}');
+    } else 
+      next();
 };
 
 const setHeadersWithoutAuth = async (req, res, next) => {
@@ -24,7 +24,7 @@ const setHeadersWithoutAuth = async (req, res, next) => {
   res.setHeader('Content-Type', 'application/json');
   res.setHeader('Access-Control-Allow-Origin', replaceHost(config.HOSTNAME));
   res.setHeader('Access-Control-Allow-Credentials', 'true');
-  res.setHeader('Access-Control-Allow-Methods', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Set-Cookie, *');
 
   next();

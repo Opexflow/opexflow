@@ -301,6 +301,7 @@ module.exports = {
     'marketPlace.budget-placeholder': 'Please specify the Budget',
     'marketplace.apply': 'Apply For Job',
     'marketplace.already-submitted': 'Proposal Submitted',
+    'marketplace.withdraw-proposal': 'Withdraw Proposal',
     'marketplace.applicant-details': 'About yourself',
     'marketplace.cover-letter': 'Cover Letter',
     'marketplace.cover-letter-placeholder': 'Describe some of your experiences that make you a great candidate for this job.',

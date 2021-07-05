@@ -8,6 +8,7 @@ import chatApp from './chat';
 import marketPlace from './marketPlace';
 import jobDetails from './job-details';
 import applyJob from './apply-job';
+import martketPlaceChatApp from './martketPlaceChatApp';
 
 const Applications = ({ match }) => (
     <div className="dashboard-wrapper">
@@ -21,6 +22,12 @@ const Applications = ({ match }) => (
           />
             <Route path={`${match.url}/survey`} component={surveyApp} isExact />
             <Route path={`${match.url}/chat`} component={chatApp} />
+
+          <Route
+                path={`${match.url}/marketplace/chat`}
+                component={martketPlaceChatApp}
+                isExact
+          />
             <Route
                 path={`${match.url}/marketplace/apply/:jobid`}
                 component={applyJob}

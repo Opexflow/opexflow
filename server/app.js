@@ -9,16 +9,18 @@ const mysql = require('mysql');
 const fs = require('fs');
 const path = require('path');
 const params = require('express-route-params');
+const cors = require('cors');
 const config = require('./config');
 const orderBook = require('./api/orderBook');
 const commands = require('./api/commands');
-const marketplace = require('./api/marketplace')
 const { replaceHost } = require('./helpers/utils');
 const mongo = require('./helpers/mongoClient');
 const { saveOrUpdateUser } = require('./services/users');
 
 const app = express();
 params(express);
+
+app.use(cors({origin: replaceHost(config.HOSTNAME)}));
 
 // Define MySQL parameter in Config.js file.
 const pool = mysql.createPool({
@@ -61,6 +63,9 @@ io.on('connection', () => {
 
 app.set('pool', pool);
 app.set('io', io);
+
+var chatIO = require('./utils/chatIO').initialize(http);
+const marketplace = require('./api/marketplace')
 
 
 async function start() {
