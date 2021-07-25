@@ -97,13 +97,15 @@ function* getConversationsList({ payload }) {
       const response = yield call(getConversationsListRequest, payload.userId);
       console.log('saga response is...', response);
       yield put(getMPConversationsListSuccess(JSON.parse(response), payload.chatId));
-      yield call(changeConversation, 
-        {
-          payload: { 
-              chatId: payload.chatId
+      if(response && response.length > 0 && payload.chatId) {
+        yield call(changeConversation, 
+          {
+            payload: { 
+                chatId: payload.chatId
+            }
           }
-        }
-      )
+        )
+      }
   } catch (error) {
       yield put(getMPConversationsListError(error));
   }

@@ -20,6 +20,7 @@ import MPChatHeading from '../../../components/applications/MPChatHeading';
 import MPMessageCard from '../../../components/applications/MPMessageCard';
 import SaySomething from '../../../components/applications/SaySomething';
 import MPChatError from '../../../components/applications/MPChatError';
+import MPChatEmpty from '../../../components/applications/MPChatEmpty';
 
 import MPChatSocket from '../../../utils/MPChatSocket';
 
@@ -53,6 +54,8 @@ class MPChatApp extends Component {
     }
 
     componentDidUpdate(prevProps) {
+      if(!this.props.authUser?.user)
+        this.props.history.push('/user/login');
       console.log('component update prevprops ', prevProps );
       console.log('component update currentprops ', this.props );
         // if (
@@ -147,6 +150,8 @@ class MPChatApp extends Component {
 
       const { menuActiveTab, messageInput } = this.state;
 
+      const noConversation = conversations && conversations.length <= 0;
+
       const selectedConversation =
       loadingConversations && selectedChatId ?
           conversations.find(
@@ -155,12 +160,14 @@ class MPChatApp extends Component {
           null;
           console.log('selected conversation is...', selectedConversation);
       const otherUser = selectedConversation && selectedConversation.participants.find(
-        participant => participant._id != this.props.authUser.user.id);
+        participant => participant._id != this.props.authUser?.user?.id);
         console.log('otherUser  is...', otherUser);
       return loadingConversations ? (
           <>
           <Row className="app-row">
                 <Colxx xxs="12" className="chat-app" style={{height: '540px'}}>
+                  {noConversation ? <MPChatEmpty /> : (
+                    <>
                     {loadingConversations && selectedChatId && (
                       <MPChatHeading
                             name={otherUser.login}
@@ -185,21 +192,25 @@ class MPChatApp extends Component {
                                         sender={sender}
                                         content={message.content}
                                         timeCreated={message.timeCreated}
-                                        currentUserid={this.props.authUser.user.id}
+                                        currentUserid={this.props.authUser?.user?.id}
                                       />
                                   );
                               })}
                           </PerfectScrollbar>
                       )}
+                      </>
+                    )}
                   </Colxx>
               </Row>
+          {selectedConversation ?
           <SaySomething
                 placeholder={this.props.intl.messages['chat.saysomething']}
                 messageInput={messageInput}
                 handleChatInputPress={this.handleChatInputPress}
                 handleChatInputChange={this.handleChatInputChange}
                 handleSendButtonClick={this.handleSendButtonClick}
-              />
+              /> : null
+          }
           <MPChatApplicationMenu
                 activeTab={menuActiveTab}
                 toggleAppMenu={this.toggleAppMenu}

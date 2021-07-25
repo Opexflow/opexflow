@@ -94,7 +94,7 @@ class MPChatApplicationMenu extends Component {
                               { loadingConversations &&
                                 conversations.map((conversation, index) => {
                                   const otherUser = conversation.participants.find(
-                                    participant => participant._id != this.props.authUser.user.id);
+                                    participant => participant._id != this.props.authUser?.user?.id);
                       return (
                           <div
                               key={conversation._id}

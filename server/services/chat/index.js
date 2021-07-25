@@ -7,7 +7,7 @@ const getChatList = async (req, res) => {
     const userId = req.query.userId;
     const user = await mongo.getUserObject().getUser(userId.toString());
     console.log('user is...', user);
-    const chatList = await mongo.getChatObject().getChatList(user.chatIdArray);
+    const chatList = await mongo.getChatObject().getChatList(user.chatIdArray || []);
     return res.send(JSON.stringify({success: true, status: "200", data: JSON.stringify(chatList)}));
   } catch (error) {
     console.log('Error while retriving the chat : ', error);

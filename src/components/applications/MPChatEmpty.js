@@ -41,7 +41,7 @@ class MPChatError extends Component {
                                               <span className="logo-single" />
                                             </NavLink>
                                           <CardTitle className="mb-4">
-                                              <IntlMessages id="marketplace.error-title" />
+                                              <IntlMessages id="marketplace.no-chat-error-title" />
                                             </CardTitle>
                                           <p className="mb-0 text-muted text-small mb-0">
                                               <IntlMessages id="marketplace.error-code" />
