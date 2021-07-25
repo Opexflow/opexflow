@@ -19,6 +19,7 @@ import MPChatApplicationMenu from '../../../containers/applications/MPChatApplic
 import MPChatHeading from '../../../components/applications/MPChatHeading';
 import MPMessageCard from '../../../components/applications/MPMessageCard';
 import SaySomething from '../../../components/applications/SaySomething';
+import MPChatError from '../../../components/applications/MPChatError';
 
 import MPChatSocket from '../../../utils/MPChatSocket';
 
@@ -136,6 +137,7 @@ class MPChatApp extends Component {
           allContacts,
           conversations,
           loadingConversations,
+          loadingConversationsFailed,
           loadingMessages,
           currentUser,
           selectedUser,
@@ -204,6 +206,7 @@ class MPChatApp extends Component {
               />
         </>
       ) : (
+          loadingConversationsFailed ? <MPChatError /> :
           <div className="loading" />
       );
   }

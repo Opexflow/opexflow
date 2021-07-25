@@ -120,7 +120,8 @@ const getConversationsListRequest = async userId => {
           // const res = x.responseText && JSON.parse(x.responseText);
           const res = x.responseText;
           const jsonResponse = JSON.parse(res);
-          resolve(jsonResponse.data);
+          if(jsonResponse.success) resolve(jsonResponse.data);
+          else throw new Error(jsonResponse.error); 
         } catch(Error) {
           console.log('Error while parsing response body: ', Error);
           reject(Error);

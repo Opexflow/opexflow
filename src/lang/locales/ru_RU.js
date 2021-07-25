@@ -311,6 +311,10 @@ module.exports = {
     'marketplace.submit-proposal': 'Submit Proposal',
     'marketplace.bid-amount': 'Please specify your bid',
     'marketplace.bid-amount-help': 'This is the amount the client will see on your proposal',
+    'marketplace.error-title': 'Ooops... looks like an error occurred while retriving chats!',
+    'marketplace.error-code': 'Error code',
+    'marketplace.no-chat-error-title': 'Ooops... looks like an you don\'t have any active chats!',
+
 
     /* 07.UI */
 

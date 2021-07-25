@@ -23,6 +23,7 @@ const INIT_STATE = {
     searchKeyword: '',
     loadingContacts: false,
     loadingConversations: false,
+    loadingConversationsFailed: false,
     currentUser: null,
     selectedUser: null,
     selectedUserId: null,
@@ -62,7 +63,7 @@ export default (state = INIT_STATE, action) => {
           };
 
       case MP_CHAT_GET_CONVERSATIONS_LIST_ERROR:
-          return { ...state, loadingConversations: false, error: action.payload };
+          return { ...state, loadingConversations: false, loadingConversationsFailed: true, error: action.payload };
 
       
         case MP_CHAT_CHANGE_CONVERSATION:

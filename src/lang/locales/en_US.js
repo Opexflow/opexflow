@@ -315,6 +315,10 @@ module.exports = {
     'marketplace.proposals' : 'Proposals',
     'marketplace.proposal-view-more' : 'View More',
     'marketplace.proposal-view-less' : 'View Less',
+    'marketplace.error-title': 'Ooops... looks like an error occurred while retriving chats!',
+    'marketplace.error-code': 'Error code',
+    'marketplace.no-chat-error-title': 'Ooops... looks like an you don\'t have any active chats!',
+    
 
     /* 07.UI */
 
