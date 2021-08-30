@@ -3,6 +3,8 @@ const config = require('../config');
 const Users = require('../DataModals/Users');
 const Marketplace = require('../DataModals/Marketplace');
 const Proposal = require('../DataModals/Proposal');
+const Chat =require('../DataModals/Chat');
+const Message = require('../DataModals/Message');
 
 class MongoClientHelper {
   constructor() {
@@ -16,6 +18,8 @@ class MongoClientHelper {
         this.Users = new Users(this.db);
         this.Marketplace = new Marketplace(this.db);
         this.Proposal = new Proposal(this.db);
+        this.Chat = new Chat(this.db);
+        this.Message = new Message(this.db);
       });
     } catch(e) {
       console.log('Erro while connecting to mongo DB');
@@ -35,6 +39,14 @@ class MongoClientHelper {
 
   getProposalObject() {
     return this.Proposal;
+  }
+
+  getChatObject() {
+    return this.Chat;
+  }
+
+  getMessageObject() {
+    return this.Message;
   }
 
 }

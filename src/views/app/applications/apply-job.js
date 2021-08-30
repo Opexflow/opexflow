@@ -56,6 +56,7 @@ class ApplyJob extends Component {
 
         this.state = {
           jobid: this.props.match.params.jobid,
+          submitClicked: false,
         };
     }
 
@@ -75,6 +76,8 @@ class ApplyJob extends Component {
       bid: values.bid,
       currentPropsalStatus: 0,
     }
+
+    this.setState({ submitClicked: true });
 
     this.props.applyJob(proposal);
     
@@ -312,9 +315,11 @@ class ApplyJob extends Component {
                       )}
                     </FormGroup>
                     <hr />
-                    <Button type="submit" color="primary" className="mt-4">
+                    <Button type="submit" color="primary" className="mt-4" disabled={this.state.submitClicked}>
                       <IntlMessages id="marketplace.submit-proposal" />
-                    </Button>
+                    </Button> 
+                    { this.state.submitClicked && !applyJobLoading ?
+                     <div className="loading" /> : null }
                   </Form>
                   </CardBody>
               </Card>

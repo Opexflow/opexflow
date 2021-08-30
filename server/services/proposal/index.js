@@ -19,12 +19,12 @@ const submitProposal = async (req, res) => {
       return res.end(`{"success": true, "data": ${JSON.stringify(allProposals)}}`);
     }
 
-    return res.end(`{"success": false, data: ${submittedProposal}}`);
+    return res.end(`{"success": false, "error": ${submittedProposal}}`);
 
 
   } catch (error) {
       console.log('Error while creating a job : ', error);
-      return res.end(`{"success": false, errorMessage: ${error}}`);
+      return res.end(`{"success": false, "error": ${error}}`);
   }
 };
 
@@ -42,9 +42,40 @@ const getAllProposalsForJob = async (req, res) => {
     return res.end(`{"success": true, "data": ${JSON.stringify(allProposals)}}`);
   } catch (error) {
     console.log('Error while creating a job : ', error);
-    return res.end(`{"success": false, errorMessage: ${error}}`);
+    return res.end(`{"success": false, "error": ${error}}`);
   }
 
 }
 
-module.exports = { submitProposal, getAllProposalsForJob };
+const deleteProposal = async (req, res) => {
+  try {
+    const proposalId = req.query.proposalId;
+    const proposals = await mongo.getProposalObject().deleteProposal(proposalId);
+    const allProposals = await mongo.getProposalObject().getAllProposalsForJob(jobId);
+    return res.end(`{"success": true, "data": ${JSON.stringify(allProposals)}}`);
+  } catch (error) {
+    console.log('Error while withdrawing the proposal : ', error);
+    return res.end(`{"success": false, "error": ${error}}`);
+  }
+}
+
+
+const deleteProposalByJobId = async (req, res) => {
+  try {
+    //const proposalId = req.query.proposalId;
+    const userId = req.query.userId;
+    const jobId = req.query.jobId;
+    const proposals = await mongo.getProposalObject().deleteProposalByJobId(userId, jobId);
+    if(proposals.deletedCount > 0) {
+      const allProposals = await mongo.getProposalObject().getAllProposalsForJob(jobId);
+      return res.end(`{"success": true, "data": ${JSON.stringify(allProposals)}}`);
+    } else {
+      return res.end(`{"success": false, "error": "No Record Found"`);
+    }
+  } catch (error) {
+    console.log('Error while withdrawing the proposal : ', error);
+    return res.end(`{"success": false, "error": ${error}}`);
+  }
+}
+
+module.exports = { submitProposal, getAllProposalsForJob, deleteProposal, deleteProposalByJobId };

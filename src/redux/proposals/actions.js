@@ -6,6 +6,10 @@ import {
   APPLY_JOB_SUCCESS,
   APPLY_JOB_ERROR,
   RESET_APPLY_LOADING,
+  WITHDRAW_PROPOSAL,
+  WITHDRAW_PROPOSAL_SUCCESS,
+  WITHDRAW_PROPOSAL_ERROR,
+  RESET_WITHDRAW_LOADING,
 } from '../actions';
 
 export const getProposalsList = jobId => ({
@@ -40,4 +44,29 @@ export const applyJobError = error => ({
 
 export const resetApplyLoading = () => ({
   type: RESET_APPLY_LOADING,
-})
+});
+
+// export const withdrawProposal = proposalId => ({
+//   type: WITHDRAW_PROPOSAL,
+//   payload: proposalId,
+// });
+
+export const withdrawProposal = (userId, jobId) => ({
+  type: WITHDRAW_PROPOSAL,
+  payload: {userId, jobId},
+});
+
+
+export const withdrawProposalSuccess = items => ({
+  type: WITHDRAW_PROPOSAL_SUCCESS,
+  payload: items,
+});
+
+export const withdrawProposalError = error => ({
+  type: WITHDRAW_PROPOSAL_ERROR,
+  payload: error,
+});
+
+export const resetWithdrawLoading = () => ({
+  type: RESET_WITHDRAW_LOADING,
+});

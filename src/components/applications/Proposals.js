@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { NavLink } from 'react-router-dom';
 import { Row, Card, Button, CardBody } from "reactstrap";
 
 import { Colxx } from '../common/CustomBootstrap';
@@ -16,6 +17,8 @@ const Proposals = (props) => {
     WebkitBoxOrient: "vertical"
   } : {} ;
 
+  console.log('owner id is ', props.job.createdById);
+  console.log('user id is ', props.userId);
   return (
     <>
     { props.loading && props.proposalsList && props.proposalsList.length > 0 ?
@@ -66,6 +69,28 @@ const Proposals = (props) => {
                             {proposal.bid}
                           </span> </> : null }
                     </div>
+                    {props.userId && props.job.createdById === props.userId ?
+                      <NavLink
+                        to={{
+                          pathname: `/app/applications/marketplace/chat`,
+                          createConversation: {
+                            proposalId: proposal._id,
+                            title: props.job.title,
+                            freelancerId: proposal.user._id
+                          }
+                        }}
+                        id={`toggler${proposal._id}`}>
+                      <Button 
+                        outline
+                        className="flex-grow-1"
+                        size="lg"
+                        color="primary" 
+                        //onClick={() => props.getOrCreateChat(props.userId, proposal.user._id, proposal._id, props.job.title)}
+                      >
+                        Send Message
+                      </Button> 
+                      </NavLink> : null
+                    }
                   </div>
                 </div>
                 <div className="separator mb-5" />

@@ -19,5 +19,23 @@ class Proposal {
     return proposals;
   }
 
+  async deleteProposal(proposalId) {
+    const query = { _id: proposalId };
+    const proposals = await this.collection.deleteOne( query );
+    console.log('deleted....now proposals is...', proposals);
+  }
+
+  async deleteProposalByJobId(userId, jobId) {
+    const query = { 'user._id': userId, jobId: jobId };
+    console.log('query is....', query);
+    const proposals = await this.collection.deleteOne( query );
+    console.log('deleted....now proposals is...', proposals);
+  }
+
+  async updateProposal(query, newValues, upsert){
+    const proposal = await this.collection.updateOne(query, newValues, upsert);
+    return proposal;
+  }
+
 }
 module.exports = Proposal;

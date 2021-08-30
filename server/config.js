@@ -23,6 +23,8 @@ module.exports = {
         users: "Users",
         marketplace: "Marketplace",
         proposals: "Proposals",
+        chat: "Chat",
+        message: "Message",
       }
     }
 };

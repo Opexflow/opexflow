@@ -14,7 +14,7 @@ const TopnavEasyAccess = () => (
               right
               id="iconMenuDropdown"
             >
-              <NavLink to="/app/dashboards/default" className="icon-menu-item">
+            {/*<NavLink to="/app/dashboards/default" className="icon-menu-item">
                   <i className="iconsminds-shop-4 d-block" />
                     {' '}
                   <IntlMessages id="menu.dashboards" />
@@ -25,17 +25,17 @@ const TopnavEasyAccess = () => (
                     {' '}
                   <IntlMessages id="menu.ui" />
                 </NavLink>
-              {/* <NavLink to="/app/ui/charts" className="icon-menu-item">
+              <NavLink to="/app/ui/charts" className="icon-menu-item">
                   <i className="iconsminds-bar-chart-4 d-block" />
                     {' '}
                   <IntlMessages id="menu.charts" />
                 </NavLink> */}
-              <NavLink to="/app/applications/chat" className="icon-menu-item">
+              <NavLink to="/app/applications/marketplace/chat" className="icon-menu-item">
                   <i className="iconsminds-speach-bubble d-block" />
                     {' '}
                   <IntlMessages id="menu.chat" />
                 </NavLink>
-              <NavLink to="/app/applications/survey" className="icon-menu-item">
+              {/* <NavLink to="/app/applications/survey" className="icon-menu-item">
                   <i className="iconsminds-formula d-block" />
                     {' '}
                   <IntlMessages id="menu.survey" />
@@ -44,7 +44,7 @@ const TopnavEasyAccess = () => (
                   <i className="iconsminds-check d-block" />
                     {' '}
                   <IntlMessages id="menu.todo" />
-                </NavLink>
+                </NavLink> */}
               <NavLink to="/app/applications/marketplace" className="icon-menu-item">
                   <i className="iconsminds-factory d-block" />
                     {' '}

@@ -26,6 +26,7 @@
     "classnames": "2.2.6",
     "cookie-parser": "^1.4.5",
     "core-js": "^3.6.5",
+    "cors": "^2.8.5",
     "cross-env": "^7.0.2",
     "enzyme": "^3.11.0",
     "enzyme-adapter-react-16": "^1.15.5",
