@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { NavLink } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 
 import {
     Row,
@@ -9,21 +9,22 @@ import {
     CardBody,
     Badge
 } from 'reactstrap';
-import classnames from 'classnames';
-import { mapOrder } from '../../../helpers/Utils';
+import { ToastContainer, toast } from 'react-toastify';
 import Proposals from '../../../components/applications/Proposals'; 
 import IntlMessages from '../../../helpers/IntlMessages';
 import { Colxx } from '../../../components/common/CustomBootstrap';
 import Breadcrumb from '../../../containers/navs/Breadcrumb';
 
-import { getProposalsList, resetApplyLoading } from '../../../redux/actions';
+import { getProposalsList, resetApplyLoading, withdrawProposal, resetWithdrawLoading } from '../../../redux/actions';
 
+import "react-toastify/dist/ReactToastify.css";
 class MarketPlaceApp extends Component {
     constructor(props) {
         super(props);
         this.state = {
           jobid: this.props.match.params.jobid,
           applyDisable: false,
+          submittedProposalId: null,
         };
     }
 
@@ -36,17 +37,69 @@ class MarketPlaceApp extends Component {
       let submittedProposal = null;
 
       submittedProposal = proposalsList.find((proposal) => {
-        return proposal.freelancerId == user.id
+        if(proposal.freelancerId == user.id) {
+          //this.setState({ submittedProposalId: proposal._id });
+          return true;
+        }
       });
       if(submittedProposal) return true;
       else return false;
+    }
+
+    withdrawProposal = () => {
+      //this.props.withdrawProposal(this.state.submittedProposalId);
+      this.props.withdrawProposal(this.props.authUser.user.id, this.state.jobid);
+    }
+
+    afterReducerUpdate() {
+      const {withdrawProposalSuccess, error } = this.props.proposals;
+      if(withdrawProposalSuccess) {
+        this.showToast('success', 'Proposal withdrawn successfully');
+      }
+      else {
+        this.showToast('error', 'Server Error, Please try again');
+        console.log('Server threw error while withdrawing the proposal ', error);
+      }
+      this.props.resetWithdrawLoading();
+      this.props.getProposalsList(this.state.jobid);
+      this.props.resetApplyLoading();
+      
+      
+    }
+
+    // getOrCreateChat(ownerId, freelancerId, proposalId, jobTitle){
+      
+    // }
+
+    showToast = (type, message) => {
+      if(type === 'success'){
+        toast.success(message, {
+          position: "bottom-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: false,
+          pauseOnHover: false,
+          draggable: false
+        })
+      }
+      else{
+        toast.error(message, {
+          position: "bottom-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: false,
+          pauseOnHover: false,
+          draggable: false
+        })
+      }
     }
 
 
     render() {
       const { marketPlaceItems } = this.props.marketPlaceApp;
       const { user } = this.props.authUser;
-      const { loading, proposalsList, error } = this.props.proposals;
+      const { loading, proposalsList, withdrawProposalLoading } = this.props.proposals;
+      console.log('props are ', this.props);
 
       let applyDisable = false;
 
@@ -54,11 +107,13 @@ class MarketPlaceApp extends Component {
         applyDisable = this.isProposalAlreadySubmitted(user, proposalsList);
       }
 
+      if(withdrawProposalLoading) this.afterReducerUpdate();
+
       const job = marketPlaceItems.find(item => item._id === this.state.jobid)
       return (
         <>
           <Row>
-            <Colxx xxs="12">
+            <Colxx xxs="12" lg="8">
               <h1>
                 <i className="simple-icon-refresh heading-icon" />
                 {' '}
@@ -67,24 +122,37 @@ class MarketPlaceApp extends Component {
                 </span>
               </h1>
               <Breadcrumb match={this.props.match} />
-              <div className="float-sm-right mb-2">
-                <NavLink
-                  to={applyDisable ? '' :  `/app/applications/marketplace/apply/${this.state.jobid}`}
-                  className="list-item-heading mb-0 truncate w-40 w-xs-100  mb-1 mt-1"
-                >
-                  <Button
-                      disabled={applyDisable}
-                      outline
-                      className="flex-grow-1"
-                      size="lg"
-                      color="primary"
-                    >
-                      {applyDisable ? 
-                      <IntlMessages id="marketplace.already-submitted" /> : 
-                      <IntlMessages id="marketplace.apply" />}
-                  </Button>
-                </NavLink>
-              </div>
+              </Colxx>
+
+              { !user || (user && user.id && user.id !== job.createdById) ? 
+              <Colxx xxs="12" lg="4">
+                <div className="float-sm-right mb-2">
+                  <Row>
+                  <NavLink
+                    to={applyDisable ? '' :  `/app/applications/marketplace/apply/${this.state.jobid}`}
+                    className="list-item-heading mb-0 truncate w-xs-100  mb-1 mt-1"
+                  >
+                    <Button
+                        disabled={applyDisable}
+                        outline
+                        className="flex-grow-1"
+                        size="lg"
+                        color="primary"
+                      >
+                        {applyDisable ? 
+                        <IntlMessages id="marketplace.already-submitted" /> 
+                        // <Link onClick={this.withdrawProposal}></Link>
+                        : <IntlMessages id="marketplace.apply" />}
+                    </Button>
+                  </NavLink>
+                  </Row>
+                  <Row style={{ justifyContent: 'center'}}>
+                  { applyDisable ? <Button color="link" onClick={(e) => { e.preventDefault(); this.withdrawProposal()}}><IntlMessages id="marketplace.withdraw-proposal" /></Button> : null}
+                  </Row>
+                </div>
+              </Colxx> : null }
+            </Row>
+
               <Row>
                 <Colxx xxs="12" lg="8" className="mb-4">
                   <Card className="mb-4">
@@ -136,9 +204,13 @@ class MarketPlaceApp extends Component {
                   </Card>
                 </Colxx>
               </Row>
-            </Colxx>
-          </Row>
-          <Proposals loading={loading} proposalsList={proposalsList} />
+          <Proposals 
+            loading={loading}
+            proposalsList={proposalsList}
+            job={job}
+            userId={user ? user.id : null}
+          />
+          <ToastContainer />
         </>
       );
     }
@@ -154,5 +226,7 @@ export default connect(
     {
         getProposalsList,
         resetApplyLoading,
+        withdrawProposal,
+        resetWithdrawLoading,
     },
 )(MarketPlaceApp);

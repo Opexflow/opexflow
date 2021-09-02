@@ -301,6 +301,7 @@ module.exports = {
     'marketPlace.budget-placeholder': 'Please specify the Budget',
     'marketplace.apply': 'Apply For Job',
     'marketplace.already-submitted': 'Proposal Submitted',
+    'marketplace.withdraw-proposal': 'Withdraw Proposal',
     'marketplace.applicant-details': 'About yourself',
     'marketplace.cover-letter': 'Cover Letter',
     'marketplace.cover-letter-placeholder': 'Describe some of your experiences that make you a great candidate for this job.',
@@ -314,6 +315,10 @@ module.exports = {
     'marketplace.proposals' : 'Proposals',
     'marketplace.proposal-view-more' : 'View More',
     'marketplace.proposal-view-less' : 'View Less',
+    'marketplace.error-title': 'Ooops... looks like an error occurred while retriving chats!',
+    'marketplace.error-code': 'Error code',
+    'marketplace.no-chat-error-title': 'Ooops... looks like an you don\'t have any active chats!',
+    
 
     /* 07.UI */
 
