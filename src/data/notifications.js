@@ -1,5 +1,5 @@
 const data = [
-    {
+    /*{
         img: '/assets/img/profile-pic-l-2.jpg',
         title: 'Joisse Kaycee just sent a new comment!',
         date: '09.04.2018 - 12:45',
@@ -22,6 +22,6 @@ const data = [
         title: '3 items just added to wish list by a user!',
         date: '09.04.2018 - 12:45',
         id: 4,
-    },
+    },*/
 ];
 export default data;
