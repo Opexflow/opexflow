@@ -22,7 +22,7 @@ if (window.location.pathname && window.location.pathname !== '/user/login') {
     x.open('GET', host, true);
     x.onload = function() {
         const res = x.responseText && JSON.parse(x.responseText);
-        const { user, finance } = res;
+        const { user, finance, imageStream } = res;
 
         console.log(x.responseText);
         console.log(user, res);
@@ -36,7 +36,7 @@ if (window.location.pathname && window.location.pathname !== '/user/login') {
                 } else {
                     // console.log(user.id, response);
                     ReactDOM.render(
-                      <Provider store={configureStore({ authUser: { user: { ...response}, finance, FB } })}>
+                      <Provider store={configureStore({ authUser: { user: { ...response}, finance, FB, imageStream } })}>
                           <Suspense fallback={<div className="loading" />}>
                               <App />
                             </Suspense>
@@ -60,7 +60,7 @@ if (window.location.pathname && window.location.pathname !== '/user/login') {
               } else {
                 // console.log(user.id, response);
                 ReactDOM.render(
-                  <Provider store={configureStore({ authUser: { user: { ...response, picture: { data: {url: response.avatar_url } } }, finance } })}>
+                  <Provider store={configureStore({ authUser: { user: { ...response, picture: { data: {url: response.avatar_url } } }, finance, imageStream } })}>
                       <Suspense fallback={<div className="loading" />}>
                           <App />
                         </Suspense>

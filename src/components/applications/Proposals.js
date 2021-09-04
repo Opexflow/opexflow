@@ -43,8 +43,8 @@ const Proposals = (props) => {
                 <div className="d-flex flex-row chat-heading">
                   <div className="d-flex">
                     <img
-                      alt={user.login}
-                      src={user.photo}
+                      alt={user?.login}
+                      src={user?.photo}
                       className="img-thumbnail border-0 rounded-circle ml-0 mr-4 list-thumbnail align-self-center small"
                     />
                   </div>
@@ -52,7 +52,7 @@ const Proposals = (props) => {
                         <div className="card-body pl-0 align-self-center d-flex flex-column flex-lg-row justify-content-between min-width-zero">
                             <div className="min-width-zero">
                                 <div>
-                                    <p className="list-item-heading mb-1 truncate ">{user.login}</p>
+                                    <p className="list-item-heading mb-1 truncate ">{user?.login}</p>
                               </div>
                                 <p className="mb-0 text-muted text-small">
                                     {proposal.freelancerTitle}
