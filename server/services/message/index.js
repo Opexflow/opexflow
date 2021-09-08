@@ -1,6 +1,8 @@
 const io = require('../../utils/chatIO').io();
 const mongo = require('../../helpers/mongoClient');
+const ObjectId = require('mongodb').ObjectID;
 
+const connectedUsers = {};
 
 const getMessagesByChatId = async (req, res) => {
   try {
@@ -22,17 +24,32 @@ io.on('connection', (socket) => {
 
   try {
 
+    socket.on("user-login", async userId => {
+      
+      var query = { _id: userId.userId.toString() };
+      const updateUser = { 
+        $set: { isOnline: true, socketID: socket.id },
+      }
+      const user = await mongo.getUserObject().updateOrInsertUser(query, updateUser, {upsert: false});
+      connectedUsers[userId.userId.toString()] = socket.id;
+    });
+
+    socket.on("user-logout", async userId => {
+      
+      var query = { _id: userId.userId.toString() };
+      const updateUser = { 
+        $set: { isOnline: false, socketID: null },
+      }
+      const user = await mongo.getUserObject().updateOrInsertUser(query, updateUser, {upsert: false});
+      delete connectedUsers[userId.userId.toString()];
+    });
+
     socket.on("join-chat", async chatId => {
-      console.log('chat id is...', chatId);
-      console.log('before joined chat', socket.rooms);
       socket.join(chatId.chatId);
-      console.log('after joined chat', socket.rooms);
     });
 
     socket.on("leave-chat", async chatId => {
-      console.log('before leaving chat', socket.rooms);
       socket.leave(chatId.chatId);
-      console.log('after leaving chat', socket.rooms);
     });
 
     socket.on("get-messages", async chatId => {
@@ -41,7 +58,6 @@ io.on('connection', (socket) => {
     });
 
     socket.on("add-message", async msgBody => {
-      console.log('add message called', socket.rooms);
       const message = {
         sender: msgBody.sender,
         content: msgBody.content,
@@ -52,10 +68,38 @@ io.on('connection', (socket) => {
       const sentMessage = await mongo.getMessageObject().sendMessage(message);
 
       if(sentMessage.ops.length > 0 && sentMessage.ops[0]) {
-        console.log('add message success', socket.rooms);
+
+        //updating chat list, last updated and last message
+        const updateChatQuery = { _id: new ObjectId(msgBody.chatId.toString()) };
+        const newvalues = { $set: {lastUpdated: msgBody.timeCreated, lastMessage: msgBody.content } };
+        await mongo.getChatObject().updateChat(updateChatQuery, newvalues, {upsert: false});
         
-        //socket.emit("add-message-response", sentMessage.ops[0]);
-        io.to(msgBody.chatId).emit("add-message-response", sentMessage.ops[0]);
+        //sending message to all the users who have joined the chat
+        //io.to(msgBody.chatId).emit("add-message-response", sentMessage.ops[0]);
+        io.in(msgBody.chatId).emit("add-message-response", sentMessage.ops[0]);
+
+        //Updating chat list of all the partiipants of the chat
+        const chat = await mongo.getChatObject().getChatById(new ObjectId(msgBody.chatId));
+        const { participants } = chat;
+        participants && participants.length > 0 && participants.map(async participant => {
+
+          const user = await mongo.getUserObject().getUser(participant._id.toString());
+          const chatList = await mongo.getChatObject().getChatList(user.chatIdArray || []);
+
+          await Promise.all(chatList.map( async (chat) => {
+            chat.participants = await Promise.all(chat.participants.map(async (participant) => {
+              const userData = await mongo.getUserObject().getUser(participant._id);
+              participant = userData;
+              return participant;
+            }));
+            return chat;
+          }));
+          io.to(connectedUsers[participant._id.toString()]).emit(`chat-list-response`, {
+            error : false,
+            singleUser : false,
+            chatList,
+          });
+        });
       }
 
     });
@@ -63,8 +107,16 @@ io.on('connection', (socket) => {
   } catch(error) {
     console.log('Error during message IO ', error);
   }
-  socket.on('disconnect', function () {
-    console.log('A user disconnected');
+  socket.on('disconnect', async () => {
+    
+    const userId = Object.keys(connectedUsers).find(key => connectedUsers[key] === socket.id);
+    var query = { _id: userId.toString() };
+      const updateUser = { 
+        $set: { isOnline: false, socketID: null },
+      }
+      await mongo.getUserObject().updateOrInsertUser(query, updateUser, {upsert: false});
+      delete connectedUsers[userId.toString()];
+      console.log('A user disconnected');
  });
 });
 

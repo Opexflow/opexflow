@@ -66,7 +66,7 @@ export const registerUserError = message => ({
     payload: { message },
 });
 
-export const logoutUser = history => ({
+export const logoutUser = (history, userId) => ({
     type: LOGOUT_USER,
-    payload: { history },
+    payload: { history, userId },
 });

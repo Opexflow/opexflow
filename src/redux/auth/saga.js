@@ -21,6 +21,8 @@ import {
     resetPasswordError,
 } from './actions';
 
+import MPChatSocket from '../../utils/MPChatSocket';
+
 const auth = {};
 
 export function* watchLoginUser() {
@@ -77,15 +79,16 @@ export function* watchLogoutUser() {
     yield takeEvery(LOGOUT_USER, logout);
 }
 
-const logoutAsync = async history => {
+const logoutAsync = async (history, userId) => {
+    MPChatSocket.logout(userId);
     await auth.signOut().then(authUser => authUser).catch(error => error);
     history.push('/');
 };
 
 function* logout({ payload }) {
-    const { history } = payload;
+    const { history, userId } = payload;
     try {
-        yield call(logoutAsync, history);
+        yield call(logoutAsync, history, userId);
         localStorage.removeItem('user_id');
     } catch (error) {
     }

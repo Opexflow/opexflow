@@ -9,6 +9,7 @@ import {
     MP_CHAT_CREATE_CONVERSATION_SUCCESS,
     MP_CHAT_CREATE_CONVERSATION_ERROR,
     MP_CHAT_CHANGE_CONVERSATION,
+    MP_CHAT_UPDATE_CONVERSATION,
     MP_CHAT_GET_MESSAGES_SUCCESS,
     MP_CHAT_GET_MESSAGES_ERROR,
     MP_CHAT_RECEIVE_MESSAGE,
@@ -53,6 +54,11 @@ export const createMPConversation = (currentUserId, selectedUserId, allConversat
 export const changeMPConversation = payload => ({
     type: MP_CHAT_CHANGE_CONVERSATION,
     payload,
+});
+
+export const updateMPConversation = payload => ({
+  type: MP_CHAT_UPDATE_CONVERSATION,
+  payload,
 });
 
 export const getMessagesSuccess = payload => ({

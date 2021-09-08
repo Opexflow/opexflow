@@ -1,3 +1,4 @@
+const io = require('../../utils/chatIO').io();
 const mongo = require('../../helpers/mongoClient');
 const ObjectId = require('mongodb').ObjectID;
 
@@ -44,7 +45,6 @@ const getChatByProposalId = async (req, res) => {
         return res.send(JSON.stringify({success: false, status: 401, error: "Not Authorized to access the chat"}));
       }
     } else {
-      console.log('Inside else sending ...');
       return res.send(JSON.stringify({success: false, status: 404, error: "No Chat Found"}));
     }
   } catch (error) {
@@ -61,7 +61,6 @@ const createChat = async (req, res) => {
         throw new Error('Invalid request object');
 
       const requestBody = JSON.parse(Object.keys(req.body)[0]);
-      console.log('req body is...', requestBody);
 
       //Removing embded logic, referencing user id with user table
       /*
@@ -101,6 +100,50 @@ const createChat = async (req, res) => {
         return res.send(JSON.stringify({success: false, status: 500, error}));
     }
 };
+
+io.on('connection', (socket) => {
+  try {
+    socket.on(`chat-list`, async (data) => {
+      if (data.userId == '') {
+        io.emit(`chat-list-response`, {
+          error : true,
+          message : `User does not exits.`
+        });
+      } else {
+        try {
+          const user = await mongo.getUserObject().getUser(data.userId.toString());
+          const chatList = await mongo.getChatObject().getChatList(user.chatIdArray || []);
+
+          await Promise.all(chatList.map( async (chat) => {
+            chat.participants = await Promise.all(chat.participants.map(async (participant) => {
+              const userData = await mongo.getUserObject().getUser(participant._id);
+              participant = userData;
+              return participant;
+            }));
+            return chat;
+          }));
+          io.to(socket.id).emit(`chat-list-response`, {
+            error : false,
+            singleUser : false,
+            chatList,
+          });
+        } catch ( error ) {
+          console.log('Error during chat-list-response IO ', error);
+          io.to(socket.id).emit(`chat-list-response`,{
+            error : true ,
+            message: error,
+            chatList : []
+          });
+        }
+      }
+    });
+  } catch(error) {
+    console.log('Error during message IO ', error);
+  }
+  socket.on('disconnect', function () {
+    console.log('A user disconnected');
+ });
+});
 
 
 module.exports = { getChatList, createChat, getChatByProposalId };
