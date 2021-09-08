@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import {
-    Nav, TabContent, TabPane, CardHeader, NavItem,
+    Nav, TabContent, TabPane, CardHeader, NavItem, Badge
 } from 'reactstrap';
 import { NavLink } from 'react-router-dom';
 import PerfectScrollbar from 'react-perfect-scrollbar';
@@ -10,10 +10,12 @@ import classnames from 'classnames';
 
 import IntlMessages from '../../helpers/IntlMessages';
 import ApplicationMenu from '../../components/common/ApplicationMenu';
+import MPChatSocket from '../../utils/MPChatSocket';
 
 import {
     changeMPConversation,
     createMPConversation,
+    updateMPConversation,
     searchContact,
 } from '../../redux/actions';
 
@@ -23,6 +25,23 @@ class MPChatApplicationMenu extends Component {
         this.state = {
             searchKey: '',
         };
+    }
+    
+    componentDidMount() {
+      MPChatSocket.establishSocketConnection();
+      //MPChatSocket.listenForChatList();
+      MPChatSocket.getChatList(this.props.authUser?.user?.id);
+      //MPChatSocket.eventEmitter.on('chat-list-response', this.receiveSocketConversations);
+      MPChatSocket.socket.on('chat-list-response', this.receiveSocketConversations);
+      }
+
+    componentWillUnmount() {
+      //MPChatSocket.eventEmitter.removeListener('chat-list-response', this.receiveSocketConversations);
+      MPChatSocket.socket.off('chat-list-response', this.receiveSocketConversations);
+    }
+
+    receiveSocketConversations = socketResponse => {
+      this.props.updateMPConversation({...socketResponse, chatId: this.props.marketPlaceChatApp?.selectedChatId });
     }
 
   toggleAppMenu = tab => {
@@ -100,24 +119,38 @@ class MPChatApplicationMenu extends Component {
                               key={conversation._id}
                               className="d-flex flex-row mb-1 border-bottom pb-3 mb-3"
                         >
+                          <span className={`${selectedChatId == conversation._id ? "chat-active" : "chat-not-active" }`}></span>
                               <NavLink
                                   className="d-flex"
                                   to="#"
                                   onClick={e => this.handleConversationClick(e, conversation._id, selectedChatId)}
                             >
+                              <span className={`d-block position-relative`}>
                                   <img
                                       alt={otherUser.login}
                                       src={otherUser.photo}
-                                      className="img-thumbnail border-0 rounded-circle mr-3 list-thumbnail align-self-center xsmall"
+                                      className="img-thumbnail border-0 rounded-circle mr-3 list-thumbnail align-self-center xsmall d-block"
                                 />
+                                <Badge
+                                      key={index}
+                                      className="position-absolute badge-top-left-2 rounded-circle"
+                                      color={otherUser.isOnline ? 'success' : 'light'}
+                                      style={{fontSize: '0.9rem', top: '30px', left: '5px', display: 'block'}}
+                                    >
+                                      {   }
+                                  </Badge>
+                                  </span>
                                   <div className="d-flex flex-grow-1 min-width-zero">
                                       <div className="pl-0 align-self-center d-flex flex-column flex-lg-row justify-content-between min-width-zero">
                                           <div className="min-width-zero">
                                               <p className=" mb-0 truncate">
                                                   {otherUser.login}
                                             </p>
-                                            <p className="mb-1 text-muted text-small">
-                                                  {conversation.title}
+                                            <p className="mb-1 text-small truncate">
+                                                  {`Job Title : ${conversation.title}`}
+                                            </p>
+                                            <p className="mb-1 text-muted text-small truncate">
+                                                  {conversation.lastMessage || ''}
                                             </p>
                                               <p className="mb-1 text-muted text-small">
                                                   {conversation.lastUpdated}
@@ -145,6 +178,7 @@ export default injectIntl(
         {
             changeMPConversation,
             createMPConversation,
+            updateMPConversation,
             searchContact,
         },
     )(MPChatApplicationMenu),

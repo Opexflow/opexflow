@@ -173,7 +173,7 @@ class TopNav extends Component {
   };
 
   handleLogout = () => {
-      this.props.logoutUser(this.props.history);
+      this.props.logoutUser(this.props.history, this.props.authUser?.user?.id);
   };
 
   handleLogin = () => {

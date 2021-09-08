@@ -38,10 +38,8 @@ class MPChatApp extends Component {
       if(!this.props.authUser?.user) {
         this.props.history.push('/user/login');
       } else {
-        MPChatSocket.establishSocketConnection();
-        MPChatSocket.receiveMessage();
-        MPChatSocket.eventEmitter.on('add-message-response', this.receiveSocketMessages);
-        console.log('props location is ', this.props.location);
+        
+
         if(this.props.location.createConversation && this.props.location.createConversation.proposalId) {
           const {proposalId, freelancerId, title} = this.props.location.createConversation;
           console.log('propsal id is', proposalId);
@@ -50,14 +48,17 @@ class MPChatApp extends Component {
           this.props.getMPConversationsList({userId: this.props.authUser.user.id})
         }
 
+        MPChatSocket.establishSocketConnection();
+        //MPChatSocket.receiveMessage();
+        //MPChatSocket.eventEmitter.on('add-message-response', this.receiveSocketMessages);
+        MPChatSocket.socket.on('add-message-response', this.receiveSocketMessages);
+
       }
     }
 
     componentDidUpdate(prevProps) {
       if(!this.props.authUser?.user)
         this.props.history.push('/user/login');
-      console.log('component update prevprops ', prevProps );
-      console.log('component update currentprops ', this.props );
         // if (
         //     this.props.marketPlaceChatApp.loadingConversations &&
         //     this.props.marketPlaceChatApp.conversations &&
@@ -73,7 +74,8 @@ class MPChatApp extends Component {
     }
 
     componentWillUnmount() {
-      MPChatSocket.eventEmitter.removeListener('add-message-response', this.receiveSocketMessages);
+      //MPChatSocket.eventEmitter.removeListener('add-message-response', this.receiveSocketMessages);
+      MPChatSocket.socket && MPChatSocket.socket.off('add-message-response', this.receiveSocketMessages);
     }
 
     addMessageToConversation = message => {
