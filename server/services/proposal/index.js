@@ -8,14 +8,25 @@ const submitProposal = async (req, res) => {
 
     const requestBody = JSON.parse(Object.keys(req.body)[0]);
 
-    const userData = await mongo.getUserObject().getUser(requestBody.freelancerId);
+    //Removing embded logic, referencing user id with user table
+    /*
+    const userData = await mongo.getUserObject().getUser(requestBody.freelancerId.toString());
     requestBody['user'] = userData;
+    */
+    requestBody['user'] = {
+      _id: requestBody.freelancerId.toString(),
+    };
 
     const submittedProposal = await mongo.getProposalObject().submitProposal(requestBody);
 
     if(submittedProposal.ops.length > 0 && submittedProposal.ops[0]) {
 
       const allProposals = await mongo.getProposalObject().getAllProposalsForJob(requestBody.jobId);
+      
+      await Promise.all(allProposals.map( async (proposal) => {
+        const userData = await mongo.getUserObject().getUser(proposal.user._id); 
+        proposal['user'] = userData;
+      }));
       return res.end(`{"success": true, "data": ${JSON.stringify(allProposals)}}`);
     }
 
@@ -34,10 +45,10 @@ const getAllProposalsForJob = async (req, res) => {
     const jobId = req.query.jobId;
     const allProposals = await mongo.getProposalObject().getAllProposalsForJob(jobId);
     
-    // await Promise.all(allProposals.map( async (proposal) => {
-    //   const userData = await mongo.getUserObject().getUser(proposal.freelancerId); 
-    //   proposal['user'] = userData;
-    // }));
+    await Promise.all(allProposals.map( async (proposal) => {
+      const userData = await mongo.getUserObject().getUser(proposal.user._id); 
+      proposal['user'] = userData;
+    }));
     
     return res.end(`{"success": true, "data": ${JSON.stringify(allProposals)}}`);
   } catch (error) {
@@ -52,6 +63,12 @@ const deleteProposal = async (req, res) => {
     const proposalId = req.query.proposalId;
     const proposals = await mongo.getProposalObject().deleteProposal(proposalId);
     const allProposals = await mongo.getProposalObject().getAllProposalsForJob(jobId);
+
+    await Promise.all(allProposals.map( async (proposal) => {
+      const userData = await mongo.getUserObject().getUser(proposal.user._id); 
+      proposal['user'] = userData;
+    }));
+
     return res.end(`{"success": true, "data": ${JSON.stringify(allProposals)}}`);
   } catch (error) {
     console.log('Error while withdrawing the proposal : ', error);
@@ -68,6 +85,13 @@ const deleteProposalByJobId = async (req, res) => {
     const proposals = await mongo.getProposalObject().deleteProposalByJobId(userId, jobId);
     if(proposals.deletedCount > 0) {
       const allProposals = await mongo.getProposalObject().getAllProposalsForJob(jobId);
+
+      await Promise.all(allProposals.map( async (proposal) => {
+        const userData = await mongo.getUserObject().getUser(proposal.user._id); 
+        proposal['user'] = userData;
+      }));
+
+
       return res.end(`{"success": true, "data": ${JSON.stringify(allProposals)}}`);
     } else {
       return res.end(`{"success": false, "error": "No Record Found"`);

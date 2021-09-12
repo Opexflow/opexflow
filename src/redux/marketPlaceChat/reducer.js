@@ -7,6 +7,7 @@ import {
     MP_CHAT_GET_CONVERSATIONS_LIST_ERROR,
     MP_CHAT_CREATE_CONVERSATION,
     MP_CHAT_CHANGE_CONVERSATION,
+    MP_CHAT_UPDATE_CONVERSATION,
     MP_CHAT_GET_MESSAGES_SUCCESS,
     MP_CHAT_GET_MESSAGES_ERROR,
     MP_CHAT_RECEIVE_MESSAGE,
@@ -68,6 +69,14 @@ export default (state = INIT_STATE, action) => {
       
         case MP_CHAT_CHANGE_CONVERSATION:
             return { ...state, loadingMessages: false, selectedChatId: action.payload.chatId };
+
+        case MP_CHAT_UPDATE_CONVERSATION:
+          return {
+            ...state,
+            loadingConversations: true,
+            conversations: action.payload.chatList,
+            selectedChatId: action.payload.chatId,
+          };
 
         case MP_CHAT_GET_MESSAGES_SUCCESS:
           return {

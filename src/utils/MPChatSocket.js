@@ -11,12 +11,26 @@ class MPChatSocket {
     // Connecting to Socket Server
     establishSocketConnection() {
         try {
-          this.socket = openSocket(getHost(''), {
-            path: '/api/socket/chat',
-          });
+          if(!this.socket) {
+            this.socket = openSocket(getHost(''), {
+              path: '/api/socket/chat',
+            });
+          }
         } catch (error) {
             alert(`Something went wrong; Can't connect to socket server`);
         }
+    }
+
+    login(userId) {
+      this.socket.emit('user-login', {
+        userId: userId
+      });
+    }
+
+    logout(userId) {
+      this.socket.emit('user-logout', {
+        userId: userId
+      });
     }
 
     joinChat(chatId) {
@@ -32,12 +46,15 @@ class MPChatSocket {
     }
 
     getChatList(userId) {
-        this.socket.emit('chat-list', {
-            userId: userId
-        });
-        this.socket.on('chat-list-response', (data) => {
-            this.eventEmitter.emit('chat-list-response', data);
-        });
+      this.socket.emit('chat-list', {
+        userId: userId
+      });
+    }
+
+    listenForChatList() {
+      this.socket.on('chat-list-response', (data) => {
+        this.eventEmitter.emit('chat-list-response', data);
+      });
     }
 
     sendMessage(message) {
@@ -46,8 +63,7 @@ class MPChatSocket {
 
     receiveMessage() {
         this.socket.on('add-message-response', (data) => {
-          console.log('message receieved...', data);
-            this.eventEmitter.emit('add-message-response', data);
+            this.eventEmitter.emit('add-message-response', data);            
         });
     }
 

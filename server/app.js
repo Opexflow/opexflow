@@ -84,7 +84,7 @@ passport.use(new FacebookStrategy({
         console.log(profile);
         if (profile && profile.id) {
 
-            await saveOrUpdateUser(profile, mongo);
+          const savedImagePath = await saveOrUpdateUser(profile, mongo);
             /*
             pool.query(`INSERT INTO Users SET
                     id = '${profile.id}', login = '${profile.displayName}', email = '${email}', photo='${photo}', createdAt = NOW(), balance = 10000
@@ -93,6 +93,7 @@ passport.use(new FacebookStrategy({
             */
 
             profile.accessToken = accessToken;
+            profile.photos = [{value : savedImagePath}]
         }
         return done(null, profile);
     });
@@ -109,7 +110,7 @@ passport.use(new GitHubStrategy({
   process.nextTick(async () => {
       console.log('github profile', profile);
       if (profile && profile.id) {
-          await saveOrUpdateUser(profile, mongo);
+          const savedImagePath = await saveOrUpdateUser(profile, mongo);
           /*
           pool.query(`INSERT INTO Users SET
                   id = '${profile.id}', login = '${profile.displayName}', email = '${email}', photo='${photo}', createdAt = NOW(), balance = 10000
@@ -118,7 +119,8 @@ passport.use(new GitHubStrategy({
           */
 
           profile.accessToken = accessToken;
-      }
+          profile.photos = [{value : savedImagePath}]
+        }
       return done(null, profile);
   });
 })));
@@ -171,7 +173,7 @@ app.get('/api/account', async (req, res) => {
     });
     */
     const user = await mongo.getUserObject().getUser(req.user.id);
-    res.end(JSON.stringify({ user: req.user, finance: { balance: user.balance } }));
+    res.end(JSON.stringify({ user: req.user, finance: { balance: user.balance }, imageStream: user.photo }));
 });
 
 app.get('/api/account/:id', async (req, res) => {
@@ -224,15 +226,9 @@ app.get('/api/stocks/ticks/:tick', ensureAuthenticated, (req, res) => {
 
     const filename = path.join(__dirname, `SBER_${req.params.tick[0]}.txt`);
 
-    console.log(req.params);
-    console.log(__dirname);
-    console.log(filename);
-
     if (!fs.existsSync(filename)) {
         return res.end('{}');
     }
-
-    console.log(filename);
 
     // Вместо этого файла будут данные из БД
     const ticks = fs.readFileSync(filename).toString()

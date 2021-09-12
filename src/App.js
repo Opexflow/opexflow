@@ -15,6 +15,7 @@ import enLang from './lang/entries/en-US';
 // import ColorSwitcher from './components/common/ColorSwitcher';
 import NotificationContainer from './components/common/react-notifications/NotificationContainer';
 import { getDirection } from './helpers/Utils';
+import MPChatSocket from './utils/MPChatSocket';
 
 const ViewMain = React.lazy(() => import(/* webpackChunkName: "views" */ './views'));
 const ViewApp = React.lazy(() => import(/* webpackChunkName: "views-app" */ './views/app'));
@@ -48,6 +49,11 @@ class App extends Component {
         } else {
             document.body.classList.add('ltr');
             document.body.classList.remove('rtl');
+        }
+
+        if(props.loginUser && props.loginUser.id) {
+          MPChatSocket.establishSocketConnection();
+          MPChatSocket.login(props.loginUser.id);
         }
     }
 

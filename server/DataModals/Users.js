@@ -1,4 +1,5 @@
 const config = require('../config');
+const {loadImageForUser} = require('../helpers/utils');
 
 class User {
   constructor(db) {
@@ -11,6 +12,13 @@ class User {
 
   async getUser(id){
     const user = await this.collection.findOne({"_id": id});
+    
+    const imageStream = await loadImageForUser(user.photo);
+    // if(imageStream.success){
+    //   const imgBuffer = new Buffer(imageStream.stringStream)
+    //   user.photo = imgBuffer;
+    // }
+    user.photo = imageStream;
     return user;
   }
 
